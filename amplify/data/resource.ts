@@ -12,6 +12,32 @@ const schema = a.schema({
       content: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+
+    News: a
+    .model({
+      title: a.string(),
+      group: a.integer(),
+      writtenBy: a.string(),
+      date: a.date(),
+      lDate: a.date(),
+      source: a.string(),
+      memo: a.string(),
+      ord: a.integer(),
+      rank: a.integer(),
+      header: a.string(),
+      published: a.boolean(),
+      newField: a.boolean(),
+      type: a.enum(['Steel', 'Auto', 'Aluminum']),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  NewsGroup: a
+    .model({
+      name: a.string(),
+      nameJ: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
 });
 
 export type Schema = ClientSchema<typeof schema>;
