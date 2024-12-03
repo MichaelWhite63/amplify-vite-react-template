@@ -10,6 +10,7 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
+      isDone: a.boolean(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
@@ -38,6 +39,26 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
+  Chart1: a
+    .model({
+      Order: a.integer(),
+      Title: a.string(),
+      ThisWeek: a.float(),
+      LastWeek: a.float(),
+      LastYear: a.float(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+    Chart2: a
+    .model({
+      Order: a.integer(),
+      Title: a.string(),
+      ThisMonth: a.integer(),
+      LastMonth: a.integer(),
+      LastYear: a.integer(),
+      Month: a.integer(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
