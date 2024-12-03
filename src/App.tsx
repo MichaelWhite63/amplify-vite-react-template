@@ -77,7 +77,8 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
   };
 
   function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
-    const { name, value, type, checked } = event.target;
+    const { name, value, type } = event.target;
+    const checked = (event.target as HTMLInputElement).checked;
     setNewsForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
