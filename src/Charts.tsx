@@ -16,7 +16,7 @@ const Charts: React.FC = () => {
     <Grid2 container spacing={3} direction="column" alignItems="center">        <Grid2 xs={12}>
           <Chart1Component />
         </Grid2>
-        <Grid2 xs={12}>
+        <Grid2 sx={{ xs: 12 }}>
           <Chart2Component />
         </Grid2>
       </Grid2>
