@@ -59,6 +59,49 @@ const schema = a.schema({
       Month: a.integer(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+
+    Chart3: a
+    .model({
+      Order: a.integer(),
+      Title: a.string(),
+      Import: a.integer(),
+      MillPrice: a.integer(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+    Chart4: a
+    .model({
+      Order: a.integer(),
+      Title: a.string(),
+      ThisMonth: a.integer(),
+      LastMonth: a.integer(),
+      LastYear: a.integer(),
+      Month: a.integer(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+    Chart5: a
+    .model({
+      Order: a.integer(),
+      Title: a.string(),
+      ThisMonth: a.integer(),
+      LastMonth: a.integer(),
+      LastYear: a.integer(),
+      Month: a.integer(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+
+    Chart6: a
+    .model({
+      Order: a.integer(),
+      Title: a.string(),
+      ThisMonth: a.integer(),
+      LastMonth: a.integer(),
+      LastYear: a.integer(),
+      Month: a.integer(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

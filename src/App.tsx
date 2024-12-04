@@ -3,7 +3,7 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { CSSProperties } from 'react';
-import HelloWorld from './HelloWorld';
+import Charts from './Charts';
 
 const client = generateClient<Schema>();
 
@@ -187,13 +187,13 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
 
   const renderScreen = () => {
     switch (currentScreen) {
-      case 'helloWorld':
-        return <HelloWorld />;
+      case 'Charts':
+        return <Charts />;
       case 'form':
       default:
         return (
           <main style={mainStyle}>
-            <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>News Management System</h1>
+            <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>Metal News - News Entry</h1>
             <form onSubmit={submitNewsForm} style={formStyle}>
               <div>
                 <label htmlFor="type">Category:</label>

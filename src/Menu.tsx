@@ -23,8 +23,8 @@ const MenuComponent: React.FC<MenuComponentProps> = ({ setCurrentScreen }) => {
     setAnchorEl(null);
   };
 
-  const handleHelloWorldClick = () => {
-    setCurrentScreen('helloWorld');
+  const handleChartsClick = () => {
+    setCurrentScreen('Charts');
     handleClose();
   };
 
@@ -62,8 +62,8 @@ const MenuComponent: React.FC<MenuComponentProps> = ({ setCurrentScreen }) => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleFormClick} sx={{ color: 'red' }}>Form</MenuItem>
-          <MenuItem onClick={handleHelloWorldClick} sx={{ color: 'orange' }}>Hello World</MenuItem>
+          <MenuItem onClick={handleFormClick} sx={{ color: 'red' }}>News Entry</MenuItem>
+          <MenuItem onClick={handleChartsClick} sx={{ color: 'orange' }}>Charts</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
