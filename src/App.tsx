@@ -5,6 +5,11 @@ import type { Schema } from '../amplify/data/resource';
 import { CSSProperties } from 'react';
 import Charts from './Charts';
 
+import { Amplify } from "aws-amplify"
+import outputs from "../amplify_outputs.json"
+
+Amplify.configure(outputs);
+
 const client = generateClient<Schema>();
 
 interface News {
