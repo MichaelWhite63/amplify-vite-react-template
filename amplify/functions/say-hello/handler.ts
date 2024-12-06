@@ -3,17 +3,9 @@ import { DynamoDB } from 'aws-sdk';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
-const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum') => {
+const getUnpublishedNews = async () => {
   const params = {
-    TableName: 'News',
-    FilterExpression: 'published = :published AND #type = :type',
-    ExpressionAttributeValues: { 
-      ':published': false,
-      ':type': type
-    },
-    ExpressionAttributeNames: {
-      '#type': 'type'
-    }
+    TableName: 'News'
   };
 
   const result = await dynamoDb.scan(params).promise();
@@ -39,7 +31,7 @@ export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
   const { name, type, nonEnum } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum', nonEnum: string };
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
-    const unpublishedNews = await getUnpublishedNews(type);
+    const unpublishedNews = await getUnpublishedNews();
     //if (unpublishedNews) {
     //  const newsIds = unpublishedNews.map(news => news.id);
     //  await publishNews(newsIds);
@@ -61,3 +53,19 @@ export const handler: Handler = async (event, context) => {
   return 'Hello, World!';
 };
 */
+
+/*
+const ABCgetUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum') => {
+  const params = {
+    TableName: 'News',
+    FilterExpression: 'published = :published AND #type = :type',
+    ExpressionAttributeValues: { 
+      ':published': false,
+      ':type': type
+    },
+    ExpressionAttributeNames: {
+      '#type': 'type'
+    }
+  };
+
+  */

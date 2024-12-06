@@ -12,7 +12,7 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-console.log(   
+console.log(   await
   client.queries.sayHello({name: 'World', type: 'Steel', nonEnum: 'Auto'})
   );
 
@@ -85,11 +85,11 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
     setFormWidth(`${window.innerWidth * 0.8}px`);
   };
 
-   function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
+  async function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
     const { name, value, type } = event.target;
     const checked = (event.target as HTMLInputElement).checked;
     console.log('Field name: ', name, 'Field value: ', value, 'type: ', type, 'checked: ', checked);
-    console.log(    
+    console.log(    await
       client.queries.sayHello({name: value, type: value as 'Steel' | 'Auto' | 'Aluminum', nonEnum: value})
       );
     setNewsForm((prev) => ({
