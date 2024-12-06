@@ -85,7 +85,7 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
     setFormWidth(`${window.innerWidth * 0.8}px`);
   };
 
-  async function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
+  function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
     const { name, value, type } = event.target;
     const checked = (event.target as HTMLInputElement).checked;
     console.log('name:', name, 'value:', value, 'type:', type, 'checked:', checked);
