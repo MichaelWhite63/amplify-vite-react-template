@@ -12,7 +12,7 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-console.log(await 
+console.log( 
   (client.queries.sayHello({name: 'World', type: 'Steel'}))
   );
 
