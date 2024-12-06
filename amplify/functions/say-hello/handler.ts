@@ -36,7 +36,7 @@ const publishNews = async (newsIds: string[]) => {
 
 export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
-  const { name, type } = event.arguments
+  const { name, type, nonEnum } = event.arguments
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
     const unpublishedNews = await getUnpublishedNews(type);
@@ -47,7 +47,13 @@ export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
     // return typed from `.returns()`
     return `Hello, ${name}! Unpublished news count: ${unpublishedNews ? unpublishedNews.length : 0}`;
   } else {
-    throw new Error(`Invalid type:  ${type} | name : ${name}`);
+    const unpublishedNews = await getUnpublishedNews(nonEnum as 'Steel' | 'Auto' | 'Aluminum');
+    if (unpublishedNews) {
+      const newsIds = unpublishedNews.map(news => news.id);
+      await publishNews(newsIds);
+    }
+
+    throw new Error(`Invalid type: ${type} | name : ${name} | nonEnum : ${nonEnum}`);
   }
   
   // return typed from `.returns()`

@@ -14,6 +14,7 @@ const schema = a.schema({
     .arguments({
       name: a.string(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
+      nonEnum: a.string(),
     })
     .returns(a.string())
     .handler(a.handler.function(sayHello))

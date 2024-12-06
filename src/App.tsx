@@ -12,8 +12,8 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-console.log( 
-  (client.queries.sayHello({name: 'World', type: 'Steel'}))
+console.log(await  
+  (client.queries.sayHello({name: 'World', type: 'Steel', nonEnum: 'Auto'}, 'Steel'))
   );
 
 interface News {
@@ -85,9 +85,13 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
     setFormWidth(`${window.innerWidth * 0.8}px`);
   };
 
-  function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
+  async function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
     const { name, value, type } = event.target;
     const checked = (event.target as HTMLInputElement).checked;
+    console.log('name:', name, 'value:', value, 'type:', type, 'checked:', checked);
+    console.log(await  
+      (client.queries.sayHello({name: value, type: value as 'Steel' | 'Auto' | 'Aluminum', nonEnum: value}))
+      );
     setNewsForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -126,7 +130,7 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
       header: '',
       published: false,
       newField: false,
-      type: 'Steel',
+      type: 'Auto',
     });
   }
 
