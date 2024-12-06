@@ -47,12 +47,6 @@ export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
     // return typed from `.returns()`
     return `Hello, ${name}! Unpublished news count: ${unpublishedNews ? unpublishedNews.length : 0}`;
   } else {
-    const unpublishedNews = await getUnpublishedNews(nonEnum as 'Steel' | 'Auto' | 'Aluminum');
-    if (unpublishedNews) {
-      const newsIds = unpublishedNews.map(news => news.id);
-      await publishNews(newsIds);
-    }
-
     throw new Error(`Invalid type: ${type} | name : ${name} | nonEnum : ${nonEnum}`);
   }
   
