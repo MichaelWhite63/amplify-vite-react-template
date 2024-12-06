@@ -12,8 +12,8 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-console.log(
-  (client.queries.sayHello({name: "World", type: "Steel",}))
+console.log(await 
+  (client.queries.sayHello({name: 'World', type: 'Steel'}))
   );
 
 interface News {
