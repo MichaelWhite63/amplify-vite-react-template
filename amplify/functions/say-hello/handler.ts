@@ -36,7 +36,7 @@ const publishNews = async (newsIds: string[]) => {
 
 export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
-  const { name, type, nonEnum } = event.arguments
+  const { name, type, nonEnum } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum', nonEnum: string };
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
     const unpublishedNews = await getUnpublishedNews(type);
