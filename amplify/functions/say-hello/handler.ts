@@ -40,12 +40,12 @@ export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
     const unpublishedNews = await getUnpublishedNews(type);
-    if (unpublishedNews) {
-      const newsIds = unpublishedNews.map(news => news.id);
-      await publishNews(newsIds);
-    }
+    //if (unpublishedNews) {
+    //  const newsIds = unpublishedNews.map(news => news.id);
+    //  await publishNews(newsIds);
+    //}
     // return typed from `.returns()`
-    return `Hello, ${name}! Unpublished news count: ${unpublishedNews ? unpublishedNews.length : 0}`;
+    return `Hello, ${name}! Unpublished news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type} | nonEnum: ${nonEnum}`;
   } else {
     throw new Error(`Invalid type: ${type} | name : ${name} | nonEnum : ${nonEnum}`);
   }
