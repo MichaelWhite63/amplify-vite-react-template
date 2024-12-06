@@ -12,8 +12,8 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-console.log(await  
-  (client.queries.sayHello({name: 'World', type: 'Steel', nonEnum: 'Auto'}, 'Steel'))
+console.log(  
+  client.queries.sayHello({name: 'World', type: 'Steel', nonEnum: 'Auto'})
   );
 
 interface News {
@@ -89,8 +89,8 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
     const { name, value, type } = event.target;
     const checked = (event.target as HTMLInputElement).checked;
     console.log('name:', name, 'value:', value, 'type:', type, 'checked:', checked);
-    console.log(await  
-      (client.queries.sayHello({name: value, type: value as 'Steel' | 'Auto' | 'Aluminum', nonEnum: value}))
+    console.log(  
+      client.queries.sayHello({name: value, type: value as 'Steel' | 'Auto' | 'Aluminum', nonEnum: value})
       );
     setNewsForm((prev) => ({
       ...prev,
