@@ -12,6 +12,10 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
+console.log((await client.queries.sayHello({
+  name: "World", type: "Steel",
+})).data);
+
 interface News {
   id: number;
   title: string;

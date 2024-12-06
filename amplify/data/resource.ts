@@ -13,6 +13,7 @@ const schema = a.schema({
     .query()
     .arguments({
       name: a.string(),
+      type: a.enum(['Steel', 'Auto', 'Aluminum']),
     })
     .returns(a.string())
     .handler(a.handler.function(sayHello))
