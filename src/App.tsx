@@ -89,7 +89,7 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
     const { name, value, type } = event.target;
     const checked = (event.target as HTMLInputElement).checked;
     console.log('Field name: ', name, 'Field value: ', value, 'type: ', type, 'checked: ', checked);
-    console.log(  await 
+    console.log(   
       client.queries.sayHello({name: value, type: value as 'Steel' | 'Auto' | 'Aluminum', nonEnum: value})
       );
     setNewsForm((prev) => ({
