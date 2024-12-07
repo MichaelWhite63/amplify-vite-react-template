@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import './index.css';
-import { useNavigate, BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useNavigate, Route, Routes } from 'react-router-dom';
 import Charts from './Charts';
 import SendEmail from './sendEmail';
 import App from './App';
