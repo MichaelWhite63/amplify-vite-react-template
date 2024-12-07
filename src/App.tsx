@@ -3,7 +3,6 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { CSSProperties } from 'react';
-import Charts from './Charts';
 
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
@@ -12,9 +11,7 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-console.log(   
-  client.queries.sayHello({name: 'World', type: 'Steel', nonEnum: 'Auto'})
-  );
+//console.log(   await client.queries.sayHello({name: 'World', type: 'Steel'}));
 
 interface News {
   id: number;
@@ -49,11 +46,7 @@ interface NewsForm {
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
 
-interface AppProps {
-  currentScreen: string;
-}
-
-const App: React.FC<AppProps> = ({ currentScreen }) => {
+const App: React.FC = () => {
   const [newsForm, setNewsForm] = useState<NewsForm>({
     title: '',
     group: 1,
@@ -88,10 +81,7 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
  function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
     const { name, value, type } = event.target;
     const checked = (event.target as HTMLInputElement).checked;
-    console.log('Field name: ', name, 'Field value: ', value, 'type: ', type, 'checked: ', checked);
-    console.log(    
-      client.queries.sayHello({name: value, type: value as 'Steel' | 'Auto' | 'Aluminum', nonEnum: value})
-      );
+
     setNewsForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -198,85 +188,77 @@ const App: React.FC<AppProps> = ({ currentScreen }) => {
     justifyContent: 'space-between',
   };
 
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'Charts':
-        return <Charts />;
-      case 'form':
-      default:
-        return (
-          <main style={mainStyle}>
-            <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>Metal News - News Entry</h1>
-            <form onSubmit={submitNewsForm} style={formStyle}>
-              <div>
-                <label htmlFor="type">Category:</label>
-                <select id="type" name="type" value={newsForm.type} onChange={handleNewsInputChange} style={inputStyle}>
-                  <option value="Steel">Steel</option>
-                  <option value="Auto">Auto</option>
-                  <option value="Aluminum">Aluminum</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="title">Title:</label>
-                <input type="text" id="title" name="title" value={newsForm.title} onChange={handleNewsInputChange} style={inputStyle} />
-              </div>
-              <div>
-                <label htmlFor="source">Source:</label>
-                <input type="text" id="source" name="source" value={newsForm.source} onChange={handleNewsInputChange} style={inputStyle} />
-              </div>
-              <div>
-                <label htmlFor="date">Date:</label>
-                <input type="date" id="date" name="date" value={newsForm.date} onChange={handleNewsInputChange} style={inputStyle} />
-              </div>
-              <div>
-                <label htmlFor="memo">Body:</label>
-                <textarea id="memo" name="memo" value={newsForm.memo} onChange={handleNewsInputChange} style={inputStyle}></textarea>
-              </div>
-              <div>
-                <label htmlFor="header">Header:</label>
-                <input type="text" id="header" name="header" value={newsForm.header} onChange={handleNewsInputChange} style={inputStyle} />
-              </div>
-              <div>
-                <label htmlFor="published">Published:</label>
-                <input type="checkbox" id="published" name="published" checked={newsForm.published} onChange={handleNewsInputChange} />
-              </div>
-              <button type="submit" style={buttonStyle}>Submit</button>
-            </form>
+  const renderFormScreen = () => (
+    <main style={mainStyle}>
+      <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>Metal News - News Entry</h1>
+      <form onSubmit={submitNewsForm} style={formStyle}>
+        <div>
+          <label htmlFor="type">Category:</label>
+          <select id="type" name="type" value={newsForm.type} onChange={handleNewsInputChange} style={inputStyle}>
+            <option value="Steel">Steel</option>
+            <option value="Auto">Auto</option>
+            <option value="Aluminum">Aluminum</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="title">Title:</label>
+          <input type="text" id="title" name="title" value={newsForm.title} onChange={handleNewsInputChange} style={inputStyle} />
+        </div>
+        <div>
+          <label htmlFor="source">Source:</label>
+          <input type="text" id="source" name="source" value={newsForm.source} onChange={handleNewsInputChange} style={inputStyle} />
+        </div>
+        <div>
+          <label htmlFor="date">Date:</label>
+          <input type="date" id="date" name="date" value={newsForm.date} onChange={handleNewsInputChange} style={inputStyle} />
+        </div>
+        <div>
+          <label htmlFor="memo">Body:</label>
+          <textarea id="memo" name="memo" value={newsForm.memo} onChange={handleNewsInputChange} style={inputStyle}></textarea>
+        </div>
+        <div>
+          <label htmlFor="header">Header:</label>
+          <input type="text" id="header" name="header" value={newsForm.header} onChange={handleNewsInputChange} style={inputStyle} />
+        </div>
+        <div>
+          <label htmlFor="published">Published:</label>
+          <input type="checkbox" id="published" name="published" checked={newsForm.published} onChange={handleNewsInputChange} />
+        </div>
+        <button type="submit" style={buttonStyle}>Submit</button>
+      </form>
 
-            <section>
-              <h2>News Items</h2>
-              <ul style={{ listStyleType: 'none', padding: 0 }}>
-                {newsItems.map((news) => (
-                  <li key={news.id} style={newsItemStyle}>
-                    <div style={newsItemHeaderStyle}>
-                      <div>
-                        <h3>{news.title}</h3>
-                        <p><strong>Group:</strong> {news.group}</p>
-                        <p><strong>Written by:</strong> {news.writtenBy}</p>
-                        <p><strong>Type:</strong> {news.type}</p>
-                      </div>
-                      <div>
-                        <p><strong>Date:</strong> {new Date(news.date).toLocaleDateString()}</p>
-                        <p><strong>Last Date:</strong> {new Date(news.lDate).toLocaleDateString()}</p>
-                        <p><strong>Source:</strong> {news.source}</p>
-                      </div>
-                    </div>
-                    <p><strong>Memo:</strong> {news.memo}</p>
-                    <p><strong>Header:</strong> {news.header}</p>
-                    <p><strong>Published:</strong> {news.published ? 'Yes' : 'No'}</p>
-                    <p><strong>New Field:</strong> {news.newField ? 'Yes' : 'No'}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
+      <section>
+        <h2>News Items</h2>
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
+          {newsItems.map((news) => (
+            <li key={news.id} style={newsItemStyle}>
+              <div style={newsItemHeaderStyle}>
+                <div>
+                  <h3>{news.title}</h3>
+                  <p><strong>Group:</strong> {news.group}</p>
+                  <p><strong>Written by:</strong> {news.writtenBy}</p>
+                  <p><strong>Type:</strong> {news.type}</p>
+                </div>
+                <div>
+                  <p><strong>Date:</strong> {new Date(news.date).toLocaleDateString()}</p>
+                  <p><strong>Last Date:</strong> {new Date(news.lDate).toLocaleDateString()}</p>
+                  <p><strong>Source:</strong> {news.source}</p>
+                </div>
+              </div>
+              <p><strong>Memo:</strong> {news.memo}</p>
+              <p><strong>Header:</strong> {news.header}</p>
+              <p><strong>Published:</strong> {news.published ? 'Yes' : 'No'}</p>
+              <p><strong>New Field:</strong> {news.newField ? 'Yes' : 'No'}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-            <button onClick={signOut} style={buttonStyle}>Sign out</button>
-          </main>
-        );
-    }
-  };
+      <button onClick={signOut} style={buttonStyle}>Sign out</button>
+    </main>
+  );
 
-  return renderScreen();
+  return renderFormScreen();
 };
 
 export default App;

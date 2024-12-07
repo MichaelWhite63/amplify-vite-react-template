@@ -35,7 +35,7 @@ const publishNews = async (newsIds: string[]) => {
 
 export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
-  const { name, type, nonEnum } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum', nonEnum: string };
+  const { name, type } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum' };
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
     const unpublishedNews = await getUnpublishedNews(type);
@@ -44,10 +44,9 @@ export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
       await publishNews(newsIds);
     }
     // return typed from `.returns()`
-   return `Hello, ${name}! Unpublished news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type} | nonEnum: ${nonEnum}`;
-   // return `Hello, ${name}! | type: ${type} | nonEnum: ${nonEnum}`;
+    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type} | nonEnum: ${nonEnum}`;
   } else {
-    throw new Error(`Invalid type: ${type} | name : ${name} | nonEnum : ${nonEnum}`);
+    throw new Error(`Invalid type: ${type} | name : ${name}`);
   } 
  }
 /*
@@ -58,19 +57,3 @@ export const handler: Handler = async (event, context) => {
   return 'Hello, World!';
 };
 */
-
-/*
-const ABCgetUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum') => {
-  const params = {
-    TableName: 'News',
-    FilterExpression: 'published = :published AND #type = :type',
-    ExpressionAttributeValues: { 
-      ':published': false,
-      ':type': type
-    },
-    ExpressionAttributeNames: {
-      '#type': 'type'
-    }
-  };
-
-  */
