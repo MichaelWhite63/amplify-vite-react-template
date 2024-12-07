@@ -44,7 +44,7 @@ export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
       await publishNews(newsIds);
     }
     // return typed from `.returns()`
-    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type} | nonEnum: ${nonEnum}`;
+    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type} `;
   } else {
     throw new Error(`Invalid type: ${type} | name : ${name}`);
   } 
