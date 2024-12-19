@@ -11,6 +11,7 @@ import { useNavigate, Route, Routes } from 'react-router-dom';
 import Charts from './Charts';
 import SendEmail from './sendEmail';
 import App from './App';
+import NewsSearch from './newsSearch';
 
 const MenuComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -62,6 +63,7 @@ const MenuComponent: React.FC = () => {
             <MenuItem onClick={() => handleNavigation('/form')} sx={{ color: 'red' }}>News Entry</MenuItem>
             <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'orange' }}>Charts</MenuItem>
             <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'blue' }}>Send Email</MenuItem>
+            <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'green' }}>News Search</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
@@ -70,6 +72,7 @@ const MenuComponent: React.FC = () => {
         <Route path="/charts" element={<Charts />} />
         <Route path="/form" element={<App />} />
         <Route path="/" element={<App />} />
+        <Route path="/news-search" element={<NewsSearch />} />
       </Routes>
     </>
   );

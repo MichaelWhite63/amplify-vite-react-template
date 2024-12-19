@@ -12,9 +12,9 @@ const client = generateClient<Schema>();
 const SendEmail: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'Steel' | 'Auto' | 'Aluminum'>('Steel');
 
-  function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
+  async function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
     setSelectedType(event.target.value as 'Steel' | 'Auto' | 'Aluminum');
-    console.log(   client.queries.sendEmail({name: 'World', type:  event.target.value as 'Steel' | 'Auto' | 'Aluminum'}));
+    console.log(  await client.queries.sendEmail({name: 'MetalNews Email', type:  event.target.value as 'Steel' | 'Auto' | 'Aluminum'}));
   }
 
   return (
