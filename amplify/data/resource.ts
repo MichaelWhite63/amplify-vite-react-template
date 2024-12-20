@@ -1,6 +1,6 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { sayHello }  from "../functions/say-hello/resource"
-import { sendEmail } from "../functions/sendEmail/resource"
+import { sayHello }   from "../functions/say-hello/resource"
+import { sendEmail }  from "../functions/sendEmail/resource"
 import { newsSearch } from "../functions/newsSearch/resource";
 
 /*== STEP 1 ===============================================================

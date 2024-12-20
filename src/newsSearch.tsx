@@ -28,7 +28,10 @@ const NewsSearch: React.FC = () => {
 
   const handleSearch = async () => {
     try {
+        console.log('Search string:', searchString);
       const response = await client.queries.newsSearch({ searchString });
+      console.log('Response:', response);
+      console.log(response.data);
       setResults(response.data ? (JSON.parse(response.data) as News[]) : []);
     } catch (error) {
       console.error('Error fetching news:', error);

@@ -7,7 +7,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   const { searchString } = event.arguments as { searchString: string };
 
   const params = {
-    TableName: 'News',
+    TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
     FilterExpression: 'contains(#title, :searchString)',
     ExpressionAttributeNames: {
       '#title': 'title',
