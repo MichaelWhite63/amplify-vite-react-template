@@ -21,7 +21,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
 
   try {
     const data = await dynamoDb.scan(params).promise();
-    return JSON.stringify(data.Items) || null;
+    return JSON.stringify(data.Items) || "Hello World";// null;
   } catch (error) {
     console.error(error);
     throw new Error('Error fetching news');
