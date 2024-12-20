@@ -5,19 +5,7 @@ const dynamoDb = new DynamoDB.DocumentClient();
 
 export const handler: Schema["newsSearch"]["functionHandler"] = async (event): Promise<string | null> => {
   const { searchString } = event.arguments as { searchString: string };
-  const type = 'Steel';
-  const params = {
-    TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-    FilterExpression: 'published = :published AND #type = :type',
-    ExpressionAttributeValues: { 
-      ':published': true,
-      ':type': type
-    },
-    ExpressionAttributeNames: {
-      '#type': 'type'
-    }
-  };
-  /*
+
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
     FilterExpression: 'contains(#title, :searchString)',
@@ -30,7 +18,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
     Limit: 25,
     ScanIndexForward: false, // To get the most recently entered rows
   };
-*/
+
   try {
     const data = await dynamoDb.scan(params).promise();
     return JSON.stringify(data.Items) || null;
