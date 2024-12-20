@@ -1,10 +1,10 @@
-import type { Schema } from "../../data/resource"
+import type { Schema } from "../../data/resource";
 import { DynamoDB } from 'aws-sdk';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
 export const handler: Schema["newsSearch"]["functionHandler"] = async (event): Promise<string | null> => {
-  const { searchString } = event.arguments as { searchString: string};
+  const { searchString } = event.arguments as { searchString: string };
 
   const params = {
     TableName: 'News',

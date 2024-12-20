@@ -1,20 +1,35 @@
 import React, { useState } from 'react';
-import { API } from 'aws-amplify';
+import { generateClient } from 'aws-amplify/data';
+
 import type { Schema } from '../amplify/data/resource';
 
+const client = generateClient<Schema>();
+
+interface News {
+    id: number;
+    title: string;
+    group: number;
+    writtenBy: string;
+    date: string;
+    lDate: string;
+    source: string;
+    memo: string;
+    ord: number;
+    rank: number;
+    header: string;
+    published: boolean;
+    newField: boolean;
+    type: 'Steel' | 'Auto' | 'Aluminum';
+  }
+  
 const NewsSearch: React.FC = () => {
   const [searchString, setSearchString] = useState('');
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<News[]>([]);
 
   const handleSearch = async () => {
     try {
-      const response = await API.graphql<Schema['newsSearch']['returnType']>({
-        query: `query NewsSearch($searchString: String!) {
-          newsSearch(searchString: $searchString)
-        }`,
-        variables: { searchString },
-      });
-      setResults(JSON.parse(response.data.newsSearch));
+      const response = await client.queries.newsSearch({ searchString });
+      setResults(JSON.parse(response.data) as News[] || []);
     } catch (error) {
       console.error('Error fetching news:', error);
     }
