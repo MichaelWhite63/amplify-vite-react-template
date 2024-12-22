@@ -83,16 +83,16 @@ const Chart3Component: React.FC = () => {
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
         <Typography variant="h4" gutterBottom>
-          American Steel Industry
+        米国鋼材相場
         </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell style={{ width: '10%' }}>Order</TableCell>
-                <TableCell style={{ width: '30%' }}>Title</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>Import</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>Mill Price</TableCell>
+                <TableCell style={{ width: '30%' }}>タイトル</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>輸入鋼材</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>価格</TableCell>
                 <TableCell style={{ width: '15%' }}>Actions</TableCell>
               </TableRow>
             </TableHead>

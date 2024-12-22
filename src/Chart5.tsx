@@ -84,17 +84,17 @@ const Chart5Component: React.FC = () => {
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
         <Typography variant="h4" gutterBottom>
-        IISI World Crude Steel Production
+        IISI世界粗鋼生産
         </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell style={{ width: '10%' }}>Order</TableCell>
-                <TableCell style={{ width: '30%' }}>Title</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>This Month</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>Last Month</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>Last Year</TableCell>
+                <TableCell style={{ width: '30%' }}>タイトル</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>今月</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>先月</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>前年同月</TableCell>
                 <TableCell style={{ width: '15%' }}>Actions</TableCell>
               </TableRow>
             </TableHead>

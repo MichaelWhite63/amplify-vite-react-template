@@ -3,6 +3,8 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { CSSProperties } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
@@ -10,8 +12,6 @@ import outputs from "../amplify_outputs.json"
 Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
-
-//console.log(   await client.queries.sayHello({name: 'World', type: 'Steel'}));
 
 interface News {
   id: number;
@@ -78,13 +78,20 @@ const App: React.FC = () => {
     setFormWidth(`${window.innerWidth * 0.8}px`);
   };
 
- function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
+  function handleNewsInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void {
     const { name, value, type } = event.target;
     const checked = (event.target as HTMLInputElement).checked;
 
     setNewsForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
+    }));
+  }
+
+  function handleMemoChange(value: string) {
+    setNewsForm((prev) => ({
+      ...prev,
+      memo: value,
     }));
   }
 
@@ -214,7 +221,7 @@ const App: React.FC = () => {
         </div>
         <div>
           <label htmlFor="memo">Body:</label>
-          <textarea id="memo" name="memo" value={newsForm.memo} onChange={handleNewsInputChange} style={inputStyle}></textarea>
+          <ReactQuill value={newsForm.memo} onChange={handleMemoChange} />
         </div>
         <div>
           <label htmlFor="header">Header:</label>
@@ -245,7 +252,7 @@ const App: React.FC = () => {
                   <p><strong>Source:</strong> {news.source}</p>
                 </div>
               </div>
-              <p><strong>Memo:</strong> {news.memo}</p>
+              <p><strong>Memo:</strong> <div dangerouslySetInnerHTML={{ __html: news.memo }} /></p>
               <p><strong>Header:</strong> {news.header}</p>
               <p><strong>Published:</strong> {news.published ? 'Yes' : 'No'}</p>
               <p><strong>New Field:</strong> {news.newField ? 'Yes' : 'No'}</p>

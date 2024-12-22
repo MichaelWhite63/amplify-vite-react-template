@@ -81,17 +81,17 @@ const Chart1Component: React.FC = () => {
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
         <Typography variant="h4" gutterBottom>
-          American Iron and Steel Co., Ltd. index
+        米国鉄鋼景気指標
         </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell style={{ width: '15%' }}>Order</TableCell>
-                <TableCell style={{ width: '80%' }}>Title</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>This Week</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>Last Week</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>Last Year</TableCell>
+                <TableCell style={{ width: '80%' }}>タイトル</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>今週</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>前週</TableCell>
+                <TableCell style={{ width: '15%', textAlign: 'right' }}>前年同週</TableCell>
                 <TableCell style={{ width: '25%' }}>Action</TableCell>
               </TableRow>
             </TableHead>
