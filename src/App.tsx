@@ -192,7 +192,7 @@ const App: React.FC = () => {
     <main style={mainStyle}>
       <form onSubmit={submitNewsForm} style={formStyle}>
         <FormControl fullWidth variant="outlined">
-          <InputLabel>Category</InputLabel>
+          <InputLabel>カテゴリー</InputLabel>
           <Select
             id="type"
             name="type"
@@ -206,7 +206,7 @@ const App: React.FC = () => {
           </Select>
         </FormControl>
         <TextField
-          label="Title"
+          label="タイトル"
           variant="outlined"
           id="title"
           name="title"
@@ -215,7 +215,7 @@ const App: React.FC = () => {
           fullWidth
         />
         <TextField
-          label="Source"
+          label="タグ、キーワード"
           variant="outlined"
           id="source"
           name="source"
@@ -224,7 +224,7 @@ const App: React.FC = () => {
           fullWidth
         />
         <TextField
-          label="Date"
+          label="発行日"
           type="date"
           variant="outlined"
           id="date"
@@ -237,28 +237,17 @@ const App: React.FC = () => {
           }}
         />
         <FormControl fullWidth style={{ marginBottom: '40px' }}>
-          <FormLabel>Body</FormLabel>
+          <FormLabel>本文</FormLabel>
           <ReactQuill value={newsForm.memo} onChange={handleMemoChange} />
         </FormControl>
         <TextField
-          label="Header"
+          label="見出し"
           variant="outlined"
           id="header"
           name="header"
           value={newsForm.header}
           onChange={handleNewsInputChange}
           fullWidth
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              id="published"
-              name="published"
-              checked={newsForm.published}
-              onChange={handleNewsInputChange}
-            />
-          }
-          label="Published"
         />
         <Button type="submit" variant="contained" color="primary">
           Submit

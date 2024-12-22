@@ -39,7 +39,7 @@ const SendEmail: React.FC = () => {
         <FormControl sx={{ m: 12 }} variant="standard">
         <Grid container spacing={2}>
             <Grid size={12}>
-              <FormLabel>Email Type:</FormLabel>
+              <FormLabel>カテゴリー</FormLabel>
               <RadioGroup row value={selectedType} onChange={handleChange}>
                 <FormControlLabel value="Steel" control={<Radio />} label="Steel" />
                 <FormControlLabel value="Auto" control={<Radio />} label="Auto" />
@@ -47,7 +47,7 @@ const SendEmail: React.FC = () => {
               </RadioGroup>
             </Grid>
             <Grid size={12}>
-              <FormLabel>Recipient:</FormLabel>
+              <FormLabel>配信グループ</FormLabel>
               <RadioGroup row value={recipient} onChange={(e) => setRecipient(e.target.value as 'everyone' | 'single')}>
                 <FormControlLabel value="everyone" control={<Radio />} label="Everyone" />
                 <FormControlLabel value="single" control={<Radio />} label="Single" />
@@ -66,7 +66,7 @@ const SendEmail: React.FC = () => {
             <Grid size={12}>
               <TextField
                 id="title"
-                label="Title"
+                label="タイトル"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 fullWidth

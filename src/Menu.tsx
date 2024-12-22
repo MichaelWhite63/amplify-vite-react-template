@@ -43,7 +43,7 @@ const MenuComponent: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" style={{ flexGrow: 1 }}>
-            My App
+            Metal News
           </Typography>
           <Menu
             id="menu-appbar"

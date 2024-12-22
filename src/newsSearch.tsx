@@ -117,10 +117,9 @@ const NewsSearch: React.FC = () => {
 
   return (
     <div>
-      <h1>ニュースの検索</h1>
       {!editingNews && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '0 auto' }}>
-          キーワード: 
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '0 auto', paddingTop: '20px'  }}>
+          キーワード 検索
           <TextField
             value={searchString}
             onChange={(e) => setSearchString(e.target.value)}
@@ -128,7 +127,7 @@ const NewsSearch: React.FC = () => {
             variant="outlined"
           />
           <Button onClick={handleSearch} variant="contained" color="primary">
-            Search
+          検索
           </Button>
         </div>
       )}
@@ -152,7 +151,7 @@ const NewsSearch: React.FC = () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell style={{ width: '70%' }}>Title</TableCell>
+                    <TableCell style={{ width: '70%' }}>タイトル</TableCell>
                     <TableCell style={{ width: '20%' }}>Date</TableCell>
                     <TableCell style={{ width: '10%' }}>Edit</TableCell>
                   </TableRow>
@@ -183,36 +182,36 @@ const NewsSearch: React.FC = () => {
       )}
       {editingNews && newsForm && (
         <div style={{ maxWidth: '80%', margin: '0 auto' }}>
-          <h2>Edit News</h2>
+          <h2>ニュースの編集</h2>
           <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <TextField
-              label="Title"
+              label="タイトル"
               variant="outlined"
               value={newsForm.title}
               onChange={(e) => handleNewsFormChange('title', e.target.value)}
               fullWidth
             />
             <FormControl variant="outlined" fullWidth>
-              <InputLabel>Type</InputLabel>
+              <InputLabel>カテゴリー</InputLabel>
               <Select
                 value={newsForm.type}
                 onChange={(e) => handleNewsFormChange('type', e.target.value)}
                 label="Type"
               >
-                <MenuItem value="Steel">Steel</MenuItem>
-                <MenuItem value="Auto">Auto</MenuItem>
-                <MenuItem value="Aluminum">Aluminum</MenuItem>
+                <MenuItem value="Steel" style={{ color: 'white' }}>Steel</MenuItem>
+                <MenuItem value="Auto" style={{ color: 'white' }}>Auto</MenuItem>
+                <MenuItem value="Aluminum" style={{ color: 'white' }}>Aluminum</MenuItem>
               </Select>
             </FormControl>
             <TextField
-              label="Header"
+              label="見出し"
               variant="outlined"
               value={newsForm.header}
               onChange={(e) => handleNewsFormChange('header', e.target.value)}
               fullWidth
             />
             <TextField
-              label="Source"
+              label="タグ、キーワード"
               variant="outlined"
               value={newsForm.source}
               onChange={(e) => handleNewsFormChange('source', e.target.value)}
@@ -227,7 +226,7 @@ const NewsSearch: React.FC = () => {
               />
             </FormControl>
             <TextField
-              label="Date"
+              label="発行日"
               type="date"
               variant="outlined"
               value={new Date(newsForm.date).toISOString().split('T')[0]}
