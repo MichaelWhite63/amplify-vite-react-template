@@ -8,29 +8,13 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-import { styled } from '@mui/material/styles';
-import { Paper } from '@mui/material';
-import { TextField, Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Select, MenuItem } from '@mui/material';
-import Box from '@mui/material/Box';
+import { TextField, Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  ...theme.applyStyles('dark', {
-    backgroundColor: '#1A2027',
-  }),
-}));
-
 
 const SendEmail: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'Steel' | 'Auto' | 'Aluminum'>('Steel');
   const [recipient, setRecipient] = useState<'everyone' | 'single'>('everyone');
   const [email, setEmail] = useState('');
-  const [error, setError] = React.useState(false);
   const [title, setTitle] = useState('');
 
   useEffect(() => {
@@ -45,16 +29,15 @@ const SendEmail: React.FC = () => {
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    console.log('handleSubmit');
     event.preventDefault();
-    console.log(await client.queries.sendEmail({ name: 'MetalNews Email', type: selectedType, recipient, email: recipient === 'single' ? email : undefined, title }));
+    console.log(await client.queries.sendEmail({ name: 'MetalNews Email', type: selectedType, email: recipient === 'single' ? email : undefined, title: title }));
   }
 
   return (
     <div>      
       <form onSubmit={handleSubmit}>
-        <FormControl sx={{ m: 12 }} error={error} variant="standard">
-          <Grid container spacing={3}>
+        <FormControl sx={{ m: 12 }} variant="standard">
+        <Grid container spacing={2}>
             <Grid size={12}>
               <FormLabel>Email Type:</FormLabel>
               <RadioGroup row value={selectedType} onChange={handleChange}>

@@ -8,10 +8,13 @@ import 'react-quill/dist/quill.snow.css';
 
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
-
 Amplify.configure(outputs);
-
 const client = generateClient<Schema>();
+
+import { TextField, Button, FormControl, FormLabel, FormControlLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
+
+import Checkbox from '@mui/material/Checkbox';
+
 
 interface News {
   id: number;
@@ -53,7 +56,7 @@ const App: React.FC = () => {
     writtenBy: '',
     date: new Date().toISOString().split('T')[0], // Default to today's date
     lDate: new Date().toISOString().split('T')[0],
-    source: 'User Input',
+    source: '',
     memo: '',
     ord: 0,
     rank: 0,
@@ -85,6 +88,14 @@ const App: React.FC = () => {
     setNewsForm((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
+    }));
+  }
+
+  function handleSelectChange(event: SelectChangeEvent<"Steel" | "Auto" | "Aluminum">) {
+    const { name, value } = event.target;
+    setNewsForm((prev) => ({
+      ...prev,
+      [name]: value,
     }));
   }
 
@@ -166,24 +177,6 @@ const App: React.FC = () => {
     height: '100vh',
     overflowY: 'auto'
   };
-  const inputStyle = {
-    display: 'block',
-    width: '100%',
-    padding: '10px',
-    margin: '10px 0',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  };
-
-  const buttonStyle = {
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    alignSelf: 'flex-start',
-  };
 
   const newsItemStyle = {
     borderBottom: '1px solid #ccc',
@@ -197,41 +190,79 @@ const App: React.FC = () => {
 
   const renderFormScreen = () => (
     <main style={mainStyle}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>Metal News - News Entry</h1>
       <form onSubmit={submitNewsForm} style={formStyle}>
-        <div>
-          <label htmlFor="type">Category:</label>
-          <select id="type" name="type" value={newsForm.type} onChange={handleNewsInputChange} style={inputStyle}>
-            <option value="Steel">Steel</option>
-            <option value="Auto">Auto</option>
-            <option value="Aluminum">Aluminum</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="title">Title:</label>
-          <input type="text" id="title" name="title" value={newsForm.title} onChange={handleNewsInputChange} style={inputStyle} />
-        </div>
-        <div>
-          <label htmlFor="source">Source:</label>
-          <input type="text" id="source" name="source" value={newsForm.source} onChange={handleNewsInputChange} style={inputStyle} />
-        </div>
-        <div>
-          <label htmlFor="date">Date:</label>
-          <input type="date" id="date" name="date" value={newsForm.date} onChange={handleNewsInputChange} style={inputStyle} />
-        </div>
-        <div>
-          <label htmlFor="memo">Body:</label>
+        <FormControl fullWidth variant="outlined">
+          <InputLabel>Category</InputLabel>
+          <Select
+            id="type"
+            name="type"
+            value={newsForm.type}
+            onChange={handleSelectChange}
+            label="Category"
+          >
+            <MenuItem value="Steel" style={{ color: 'white' }}>Steel</MenuItem>
+            <MenuItem value="Auto" style={{ color: 'white' }}>Auto</MenuItem>
+            <MenuItem value="Aluminum" style={{ color: 'white' }}>Aluminum</MenuItem>
+          </Select>
+        </FormControl>
+        <TextField
+          label="Title"
+          variant="outlined"
+          id="title"
+          name="title"
+          value={newsForm.title}
+          onChange={handleNewsInputChange}
+          fullWidth
+        />
+        <TextField
+          label="Source"
+          variant="outlined"
+          id="source"
+          name="source"
+          value={newsForm.source}
+          onChange={handleNewsInputChange}
+          fullWidth
+        />
+        <TextField
+          label="Date"
+          type="date"
+          variant="outlined"
+          id="date"
+          name="date"
+          value={newsForm.date}
+          onChange={handleNewsInputChange}
+          fullWidth
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <FormControl fullWidth style={{ marginBottom: '40px' }}>
+          <FormLabel>Body</FormLabel>
           <ReactQuill value={newsForm.memo} onChange={handleMemoChange} />
-        </div>
-        <div>
-          <label htmlFor="header">Header:</label>
-          <input type="text" id="header" name="header" value={newsForm.header} onChange={handleNewsInputChange} style={inputStyle} />
-        </div>
-        <div>
-          <label htmlFor="published">Published:</label>
-          <input type="checkbox" id="published" name="published" checked={newsForm.published} onChange={handleNewsInputChange} />
-        </div>
-        <button type="submit" style={buttonStyle}>Submit</button>
+        </FormControl>
+        <TextField
+          label="Header"
+          variant="outlined"
+          id="header"
+          name="header"
+          value={newsForm.header}
+          onChange={handleNewsInputChange}
+          fullWidth
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              id="published"
+              name="published"
+              checked={newsForm.published}
+              onChange={handleNewsInputChange}
+            />
+          }
+          label="Published"
+        />
+        <Button type="submit" variant="contained" color="primary">
+          Submit
+        </Button>
       </form>
 
       <section>
@@ -261,7 +292,9 @@ const App: React.FC = () => {
         </ul>
       </section>
 
-      <button onClick={signOut} style={buttonStyle}>Sign out</button>
+      <Button onClick={signOut} variant="contained" color="primary">
+        Sign out
+      </Button>
     </main>
   );
 

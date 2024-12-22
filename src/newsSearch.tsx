@@ -10,31 +10,15 @@ Amplify.configure(outputs);
 
 const client = generateClient<Schema>();
 
-
-import { styled } from '@mui/material/styles';
 import { Paper } from '@mui/material';
-import { TextField, Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Select, MenuItem, InputLabel } from '@mui/material';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid2';
+import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Toolbar from '@mui/material/Toolbar';
 import Checkbox from '@mui/material/Checkbox';
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  ...theme.applyStyles('dark', {
-    backgroundColor: '#1A2027',
-  }),
-}));
 
 interface News {
   id: number;

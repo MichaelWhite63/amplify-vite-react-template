@@ -24,6 +24,8 @@ const schema = a.schema({
     .query()
     .arguments({
       name: a.string(),
+      email: a.string(),
+      title: a.string(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
     })
     .returns(a.string())
