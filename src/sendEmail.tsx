@@ -16,6 +16,7 @@ const SendEmail: React.FC = () => {
   const [recipient, setRecipient] = useState<'everyone' | 'single'>('everyone');
   const [email, setEmail] = useState('');
   const [title, setTitle] = useState('');
+  const [unpublishedNews, setUnpublishedNews] = useState<string[]>([]);
 
   useEffect(() => {
     const now = new Date();
@@ -23,6 +24,14 @@ const SendEmail: React.FC = () => {
     const date = now.getDate();
     setTitle(`${month} 月 ${date} 日(土)  Metal News - `);
   }, []);
+
+  useEffect(() => {
+    async function fetchUnpublishedNews() {
+      const result = await client.queries.getUnpublished({ type: selectedType });
+      setUnpublishedNews(result);
+    }
+    fetchUnpublishedNews();
+  }, [selectedType]);
 
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedType(event.target.value as 'Steel' | 'Auto' | 'Aluminum');
@@ -78,6 +87,22 @@ const SendEmail: React.FC = () => {
           </Button>
         </FormControl>
       </form>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Unpublished News</th>
+          </tr>
+        </thead>
+        <tbody>
+          {unpublishedNews.map((news, index) => (
+            <tr key={index}>
+              <td>{news}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       <p>Selected Type: {selectedType}</p>
       <p>Recipient: {recipient}</p>
     </div>

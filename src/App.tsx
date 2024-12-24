@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { CSSProperties } from 'react';
+
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
 Amplify.configure(outputs);
+
 const client = generateClient<Schema>();
 
-import { TextField, Button, FormControl, FormLabel, FormControlLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
-
-import Checkbox from '@mui/material/Checkbox';
-
+import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
 
 interface News {
   id: number;
@@ -48,8 +47,30 @@ interface NewsForm {
   newField: boolean;
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
+// Top of React Quill component
+
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+    ['link', 'image'],
+    ['clean']
+  ],
+};
+
+const formats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'list', 'bullet', 'indent',
+  'link', 'image'
+];
+// Bottom of React Quill component
+
 
 const App: React.FC = () => {
+  const quillRef = useRef<ReactQuill | null>(null);
+  
   const [newsForm, setNewsForm] = useState<NewsForm>({
     title: '',
     group: 1,
@@ -76,6 +97,8 @@ const App: React.FC = () => {
     window.addEventListener('resize', updateFormWidth);
     return () => window.removeEventListener('resize', updateFormWidth);
   }, []);
+
+  
 
   const updateFormWidth = () => {
     setFormWidth(`${window.innerWidth * 0.8}px`);
@@ -238,8 +261,13 @@ const App: React.FC = () => {
         />
         <FormControl fullWidth style={{ marginBottom: '40px' }}>
           <FormLabel>本文</FormLabel>
-          <ReactQuill value={newsForm.memo} onChange={handleMemoChange} />
+          <ReactQuill 
+              value={newsForm.memo} 
+              formats={formats}
+              modules={modules}
+              onChange={handleMemoChange} />
         </FormControl>
+        
         <TextField
           label="見出し"
           variant="outlined"
