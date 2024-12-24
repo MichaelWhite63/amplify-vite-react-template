@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../amplify/data/resource';
+import { Schema } from '../amplify/data/resource';
 import { CSSProperties } from 'react';
 
 import ReactQuill from 'react-quill';
