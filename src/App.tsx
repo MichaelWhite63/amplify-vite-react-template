@@ -28,7 +28,6 @@ interface News {
   rank: number;
   header: string;
   published: boolean;
-  newField: boolean;
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
 
@@ -44,7 +43,6 @@ interface NewsForm {
   rank: number;
   header: string;
   published: boolean;
-  newField: boolean;
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
 // Top of React Quill component
@@ -69,7 +67,7 @@ const formats = [
 
 
 const App: React.FC = () => {
-  const quillRef = useRef<ReactQuill | null>(null);
+//  const quillRef = useRef<ReactQuill | null>(null);
   
   const [newsForm, setNewsForm] = useState<NewsForm>({
     title: '',
@@ -83,7 +81,6 @@ const App: React.FC = () => {
     rank: 0,
     header: '',
     published: false,
-    newField: false,
     type: 'Steel',
   });
 
@@ -160,7 +157,6 @@ const App: React.FC = () => {
       rank: 0,
       header: '',
       published: false,
-      newField: false,
       type: 'Auto',
     });
   }
@@ -303,7 +299,6 @@ const App: React.FC = () => {
               <p><strong>Memo:</strong> <div dangerouslySetInnerHTML={{ __html: news.memo }} /></p>
               <p><strong>Header:</strong> {news.header}</p>
               <p><strong>Published:</strong> {news.published ? 'Yes' : 'No'}</p>
-              <p><strong>New Field:</strong> {news.newField ? 'Yes' : 'No'}</p>
             </li>
           ))}
         </ul>
