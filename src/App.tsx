@@ -67,8 +67,6 @@ const formats = [
 
 
 const App: React.FC = () => {
-//  const quillRef = useRef<ReactQuill | null>(null);
-  
   const [newsForm, setNewsForm] = useState<NewsForm>({
     title: '',
     group: 1,
@@ -84,18 +82,14 @@ const App: React.FC = () => {
     type: 'Steel',
   });
 
-  const [newsItems, setNewsItems] = useState<News[]>([]);
   const { signOut } = useAuthenticator();
   const [formWidth, setFormWidth] = useState('80%');
 
   useEffect(() => {
-    fetchNewsItems();
     updateFormWidth();
     window.addEventListener('resize', updateFormWidth);
     return () => window.removeEventListener('resize', updateFormWidth);
   }, []);
-
-  
 
   const updateFormWidth = () => {
     setFormWidth(`${window.innerWidth * 0.8}px`);
@@ -132,14 +126,13 @@ const App: React.FC = () => {
     const newNews: Omit<News, 'id'> = {
       ...newsForm,
       writtenBy: 'Anonymous', // Replace with actual user info if available
-      ord: newsItems.length + 1,
+      ord: 0, // Remove the ord calculation
       type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum',
     };
 
     client.models.News.create(newNews) // Adjust the type as per your client library
       .then(response => {
         console.log('News created successfully:', response);
-        fetchNewsItems(); // Refresh the news items list
       })
       .catch(error => {
         console.error('Error creating news:', error);
@@ -159,20 +152,6 @@ const App: React.FC = () => {
       published: false,
       type: 'Auto',
     });
-  }
-
-  function fetchNewsItems() {
-    client.models.News.list()
-      .then(response => {
-        const newsItems = response.data.map((item: any) => ({
-          ...item,
-          id: Number(item.id), // Cast id to number
-        }));
-        setNewsItems(newsItems);
-      })
-      .catch(error => {
-        console.error('Error fetching news items:', error);
-      });
   }
 
   const formStyle: CSSProperties = {
@@ -195,16 +174,6 @@ const App: React.FC = () => {
     margin: '0 auto',
     height: '100vh',
     overflowY: 'auto'
-  };
-
-  const newsItemStyle = {
-    borderBottom: '1px solid #ccc',
-    padding: '10px 0',
-  };
-
-  const newsItemHeaderStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
   };
 
   const renderFormScreen = () => (
@@ -277,32 +246,6 @@ const App: React.FC = () => {
           Submit
         </Button>
       </form>
-
-      <section>
-        <h2>News Items</h2>
-        <ul style={{ listStyleType: 'none', padding: 0 }}>
-          {newsItems.map((news) => (
-            <li key={news.id} style={newsItemStyle}>
-              <div style={newsItemHeaderStyle}>
-                <div>
-                  <h3>{news.title}</h3>
-                  <p><strong>Group:</strong> {news.group}</p>
-                  <p><strong>Written by:</strong> {news.writtenBy}</p>
-                  <p><strong>Type:</strong> {news.type}</p>
-                </div>
-                <div>
-                  <p><strong>Date:</strong> {new Date(news.date).toLocaleDateString()}</p>
-                  <p><strong>Last Date:</strong> {new Date(news.lDate).toLocaleDateString()}</p>
-                  <p><strong>Source:</strong> {news.source}</p>
-                </div>
-              </div>
-              <p><strong>Memo:</strong> <div dangerouslySetInnerHTML={{ __html: news.memo }} /></p>
-              <p><strong>Header:</strong> {news.header}</p>
-              <p><strong>Published:</strong> {news.published ? 'Yes' : 'No'}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
 
       <Button onClick={signOut} variant="contained" color="primary">
         Sign out
