@@ -26,6 +26,6 @@ export const handler: Schema["getUnpublished"]["functionHandler"] = async (event
     const unpublishedNews = await getUnpublishedNews(type);
     return JSON.stringify(unpublishedNews);
   } else {
-    throw new Error(`Invalid type: ${type} | name : ${name}`);
+    throw new Error(`Invalid type: ${type}`);
   } 
  }
