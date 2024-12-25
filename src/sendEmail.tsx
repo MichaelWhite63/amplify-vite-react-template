@@ -28,7 +28,7 @@ const SendEmail: React.FC = () => {
   useEffect(() => {
     async function fetchUnpublishedNews() {
       const result = await client.queries.getUnpublished({ type: selectedType });
-      setUnpublishedNews(result);
+      setUnpublishedNews(Array.isArray(result.data) ? result.data : []);
     }
     fetchUnpublishedNews();
   }, [selectedType]);
