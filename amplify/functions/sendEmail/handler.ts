@@ -62,7 +62,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       await publishNews(newsIds);
     }
     const users = await selectUsers('us-east-1_oy1KeDlsD');
-    return `Fetched ${users.length} users`;
+    return JSON.stringify(users);
     // return typed from `.returns()`
 //    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type}`;
   } else {
