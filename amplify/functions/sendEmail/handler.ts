@@ -1,5 +1,23 @@
 import type { Schema } from "../../data/resource"
 import { DynamoDB } from 'aws-sdk';
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
+
+const cognito = new CognitoIdentityServiceProvider();
+
+export async function selectUsers(userPoolId: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
+  const params = {
+    UserPoolId: userPoolId,
+  };
+
+  try {
+    const data = await cognito.listUsers(params).promise();
+    return data.Users || [];
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw new Error('Error fetching users');
+  }
+}
+
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -43,9 +61,12 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       const newsIds = unpublishedNews.map(news => news.id);
       await publishNews(newsIds);
     }
+    const users = await selectUsers('us-east-1_oy1KeDlsD');
+    return `Fetched ${users.length} users`;
     // return typed from `.returns()`
-    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type}`;
+//    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type}`;
   } else {
     throw new Error(`Invalid type: ${type} | name : ${name}`);
   } 
+  
  }
