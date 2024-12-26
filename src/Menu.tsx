@@ -12,7 +12,7 @@ import Charts from './Charts';
 import SendEmail from './sendEmail';
 import App from './App';
 import NewsSearch from './newsSearch';
-import Users from './Users';
+//import Users from './Users';
 
 const MenuComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
