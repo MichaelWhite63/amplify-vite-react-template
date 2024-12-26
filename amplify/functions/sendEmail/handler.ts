@@ -3,21 +3,22 @@ import { DynamoDB } from 'aws-sdk';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 const cognito = new CognitoIdentityServiceProvider();
+//    const data = await cognito.listUsers(params).promise();
 
-export async function selectUsers(userPoolId: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
+export async function selectUsers(userPoolId: string, groupName: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
   const params = {
     UserPoolId: userPoolId,
+    GroupName: groupName,
   };
 
   try {
-    const data = await cognito.listUsers(params).promise();
+    const data = await cognito.listUsersInGroup(params).promise();
     return data.Users || [];
   } catch (error) {
     console.error('Error fetching users:', error);
     throw new Error('Error fetching users');
   }
 }
-
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -61,7 +62,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       const newsIds = unpublishedNews.map(news => news.id);
       await publishNews(newsIds);
     }
-    const users = await selectUsers('us-east-1_oy1KeDlsD');
+    const users = await selectUsers('us-east-1_oy1KeDlsD', 'Steel'); // Replace 'YourGroupName' with the actual group name
     return JSON.stringify(users);
     // return typed from `.returns()`
 //    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type}`;
