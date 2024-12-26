@@ -28,6 +28,7 @@ const schema = a.schema({
       email: a.string(),
       title: a.string(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
+      selectedNews: a.string().array(),
     })
     .returns(a.string())
     .handler(a.handler.function(sendEmail))

@@ -33,7 +33,6 @@ interface News {
   rank: number;
   header: string;
   published: boolean;
-  newField: boolean;
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
 
@@ -50,9 +49,7 @@ const SendEmail: React.FC = () => {
   const [email, setEmail] = useState('');
   const [title, setTitle] = useState('');
   const [unpublishedNews, setUnpublishedNews] = useState<News[]>([]);
-  const [selectedNews, setSelectedNews] = useState<number[]>([]);
-  
- // const [unpublishedNews, setUnpublishedNews] = useState<string[]>([]);
+  const [selectedNews, setSelectedNews] = useState<string[]>([]); // Change type to string[]
 
   useEffect(() => {
     const now = new Date();
@@ -75,23 +72,27 @@ const SendEmail: React.FC = () => {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const selectedIds = selectedNews;
+    const selectedIds = selectedNews.map(String); // Ensure selectedNews is an array of strings
     console.log('Selected IDs:', selectedIds);
+    
     console.log(await client.queries.sendEmail({ 
       name: 'MetalNews Email', 
       type: selectedType, 
       email: recipient === 'single' ? email : undefined, 
-      title: title
+      title: title,
+      selectedNews: selectedIds // Add selectedNews to the sendEmail call
     }));
+    
   }
 
   const handleSelectNews = (id: number) => {
+    const idString = id.toString(); // Convert id to string
     setSelectedNews((prevSelected) =>
-      prevSelected.includes(id) ? prevSelected.filter((newsId) => newsId !== id) : [...prevSelected, id]
+      prevSelected.includes(idString) ? prevSelected.filter((newsId) => newsId !== idString) : [...prevSelected, idString]
     );
   };
 
-  const isSelected = (id: number) => selectedNews.includes(id);
+  const isSelected = (id: number) => selectedNews.includes(id.toString());
 
   return (
     <div>
@@ -142,7 +143,7 @@ const SendEmail: React.FC = () => {
                   <Checkbox
                     indeterminate={selectedNews.length > 0 && selectedNews.length < unpublishedNews.length}
                     checked={unpublishedNews.length > 0 && selectedNews.length === unpublishedNews.length}
-                    onChange={(e) => setSelectedNews(e.target.checked ? unpublishedNews.map((news) => news.id) : [])}
+                    onChange={(e) => setSelectedNews(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
                   />
                 </TableCell>
                 <TableCell style={{ width: '85%' }}>Unpublished News</TableCell>

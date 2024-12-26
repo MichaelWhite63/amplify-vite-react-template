@@ -54,7 +54,8 @@ const publishNews = async (newsIds: string[]) => {
 
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
-  const { name, type } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum' };
+  const { name, type, email, title, selectedNews } = event.arguments as { name: string, email: string, title: string,
+    type: 'Steel' | 'Auto' | 'Aluminum', selectedNews: string[] };
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
     const unpublishedNews = await getUnpublishedNews(type);
@@ -62,12 +63,13 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       const newsIds = unpublishedNews.map(news => news.id);
       await publishNews(newsIds);
     }
-    const users = await selectUsers('us-east-1_oy1KeDlsD', 'Steel'); // Replace 'YourGroupName' with the actual group name
-    return JSON.stringify(users);
+    const users = await selectUsers('us-east-1_oy1KeDlsD', type); 
+    return selectedNews[0];
+    //return JSON.stringify(users);
     // return typed from `.returns()`
 //    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type}`;
   } else {
     throw new Error(`Invalid type: ${type} | name : ${name}`);
   } 
-  
+
  }
