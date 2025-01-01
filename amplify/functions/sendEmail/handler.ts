@@ -73,7 +73,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
   // arguments typed from `.arguments()`
   // email is populated if it is to be sent to a single individual
   const { name, type, email, selectedNewsIDs } = event.arguments as { name: string, email: string, title: string,
-    type: 'Steel' | 'Auto' | 'Aluminum', selectedNews: string[] };
+    type: 'Steel' | 'Auto' | 'Aluminum', selectedNewsIDs: string[] };
 
     if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
       // Check if email should be sent to single individual.
