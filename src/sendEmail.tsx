@@ -49,7 +49,7 @@ const SendEmail: React.FC = () => {
   const [email, setEmail] = useState('');
   const [title, setTitle] = useState('');
   const [unpublishedNews, setUnpublishedNews] = useState<News[]>([]);
-  const [selectedNews, setSelectedNews] = useState<string[]>([]); // Change type to string[]
+  const [selectedNewsIDs, setSelectedNewsIDs] = useState<string[]>([]); // Change type to string[]
 
   useEffect(() => {
     const now = new Date();
@@ -68,30 +68,39 @@ const SendEmail: React.FC = () => {
 
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedType(event.target.value as 'Steel' | 'Auto' | 'Aluminum');
+    console.log(`Need to set selected News to []  
+      when the type is changed to ${event.target.value}`);
+    setSelectedNewsIDs([]); // Clear selectedNewsIDs when type is changed 
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const selectedIds = selectedNews.map(String); // Ensure selectedNews is an array of strings
+    const selectedIds = selectedNewsIDs.map(String); // Ensure selectedNews is an array of strings
     console.log('Selected IDs:', selectedIds);
-    
+    console.log('Recipient:', recipient);
+    console.log('Email:', email);
+    console.log('Title:', title);
+    console.log('Type:', selectedType);
+    console.log('Sending email...');
+
     console.log(await client.queries.sendEmail({ 
-      name: 'MetalNews Email', 
-      email: recipient === 'single' ? email : undefined, 
-      type: selectedType, 
+      name: 'MetalNews Email',
+      email: recipient === 'single' ? email : null, 
+      type: selectedType,
       title: title,
-      selectedNewsIDs: selectedIds // Add selectedNewsIDs to the sendEmail call
+      selectedNewsIDs: selectedIds
     }));
   }
 
   const handleSelectNews = (id: number) => {
     const idString = id.toString(); // Convert id to string
-    setSelectedNews((prevSelected) =>
+    setSelectedNewsIDs((prevSelected) =>
       prevSelected.includes(idString) ? prevSelected.filter((newsId) => newsId !== idString) : [...prevSelected, idString]
     );
+    console.log(`Selected News IDs: ${selectedNewsIDs} | New ID: ${id}` ); // Log selectedNewsIDs
   };
 
-  const isSelected = (id: number) => selectedNews.includes(id.toString());
+  const isSelected = (id: number) => selectedNewsIDs.includes(id.toString());
 
   return (
     <div>
@@ -140,9 +149,9 @@ const SendEmail: React.FC = () => {
               <StyledTableHeadRow>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    indeterminate={selectedNews.length > 0 && selectedNews.length < unpublishedNews.length}
-                    checked={unpublishedNews.length > 0 && selectedNews.length === unpublishedNews.length}
-                    onChange={(e) => setSelectedNews(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
+                    indeterminate={selectedNewsIDs.length > 0 && selectedNewsIDs.length < unpublishedNews.length}
+                    checked={unpublishedNews.length > 0 && selectedNewsIDs.length === unpublishedNews.length}
+                    onChange={(e) => setSelectedNewsIDs(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
                   />
                 </TableCell>
                 <TableCell style={{ width: '85%' }}>Unpublished News</TableCell>
@@ -162,8 +171,9 @@ const SendEmail: React.FC = () => {
                   <TableCell padding="checkbox">
                     <Checkbox checked={isSelected(news.id)} />
                   </TableCell>
-                  <TableCell style={{ width: '85%' }}>{news.title}</TableCell>
+                  <TableCell style={{ width: '65%' }}>{news.title}</TableCell>
                   <TableCell style={{ width: '15%' }}>{news.date}</TableCell>
+                  <TableCell style={{ width: '20%' }}>{news.id}</TableCell> 
                 </TableRow>
               ))}
             </TableBody>
