@@ -84,7 +84,7 @@ const Chart4Component: React.FC = () => {
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
         <Typography variant="h4" gutterBottom>
-        US steel import
+        米国鋼材輸入
         </Typography>
         <TableContainer component={Paper}>
           <Table>

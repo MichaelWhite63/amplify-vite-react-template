@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { CSSProperties } from 'react';
+
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
 import { Schema } from '../amplify/data/resource';
-import { CSSProperties } from 'react';
 
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+//import ReactQuill from 'react-quill';
+//import 'react-quill/dist/quill.snow.css';
+
+import { Editor } from '@tinymce/tinymce-react';
 
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
@@ -45,7 +48,8 @@ interface NewsForm {
   published: boolean;
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
-// Top of React Quill component
+
+/* Top of React Quill component
 
 const modules = {
   toolbar: [
@@ -64,7 +68,7 @@ const formats = [
   'link', 'image'
 ];
 // Bottom of React Quill component
-
+*/
 
 const App: React.FC = () => {
 //  const quillRef = useRef<ReactQuill | null>(null);
@@ -87,6 +91,12 @@ const App: React.FC = () => {
   const [newsItems, setNewsItems] = useState<News[]>([]);
   const { signOut } = useAuthenticator();
   const [formWidth, setFormWidth] = useState('80%');
+  const editorRef   = useRef<Editor | null>(null);
+  const log = () => {
+    if (editorRef.current) {
+      console.log((editorRef.current as any).getContent());
+    }
+  };
 
   useEffect(() => {
     fetchNewsItems();
@@ -94,8 +104,6 @@ const App: React.FC = () => {
     window.addEventListener('resize', updateFormWidth);
     return () => window.removeEventListener('resize', updateFormWidth);
   }, []);
-
-  
 
   const updateFormWidth = () => {
     setFormWidth(`${window.innerWidth * 0.8}px`);
@@ -128,9 +136,12 @@ const App: React.FC = () => {
 
   function submitNewsForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    //This is how you can get the content of the editor
+    console.log((editorRef.current as any).getContent());
 
     const newNews: Omit<News, 'id'> = {
       ...newsForm,
+      memo: (editorRef.current as any).getContent(),
       writtenBy: 'Anonymous', // Replace with actual user info if available
       ord: newsItems.length + 1,
       type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum',
@@ -210,6 +221,7 @@ const App: React.FC = () => {
   const renderFormScreen = () => (
     <main style={mainStyle}>
       <form onSubmit={submitNewsForm} style={formStyle}>
+        
         <FormControl fullWidth variant="outlined">
           <InputLabel>カテゴリー</InputLabel>
           <Select
@@ -224,6 +236,7 @@ const App: React.FC = () => {
             <MenuItem value="Aluminum" style={{ color: 'white' }}>Aluminum</MenuItem>
           </Select>
         </FormControl>
+
         <TextField
           label="タイトル"
           variant="outlined"
@@ -233,6 +246,17 @@ const App: React.FC = () => {
           onChange={handleNewsInputChange}
           fullWidth
         />
+
+      <TextField
+          label="見出し"
+          variant="outlined"
+          id="header"
+          name="header"
+          value={newsForm.header}
+          onChange={handleNewsInputChange}
+          fullWidth
+        />
+        
         <TextField
           label="タグ、キーワード"
           variant="outlined"
@@ -255,28 +279,49 @@ const App: React.FC = () => {
             shrink: true,
           }}
         />
+      
         <FormControl fullWidth style={{ marginBottom: '40px' }}>
           <FormLabel>本文</FormLabel>
-          <ReactQuill 
-              value={newsForm.memo} 
-              formats={formats}
-              modules={modules}
-              onChange={handleMemoChange} />
-        </FormControl>
-        
-        <TextField
-          label="見出し"
-          variant="outlined"
-          id="header"
-          name="header"
-          value={newsForm.header}
-          onChange={handleNewsInputChange}
-          fullWidth
+          <Editor
+          onInit={(_evt, editor) => editorRef.current = editor as any}
+          apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
+          initialValue=""
+          init={{
+                plugins: [
+                  // Core editing features
+                  'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                  // Your account includes a free trial of TinyMCE premium features
+                  // Try the most popular premium features until Jan 14, 2025:
+                    'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+                  ],
+                  toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                  tinycomments_mode: 'embedded',
+                  tinycomments_author: 'Author name',
+                  mergetags_list: [
+                    { value: 'First.Name', title: 'First Name' },
+                    { value: 'Email', title: 'Email' },
+                  ] as { value: string; title: string }[],
+                  ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                  }}
         />
+        </FormControl>
+  
         <Button type="submit" variant="contained" color="primary">
           Submit
         </Button>
       </form>
+
+      <Button onClick={signOut} variant="contained" color="primary">
+        Sign out
+      </Button>
+    </main>
+  );
+
+  return renderFormScreen();
+};
+
+export default App;
+/*Lower section that displayed the news
 
       <section>
         <h2>News Items</h2>
@@ -303,14 +348,4 @@ const App: React.FC = () => {
           ))}
         </ul>
       </section>
-
-      <Button onClick={signOut} variant="contained" color="primary">
-        Sign out
-      </Button>
-    </main>
-  );
-
-  return renderFormScreen();
-};
-
-export default App;
+*/

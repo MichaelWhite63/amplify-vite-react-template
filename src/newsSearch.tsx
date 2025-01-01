@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, CSSProperties } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
-import ReactQuill from 'react-quill';
+//import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+import { Editor } from '@tinymce/tinymce-react';
 
 Amplify.configure(outputs);
 
@@ -52,6 +54,14 @@ interface NewsForm {
   newField: boolean;
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
+ 
+  const mainStyle: CSSProperties = {
+    padding: '20px',
+    maxWidth: '1600px',
+    margin: '0 auto',
+    height: '100vh',
+    overflowY: 'auto'
+  };
 
 const NewsSearch: React.FC = () => {
   const [searchString, setSearchString] = useState('');
@@ -59,7 +69,12 @@ const NewsSearch: React.FC = () => {
   const [editingNews, setEditingNews] = useState<News | null>(null);
   const [newsForm, setNewsForm] = useState<NewsForm | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
-
+  const editorRef   = useRef<Editor | null>(null);
+    const log = () => {
+      if (editorRef.current) {
+        console.log((editorRef.current as any).getContent());
+      }
+    };
   const handleSearch = async () => {
     try {
       const response = await client.queries.newsSearch({ searchString });
@@ -91,7 +106,7 @@ const NewsSearch: React.FC = () => {
   const handleUpdate = async () => {
     if (editingNews && newsForm) {
       try {
-        await client.models.News.update({ ...newsForm, id: editingNews.id.toString() });
+        await client.models.News.update({ ...newsForm, id: editingNews.id.toString(), memo: (editorRef.current as any).getContent(), });
         setEditingNews(null);
         setNewsForm(null);
         handleSearch(); // Refresh the search results
@@ -184,14 +199,8 @@ const NewsSearch: React.FC = () => {
         <div style={{ maxWidth: '80%', margin: '0 auto' }}>
           <h2>ニュースの編集</h2>
           <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <TextField
-              label="タイトル"
-              variant="outlined"
-              value={newsForm.title}
-              onChange={(e) => handleNewsFormChange('title', e.target.value)}
-              fullWidth
-            />
-            <FormControl variant="outlined" fullWidth>
+          
+          <FormControl variant="outlined" fullWidth>
               <InputLabel>カテゴリー</InputLabel>
               <Select
                 value={newsForm.type}
@@ -203,6 +212,15 @@ const NewsSearch: React.FC = () => {
                 <MenuItem value="Aluminum" style={{ color: 'white' }}>Aluminum</MenuItem>
               </Select>
             </FormControl>
+             
+            <TextField
+              label="タイトル"
+              variant="outlined"
+              value={newsForm.title}
+              onChange={(e) => handleNewsFormChange('title', e.target.value)}
+              fullWidth
+            />
+
             <TextField
               label="見出し"
               variant="outlined"
@@ -217,14 +235,7 @@ const NewsSearch: React.FC = () => {
               onChange={(e) => handleNewsFormChange('source', e.target.value)}
               fullWidth
             />
-            <FormControl fullWidth>
-              <FormLabel>Memo</FormLabel>
-              <ReactQuill
-                value={newsForm.memo}
-                onChange={(value) => handleNewsFormChange('memo', value)}
-                style={{ maxWidth: '100%' }}
-              />
-            </FormControl>
+
             <TextField
               label="発行日"
               type="date"
@@ -236,6 +247,32 @@ const NewsSearch: React.FC = () => {
                 shrink: true,
               }}
             />
+            <FormControl fullWidth>
+              <FormLabel>本文</FormLabel>
+              <Editor
+                onInit={(_evt, editor) => editorRef.current = editor as any}
+                apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
+                initialValue={newsForm.memo}
+                init={{
+                  plugins: [
+                    // Core editing features
+                    'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                    // Your account includes a free trial of TinyMCE premium features
+                    // Try the most popular premium features until Jan 14, 2025:
+                    'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+                ],
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                tinycomments_mode: 'embedded',
+                tinycomments_author: 'Author name',
+                mergetags_list: [
+                  { value: 'First.Name', title: 'First Name' },
+                  { value: 'Email', title: 'Email' },
+                ] as { value: string; title: string }[],
+                ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                }}
+              />
+            </FormControl>
+
             {/* Add other fields as needed */}
             <Button type="submit" variant="contained" color="primary">
               Update
@@ -244,7 +281,8 @@ const NewsSearch: React.FC = () => {
               Cancel
             </Button>
           </form>
-        </div>
+          </div>
+
       )}
     </div>
   );

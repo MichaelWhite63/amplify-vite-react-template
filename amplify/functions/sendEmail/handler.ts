@@ -61,11 +61,11 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
     const unpublishedNews = await getUnpublishedNews(type);
     if (unpublishedNews) {
       const newsIds = unpublishedNews.map(news => news.id);
-      await publishNews(newsIds);
+      //await publishNews(newsIds);
     }
     const users = await selectUsers('us-east-1_oy1KeDlsD', type); 
-    return selectedNews[0];
-    //return JSON.stringify(users);
+    
+    return JSON.stringify(users);
     // return typed from `.returns()`
 //    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type}`;
   } else {
