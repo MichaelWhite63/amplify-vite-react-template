@@ -3,12 +3,11 @@ import type { Schema } from "../../data/resource"
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 const cognito = new CognitoIdentityServiceProvider();
-//    const data = await cognito.listUsers(params).promise();
 
-// Selects users by group. Grouping is done by type: steel, auto, aluminum
-export async function selectUsers(userPoolId: string, groupName: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
+// Selects users by type/group. Cognito grouping is done by type: steel, auto, aluminum
+export async function selectUsersByType(userPoolId: string, groupName: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
 
-  const params = {UserPoolId: userPoolId,GroupName: groupName,};
+  const params = {UserPoolId: userPoolId, GroupName: groupName,};
 
   try {
     const data = await cognito.listUsersInGroup(params).promise();
@@ -16,6 +15,22 @@ export async function selectUsers(userPoolId: string, groupName: string): Promis
   } catch (error) {
     console.error('Error fetching users:', error);
     throw new Error('Error fetching users');
+  }
+}
+
+// Selects users by group. Grouping is done by type: steel, auto, aluminum
+export async function selectSingleUser(userPoolId: string, email: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
+  const params = {
+    UserPoolId: userPoolId,
+    Filter: `email = "${email}"`,
+  };
+
+  try {
+    const data = await cognito.listUsers(params).promise();
+    return data.Users || [];
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw new Error('Error fetching user');
   }
 }
 
@@ -56,10 +71,19 @@ const publishNews = async (newsIds: string[]) => {
 */
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
-  const { name, type, email, title, selectedNews } = event.arguments as { name: string, email: string, title: string,
+  // email is populated if it is to be sent to a single individual
+  const { name, type, email, selectedNewsIDs } = event.arguments as { name: string, email: string, title: string,
     type: 'Steel' | 'Auto' | 'Aluminum', selectedNews: string[] };
-  
-  if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
+
+    if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
+      // Check if email should be sent to single individual.
+      let users: CognitoIdentityServiceProvider.UserType[] = [];
+      if (email){
+        users = await selectSingleUser('us-east-1_oy1KeDlsD', email);
+      } else {
+        users = await selectUsersByType('us-east-1_oy1KeDlsD', type); 
+      }
+
     //const unpublishedNews = await getUnpublishedNews(type);
 /*
     if (unpublishedNews) {
@@ -67,7 +91,6 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       await publishNews(newsIds);
     }
     */
-    const users = await selectUsers('us-east-1_oy1KeDlsD', type); 
     
     return JSON.stringify(users);
     // return typed from `.returns()`
