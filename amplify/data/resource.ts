@@ -27,6 +27,7 @@ const schema = a.schema({
       name: a.string(),
       email: a.string(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
+      title: a.string(),
       selectedNewsIDs: a.string().array(),
     })
     .returns(a.string())

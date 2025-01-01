@@ -77,11 +77,11 @@ const SendEmail: React.FC = () => {
     
     console.log(await client.queries.sendEmail({ 
       name: 'MetalNews Email', 
-      type: selectedType, 
       email: recipient === 'single' ? email : undefined, 
+      type: selectedType, 
+      title: title,
       selectedNewsIDs: selectedIds // Add selectedNewsIDs to the sendEmail call
     }));
-    
   }
 
   const handleSelectNews = (id: number) => {

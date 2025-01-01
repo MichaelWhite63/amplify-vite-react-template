@@ -72,19 +72,23 @@ const publishNews = async (newsIds: string[]) => {
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
   // email is populated if it is to be sent to a single individual
-  const { name, type, email, selectedNewsIDs } = event.arguments as { name: string, 
-    email: string,type: 'Steel' | 'Auto' | 'Aluminum', 
+  const { name, email, type, title, selectedNewsIDs } = event.arguments as { name: string, 
+    email: string, type: 'Steel' | 'Auto' | 'Aluminum', title: string,
     selectedNewsIDs: string[] };
 
     if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
       // Check if email should be sent to single individual.
+      /*
       let users: CognitoIdentityServiceProvider.UserType[] = [];
       if (email){
         users = await selectSingleUser('us-east-1_oy1KeDlsD', email);
       } else {
         users = await selectUsersByType('us-east-1_oy1KeDlsD', type); 
       }
-
+      */
+      const users = (email) ? await selectSingleUser('us-east-1_oy1KeDlsD', email) 
+        : await selectUsersByType('us-east-1_oy1KeDlsD', type);
+      
     //const unpublishedNews = await getUnpublishedNews(type);
 /*
     if (unpublishedNews) {
