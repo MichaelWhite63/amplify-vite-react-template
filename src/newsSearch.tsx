@@ -1,4 +1,4 @@
-import React, { useState, useRef, CSSProperties } from 'react';
+import React, { useState, useRef } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Amplify } from "aws-amplify";
@@ -55,14 +55,6 @@ interface NewsForm {
   type: 'Steel' | 'Auto' | 'Aluminum';
 }
  
-  const mainStyle: CSSProperties = {
-    padding: '20px',
-    maxWidth: '1600px',
-    margin: '0 auto',
-    height: '100vh',
-    overflowY: 'auto'
-  };
-
 const NewsSearch: React.FC = () => {
   const [searchString, setSearchString] = useState('');
   const [results, setResults] = useState<News[]>([]);
@@ -70,11 +62,7 @@ const NewsSearch: React.FC = () => {
   const [newsForm, setNewsForm] = useState<NewsForm | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
   const editorRef   = useRef<Editor | null>(null);
-    const log = () => {
-      if (editorRef.current) {
-        console.log((editorRef.current as any).getContent());
-      }
-    };
+    
   const handleSearch = async () => {
     try {
       const response = await client.queries.newsSearch({ searchString });
@@ -268,7 +256,7 @@ const NewsSearch: React.FC = () => {
                   { value: 'First.Name', title: 'First Name' },
                   { value: 'Email', title: 'Email' },
                 ] as { value: string; title: string }[],
-                ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+    //            ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
                 }}
               />
             </FormControl>

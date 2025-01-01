@@ -1,15 +1,14 @@
 import type { Schema } from "../../data/resource"
-import { DynamoDB } from 'aws-sdk';
+//import { DynamoDB } from 'aws-sdk';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 const cognito = new CognitoIdentityServiceProvider();
 //    const data = await cognito.listUsers(params).promise();
 
+// Selects users by group. Grouping is done by type: steel, auto, aluminum
 export async function selectUsers(userPoolId: string, groupName: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
-  const params = {
-    UserPoolId: userPoolId,
-    GroupName: groupName,
-  };
+
+  const params = {UserPoolId: userPoolId,GroupName: groupName,};
 
   try {
     const data = await cognito.listUsersInGroup(params).promise();
@@ -20,8 +19,11 @@ export async function selectUsers(userPoolId: string, groupName: string): Promis
   }
 }
 
+/*
 const dynamoDb = new DynamoDB.DocumentClient();
 
+// Selecting unpublished news. It is likely that being published or not
+// is not important. If it is important, we can add a filter for it.
 const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum') => {
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
@@ -51,18 +53,20 @@ const publishNews = async (newsIds: string[]) => {
 
   await Promise.all(updatePromises);
 };
-
+*/
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
   const { name, type, email, title, selectedNews } = event.arguments as { name: string, email: string, title: string,
     type: 'Steel' | 'Auto' | 'Aluminum', selectedNews: string[] };
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
-    const unpublishedNews = await getUnpublishedNews(type);
+    //const unpublishedNews = await getUnpublishedNews(type);
+/*
     if (unpublishedNews) {
       const newsIds = unpublishedNews.map(news => news.id);
-      //await publishNews(newsIds);
+      await publishNews(newsIds);
     }
+    */
     const users = await selectUsers('us-east-1_oy1KeDlsD', type); 
     
     return JSON.stringify(users);

@@ -92,11 +92,6 @@ const App: React.FC = () => {
   const { signOut } = useAuthenticator();
   const [formWidth, setFormWidth] = useState('80%');
   const editorRef   = useRef<Editor | null>(null);
-  const log = () => {
-    if (editorRef.current) {
-      console.log((editorRef.current as any).getContent());
-    }
-  };
 
   useEffect(() => {
     fetchNewsItems();
@@ -126,14 +121,14 @@ const App: React.FC = () => {
       [name]: value,
     }));
   }
-
+/*
   function handleMemoChange(value: string) {
     setNewsForm((prev) => ({
       ...prev,
       memo: value,
     }));
   }
-
+*/
   function submitNewsForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     //This is how you can get the content of the editor
@@ -207,7 +202,7 @@ const App: React.FC = () => {
     height: '100vh',
     overflowY: 'auto'
   };
-
+/*
   const newsItemStyle = {
     borderBottom: '1px solid #ccc',
     padding: '10px 0',
@@ -217,7 +212,7 @@ const App: React.FC = () => {
     display: 'flex',
     justifyContent: 'space-between',
   };
-
+*/
   const renderFormScreen = () => (
     <main style={mainStyle}>
       <form onSubmit={submitNewsForm} style={formStyle}>
@@ -301,7 +296,7 @@ const App: React.FC = () => {
                     { value: 'First.Name', title: 'First Name' },
                     { value: 'Email', title: 'Email' },
                   ] as { value: string; title: string }[],
-                  ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+              //    ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
                   }}
         />
         </FormControl>
