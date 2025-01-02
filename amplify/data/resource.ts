@@ -3,6 +3,7 @@ import { sayHello }   from "../functions/say-hello/resource"
 import { sendEmail }  from "../functions/sendEmail/resource"
 import { newsSearch } from "../functions/newsSearch/resource";
 import { getUnpublished } from "../functions/get-unpublished/resource";
+import { getUser } from "../functions/get-user/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -11,6 +12,15 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
+
+  getUser: a
+    .query()
+    .arguments({
+      name: a.string(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(getUser))
+    .authorization((allow) => [allow.publicApiKey()]),
 
   newsSearch: a
     .query()

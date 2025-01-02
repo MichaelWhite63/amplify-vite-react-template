@@ -12,7 +12,7 @@ import Charts from './Charts';
 import SendEmail from './sendEmail';
 import App from './App';
 import NewsSearch from './newsSearch';
-//import Users from './Users';
+import User from './User';
 
 const MenuComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -75,7 +75,7 @@ const MenuComponent: React.FC = () => {
         <Route path="/news-entry" element={<App />} />
         <Route path="/" element={<App />} />
         <Route path="/news-search" element={<NewsSearch />} />
-        <Route path="/users" element={<NewsSearch />} /> {/* Fixed the route to use the Users component */}
+        <Route path="/users" element={<User />} /> {/* Fixed the route to use the User component */}
       </Routes>
     </>
   );
