@@ -6,6 +6,7 @@ import { sendEmail } from './functions/sendEmail/resource';
 import { newsSearch } from './functions/newsSearch/resource';
 import { getUnpublished } from './functions/get-unpublished/resource';
 import { getUser } from './functions/get-user/resource';
+import { searchUsers } from './functions/search-users/resource';
 
 defineBackend({
   auth,
@@ -14,5 +15,6 @@ defineBackend({
   sendEmail,
   newsSearch,
   getUnpublished,
-  getUser
+  getUser,
+  searchUsers
 });

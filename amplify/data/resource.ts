@@ -3,6 +3,7 @@ import { sayHello }   from "../functions/say-hello/resource"
 import { sendEmail }  from "../functions/sendEmail/resource"
 import { newsSearch } from "../functions/newsSearch/resource";
 import { getUnpublished } from "../functions/get-unpublished/resource";
+import { searchUsers } from "../functions/search-users/resource";
 import { getUser } from "../functions/get-user/resource";
 
 /*== STEP 1 ===============================================================
@@ -14,12 +15,21 @@ specifies that any user authenticated via an API key can "create", "read",
 const schema = a.schema({
 
   getUser: a
+  .query()
+  .arguments({
+    name: a.string(),
+  })
+  .returns(a.string())
+  .handler(a.handler.function(getUser))
+  .authorization((allow) => [allow.publicApiKey()]),
+
+  searchUsers: a
     .query()
     .arguments({
       name: a.string(),
     })
     .returns(a.string())
-    .handler(a.handler.function(getUser))
+    .handler(a.handler.function(searchUsers))
     .authorization((allow) => [allow.publicApiKey()]),
 
   newsSearch: a

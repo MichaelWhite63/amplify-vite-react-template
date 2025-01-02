@@ -7,11 +7,11 @@ const cognito = new CognitoIdentityServiceProvider();
 export async function selectSingleUser(userPoolId: string, email: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
   return await cognito.listUsers({
     UserPoolId: userPoolId,
-    Filter: `email = "${email}"`, // Filter by email
+    Filter: `email ^= "${email}"`, // Use ^= for a prefix wildcard match
   }).promise().then((data) => data.Users || []);
 }
 
-export const handler: Schema["getUser"]["functionHandler"] = async (event) => {
+export const handler: Schema["searchUsers"]["functionHandler"] = async (event) => {
   const { name } = event.arguments as { name: string };
 
   const user = selectSingleUser('us-east-1_oy1KeDlsD', name);
