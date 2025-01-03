@@ -14,7 +14,8 @@ export async function queryCognito(userPoolId: string, email: string): Promise<C
 export const handler: Schema["searchUsers"]["functionHandler"] = async (event) => {
 
   const { name } = event.arguments as { name: string };
-
-  const user = queryCognito('us-east-1_oy1KeDlsD', name);
-  return JSON.stringify(user);
+  
+ //const user = queryCognito('us-east-1_oy1KeDlsD', name);
+  return "Hello World!";
+  //  return JSON.stringify(user);
  }
