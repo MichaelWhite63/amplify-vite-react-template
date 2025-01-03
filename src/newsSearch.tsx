@@ -256,7 +256,7 @@ const NewsSearch: React.FC = () => {
                   { value: 'First.Name', title: 'First Name' },
                   { value: 'Email', title: 'Email' },
                 ] as { value: string; title: string }[],
-    //            ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
                 }}
               />
             </FormControl>

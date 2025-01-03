@@ -154,10 +154,10 @@ const SendEmail: React.FC = () => {
                     onChange={(e) => setSelectedNewsIDs(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
                   />
                 </TableCell>
-                <TableCell style={{ width: '85%' }}>Unpublished News</TableCell>
+                <TableCell style={{ width: '85%' }}>News To Publish</TableCell>
                 <TableCell style={{ width: '15%' }}>Date</TableCell>
               </StyledTableHeadRow>
-            </TableHead>
+            </TableHead> 
             <TableBody>
               {unpublishedNews.map((news) => (
                 <TableRow

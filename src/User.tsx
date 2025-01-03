@@ -31,8 +31,10 @@ const User: React.FC = () => {
 
   const handleSelectUser = async (email: string) => {
     setSelectedEmail(email);
+    console.log('email', email);
     try {
       const response = await client.queries.getUser({ name: email });
+      console.log('response', response);
       const data = response.data ? JSON.parse(response.data) : [];
       setSelectedDetails(data);
     } catch (error) {
