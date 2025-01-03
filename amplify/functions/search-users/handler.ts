@@ -7,7 +7,7 @@ const cognito = new CognitoIdentityServiceProvider();
 export async function queryCognito(userPoolId: string, email: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
   return await cognito.listUsers({
     UserPoolId: userPoolId,
-    Filter: `email *= "${email}"`, // Use *= for a substring match
+    Filter: `email ^= "${email}"`, // Use ^= for a prefix match
   }).promise().then((data) => data.Users || []);
 }
 
