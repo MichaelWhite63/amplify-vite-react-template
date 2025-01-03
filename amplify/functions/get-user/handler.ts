@@ -5,15 +5,24 @@ const cognito = new CognitoIdentityServiceProvider();
 
 // Selects users by group. Grouping is done by type: steel, auto, aluminum
 export async function selectSingleUser(userPoolId: string, email: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
-  return await cognito.listUsers({
+  const users = await cognito.listUsers({
     UserPoolId: userPoolId,
-    Filter: `email = "${email}"`, // Filter by email
+    Filter: `email = "${email}"`,
   }).promise().then((data) => data.Users || []);
+
+  for (const user of users) {
+    const groups = await cognito.adminListGroupsForUser({
+      UserPoolId: userPoolId,
+      Username: user.Username as string,
+    }).promise().then((res) => res.Groups || []);
+    (user as any).GroupMemberships = groups.map(g => g.GroupName);
+  }
+
+  return users;
 }
 
 export const handler: Schema["getUser"]["functionHandler"] = async (event) => {
   const { name } = event.arguments as { name: string };
-
-  const user = selectSingleUser('us-east-1_oy1KeDlsD', name);
+  const user = await selectSingleUser('us-east-1_oy1KeDlsD', name);
   return JSON.stringify(user);
- }
+}
