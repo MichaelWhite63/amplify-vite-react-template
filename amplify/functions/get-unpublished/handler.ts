@@ -8,7 +8,6 @@ const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum', date: str
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
     FilterExpression: 'published = :published AND #type = :type AND #date = :date',
     ExpressionAttributeValues: { 
-      ':published': false,
       ':type': type,
       ':date': date
     },

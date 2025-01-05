@@ -39,13 +39,14 @@ const User: React.FC = () => {
         : [...prev, group]
     );
   };
-
+  // This is an exact email match. It uses the same searchUsers
+  // as the initial search call.
   const handleSelectUser = async (email: string) => {
     setSelectedEmail(email);
     setEditableEmail(email);  // Initialize editable email
     console.log('email', email);
     try {
-      const response = await client.queries.getUser({ name: email });
+      const response = await client.queries.searchUsers({ name: email });
       console.log('response', response);
       const data = response.data ? JSON.parse(response.data) : [];
       setSelectedDetails(data);

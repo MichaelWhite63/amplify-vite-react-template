@@ -80,8 +80,8 @@ const MenuComponent: React.FC = () => {
       >
         <MenuItem onClick={() => handleNavigation('/news-entry')} sx={{ color: 'red' }}>ニュースの作成</MenuItem>
         <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'red' }}>ニュースの検索</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'yellow' }}>ニュースの配信をする</MenuItem>
         <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'orange' }}>チャートの編集</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'blue' }}>ニュースの配信をする</MenuItem>
         <MenuItem onClick={() => handleNavigation('/users')} sx={{ color: 'purple' }}>ユーザーの検索</MenuItem>
       </Menu>
       <Routes>

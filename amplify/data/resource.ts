@@ -191,6 +191,18 @@ export const data = defineData({
   },
 });
 
+// Add GSI configuration
+export const config = {
+  tableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
+  indexes: {
+    byDate: {
+      indexName: 'byDate',
+      sortKey: ['date'],
+      queryField: 'newsByDate'
+    }
+  }
+};
+
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a
 Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY

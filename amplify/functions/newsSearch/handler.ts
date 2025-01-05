@@ -8,19 +8,23 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
 
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
+    IndexName: 'byDate',
+    KeyConditionExpression: '#date <= :now',
     FilterExpression: 'contains(#title, :searchString)',
     ExpressionAttributeNames: {
-      '#title': 'title',
+      '#date': 'date',
+      '#title': 'title'
     },
     ExpressionAttributeValues: {
-      ':searchString': searchString,
+      ':now': new Date().toISOString().split('T')[0],
+      ':searchString': searchString
     },
     Limit: 25,
-    ScanIndexForward: false, // To get the most recently entered rows
+    ScanIndexForward: false // false for descending order (newest first)
   };
 
   try {
-    const data = await dynamoDb.scan(params).promise();
+    const data = await dynamoDb.query(params).promise();
     return JSON.stringify(data.Items) || null;
   } catch (error) {
     throw new Error(`Error fetching news: ` + error);

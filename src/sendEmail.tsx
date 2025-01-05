@@ -335,7 +335,7 @@ const SendEmail: React.FC = () => {
               ))}
             </List>
           </Paper>
-          
+
           {/* Full content */}
           <Typography variant="h6" gutterBottom>Full Content:</Typography>
           {previewContent.map((news) => (

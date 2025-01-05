@@ -137,40 +137,64 @@ const App: React.FC = () => {
 */
   function submitNewsForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    //This is how you can get the content of the editor
-    console.log((editorRef.current as any).getContent());
+    const memoContent = (editorRef.current as any)?.getContent();
+
+    // Validate required fields
+    if (!newsForm.header.trim()) {
+      alert('見出しを入力してください');
+      return;
+    }
+    if (!newsForm.title.trim()) {
+      alert('タイトルを入力してください');
+      return;
+    }
+    if (!newsForm.source.trim()) {
+      alert('タグ、キーワードを入力してください');
+      return;
+    }
+    if (!memoContent.trim()) {
+      alert('本文を入力してください');
+      return;
+    }
 
     const newNews: Omit<News, 'id'> = {
       ...newsForm,
-      memo: (editorRef.current as any).getContent(),
-      writtenBy: 'Anonymous', // Replace with actual user info if available
+      memo: memoContent,
+      writtenBy: 'Anonymous',
       ord: newsItems.length + 1,
       type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum',
     };
 
-    client.models.News.create(newNews) // Adjust the type as per your client library
+    client.models.News.create(newNews)
       .then(response => {
         console.log('News created successfully:', response);
-        fetchNewsItems(); // Refresh the news items list
+        fetchNewsItems();
+        
+        // Reset form only after successful creation
+        setNewsForm({
+          title: '',
+          group: 1,
+          writtenBy: '',
+          date: getTomorrowDate(),
+          lDate: new Date().toISOString().split('T')[0],
+          source: 'User Input',
+          memo: '',
+          ord: 0,
+          rank: 0,
+          header: '',
+          published: false,
+          type: 'Auto',
+        });
+        
+        // Clear the editor content
+        if (editorRef.current) {
+          (editorRef.current as any).setContent('');
+        }
       })
       .catch(error => {
         console.error('Error creating news:', error);
+        alert('ニュースの作成中にエラーが発生しました');
       });
-
-    setNewsForm({
-      title: '',
-      group: 1,
-      writtenBy: '',
-      date: getTomorrowDate(), // Reset to tomorrow's date
-      lDate: new Date().toISOString().split('T')[0],
-      source: 'User Input',
-      memo: '',
-      ord: 0,
-      rank: 0,
-      header: '',
-      published: false,
-      type: 'Auto',
-    });
   }
 
   function fetchNewsItems() {
