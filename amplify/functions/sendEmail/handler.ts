@@ -70,9 +70,9 @@ const publishNews = async (newsIds: string[]) => {
 };
 */
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
-  const { name, email, type, title, selectedNewsIDs } = event.arguments as { name: string, 
+  const { name, email, type, title, header, selectedNewsIDs } = event.arguments as { name: string, 
     email: string, type: 'Steel' | 'Auto' | 'Aluminum', title: string,
-    selectedNewsIDs: string[] };
+    header: string, selectedNewsIDs: string[] };
 
     if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
       // Check if email should be sent to single individual.

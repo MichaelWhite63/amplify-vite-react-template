@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import './index.css';
-import { useNavigate, Route, Routes } from 'react-router-dom';
+import { useNavigate, Route, Routes, useLocation } from 'react-router-dom';
 import Charts from './Charts';
 import SendEmail from './sendEmail';
 import App from './App';
@@ -17,6 +17,18 @@ import User from './User';
 const MenuComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const getPageTitle = (path: string) => {
+    switch (path) {
+      case '/news-entry': return 'ニュースの作成';
+      case '/news-search': return 'ニュースの検索';
+      case '/charts': return 'チャートの編集';
+      case '/send-email': return 'ニュースの配信をする';
+      case '/users': return 'ユーザーの検索';
+      default: return 'News Entry';
+    }
+  };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -34,7 +46,7 @@ const MenuComponent: React.FC = () => {
   return (
     <>
       <AppBar position="fixed">
-        <Toolbar>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <IconButton
             edge="start"
             color="inherit"
@@ -43,32 +55,35 @@ const MenuComponent: React.FC = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
-            Metal News
+          <Typography variant="h6" sx={{ flexGrow: 0 }}>
+            {getPageTitle(location.pathname)}
           </Typography>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={() => handleNavigation('/news-entry')} sx={{ color: 'red' }}>News Entry</MenuItem>
-            <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'green' }}>News Search</MenuItem>
-            <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'orange' }}>Charts</MenuItem>
-            <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'blue' }}>Send Email</MenuItem>
-            <MenuItem onClick={() => handleNavigation('/users')} sx={{ color: 'purple' }}>Users</MenuItem>
-          </Menu>
+          <Typography variant="h6" sx={{ visibility: 'hidden' }}>
+            <MenuIcon />
+          </Typography>
         </Toolbar>
       </AppBar>
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={() => handleNavigation('/news-entry')} sx={{ color: 'red' }}>ニュースの作成</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'red' }}>ニュースの検索</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'orange' }}>チャートの編集</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'blue' }}>ニュースの配信をする</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/users')} sx={{ color: 'purple' }}>ユーザーの検索</MenuItem>
+      </Menu>
       <Routes>
         <Route path="/send-email" element={<SendEmail />} />
         <Route path="/charts" element={<Charts />} />

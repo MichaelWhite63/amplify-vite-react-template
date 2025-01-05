@@ -5,6 +5,7 @@ import { newsSearch } from "../functions/newsSearch/resource";
 import { getUnpublished } from "../functions/get-unpublished/resource";
 import { searchUsers } from "../functions/search-users/resource";
 import { getUser } from "../functions/get-user/resource";
+import { updateUser } from "../functions/update-user/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -48,6 +49,7 @@ const schema = a.schema({
       email: a.string(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
       title: a.string(),
+      header: a.string(),  // Add header field
       selectedNewsIDs: a.string().array(),
     })
     .returns(a.string())
@@ -58,6 +60,7 @@ const schema = a.schema({
     .query()
     .arguments({
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
+      date: a.string(),  // Add date parameter
     })
     .returns(a.string())
     .handler(a.handler.function(getUnpublished))
@@ -71,6 +74,17 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(sayHello))
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  updateUser: a
+    .query()
+    .arguments({
+      username: a.string(),
+      email: a.string(),
+      groups: a.string().array(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(updateUser))
     .authorization((allow) => [allow.publicApiKey()]),
     
   Todo: a

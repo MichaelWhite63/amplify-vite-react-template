@@ -12,6 +12,7 @@ const User: React.FC = () => {
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   const [groupMemberships, setGroupMemberships] = useState<string[]>([]);
   const availableGroups = ['Steel', 'Auto', 'Aluminum'];
+  const [editableEmail, setEditableEmail] = useState('');
 
   const handleSearchUsers = async () => {
     console.log('name', name);
@@ -41,6 +42,7 @@ const User: React.FC = () => {
 
   const handleSelectUser = async (email: string) => {
     setSelectedEmail(email);
+    setEditableEmail(email);  // Initialize editable email
     console.log('email', email);
     try {
       const response = await client.queries.getUser({ name: email });
@@ -50,6 +52,23 @@ const User: React.FC = () => {
       setGroupMemberships(data[0]?.GroupMemberships || []);
     } catch (error) {
       console.error('Error fetching user details:', error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!selectedDetails?.[0]) return;
+    
+    try {
+      const response = await client.queries.updateUser({ 
+        username: selectedDetails[0].Username,
+        email: editableEmail,
+        groups: groupMemberships
+      });
+      console.log('Update response:', response);
+      // Refresh user details after update
+      await handleSelectUser(editableEmail);
+    } catch (error) {
+      console.error('Error updating user:', error);
     }
   };
 
@@ -83,9 +102,12 @@ const User: React.FC = () => {
             <Divider sx={{ mb: 2 }} />
             
             <Stack spacing={2}>
-              <Typography>
-                <strong>Email:</strong> {selectedDetails[0].Attributes.find((attr: any) => attr.Name === 'email')?.Value}
-              </Typography>
+              <TextField
+                label="Email"
+                value={editableEmail}
+                onChange={(e) => setEditableEmail(e.target.value)}
+                fullWidth
+              />
               
               <Typography>
                 <strong>Status:</strong> {selectedDetails[0].UserStatus}
@@ -116,6 +138,15 @@ const User: React.FC = () => {
                   ))}
                 </FormGroup>
               </div>
+
+              <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={handleUpdate}
+                sx={{ mt: 2 }}
+              >
+                Update User
+              </Button>
 
               <Typography variant="caption" color="text.secondary">
                 Created: {new Date(selectedDetails[0].UserCreateDate).toLocaleDateString()}

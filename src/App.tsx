@@ -17,6 +17,8 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
+import Grid from '@mui/material/Grid2';
+import Box from '@mui/material/Box';
 
 interface News {
   id: number;
@@ -71,13 +73,17 @@ const formats = [
 */
 
 const App: React.FC = () => {
-//  const quillRef = useRef<ReactQuill | null>(null);
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
   
   const [newsForm, setNewsForm] = useState<NewsForm>({
     title: '',
     group: 1,
     writtenBy: '',
-    date: new Date().toISOString().split('T')[0], // Default to today's date
+    date: getTomorrowDate(), // Set to tomorrow's date
     lDate: new Date().toISOString().split('T')[0],
     source: '',
     memo: '',
@@ -155,7 +161,7 @@ const App: React.FC = () => {
       title: '',
       group: 1,
       writtenBy: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getTomorrowDate(), // Reset to tomorrow's date
       lDate: new Date().toISOString().split('T')[0],
       source: 'User Input',
       memo: '',
@@ -216,94 +222,123 @@ const App: React.FC = () => {
   const renderFormScreen = () => (
     <main style={mainStyle}>
       <form onSubmit={submitNewsForm} style={formStyle}>
-        
-        <FormControl fullWidth variant="outlined">
-          <InputLabel>カテゴリー</InputLabel>
-          <Select
-            id="type"
-            name="type"
-            value={newsForm.type}
-            onChange={handleSelectChange}
-            label="Category"
-          >
-            <MenuItem value="Steel" style={{ color: 'white' }}>Steel</MenuItem>
-            <MenuItem value="Auto" style={{ color: 'white' }}>Auto</MenuItem>
-            <MenuItem value="Aluminum" style={{ color: 'white' }}>Aluminum</MenuItem>
-          </Select>
-        </FormControl>
-
-        <TextField
-          label="タイトル"
-          variant="outlined"
-          id="title"
-          name="title"
-          value={newsForm.title}
-          onChange={handleNewsInputChange}
-          fullWidth
-        />
-
-      <TextField
-          label="見出し"
-          variant="outlined"
-          id="header"
-          name="header"
-          value={newsForm.header}
-          onChange={handleNewsInputChange}
-          fullWidth
-        />
-        
-        <TextField
-          label="タグ、キーワード"
-          variant="outlined"
-          id="source"
-          name="source"
-          value={newsForm.source}
-          onChange={handleNewsInputChange}
-          fullWidth
-        />
-        <TextField
-          label="発行日"
-          type="date"
-          variant="outlined"
-          id="date"
-          name="date"
-          value={newsForm.date}
-          onChange={handleNewsInputChange}
-          fullWidth
-          InputLabelProps={{
-            shrink: true,
+        <Box 
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            p: 2
           }}
-        />
-      
-        <FormControl fullWidth style={{ marginBottom: '40px' }}>
-          <FormLabel>本文</FormLabel>
-          <Editor
-          onInit={(_evt, editor) => editorRef.current = editor as any}
-          apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
-          initialValue=""
-          init={{
-                plugins: [
-                  // Core editing features
-                  'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                  // Your account includes a free trial of TinyMCE premium features
-                  // Try the most popular premium features until Jan 14, 2025:
-                    'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
-                  ],
-                  toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                  tinycomments_mode: 'embedded',
-                  tinycomments_author: 'Author name',
-                  mergetags_list: [
-                    { value: 'First.Name', title: 'First Name' },
-                    { value: 'Email', title: 'Email' },
-                  ] as { value: string; title: string }[],
-              //    ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+        >
+          <Box sx={{ 
+            flexGrow: 1, 
+            p: 3, 
+            backgroundColor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 1
+          }}>
+            <Grid container spacing={2}>
+              <Grid size={6}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>カテゴリー</InputLabel>
+                  <Select
+                    id="type"
+                    name="type"
+                    value={newsForm.type}
+                    onChange={handleSelectChange}
+                    label="Category"
+                  >
+                    <MenuItem value="Steel" style={{ color: 'white' }}>Steel</MenuItem>
+                    <MenuItem value="Auto" style={{ color: 'white' }}>Auto</MenuItem>
+                    <MenuItem value="Aluminum" style={{ color: 'white' }}>Aluminum</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={6}>
+                <TextField
+                  label="発行日"
+                  type="date"
+                  variant="outlined"
+                  id="date"
+                  name="date"
+                  value={newsForm.date}
+                  onChange={handleNewsInputChange}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
                   }}
-        />
-        </FormControl>
-  
-        <Button type="submit" variant="contained" color="primary">
-          Submit
-        </Button>
+                />
+              </Grid>
+
+              <Grid size={12}>
+                <TextField
+                  label="タイトル"
+                  variant="outlined"
+                  id="title"
+                  name="title"
+                  value={newsForm.title}
+                  onChange={handleNewsInputChange}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid size={12}>
+                <TextField
+                  label="見出し"
+                  variant="outlined"
+                  id="header"
+                  name="header"
+                  value={newsForm.header}
+                  onChange={handleNewsInputChange}
+                  fullWidth
+                />
+              </Grid>
+
+              <Grid size={12}>
+                <TextField
+                  label="タグ、キーワード"
+                  variant="outlined"
+                  id="source"
+                  name="source"
+                  value={newsForm.source}
+                  onChange={handleNewsInputChange}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
+          <FormControl fullWidth style={{ marginBottom: '40px' }}>
+            <FormLabel>本文</FormLabel>
+            <Editor
+            onInit={(_evt, editor) => editorRef.current = editor as any}
+            apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
+            initialValue=""
+            init={{
+                  plugins: [
+                    // Core editing features
+                    'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                    // Your account includes a free trial of TinyMCE premium features
+                    // Try the most popular premium features until Jan 14, 2025:
+                      'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+                    ],
+                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                    tinycomments_mode: 'embedded',
+                    tinycomments_author: 'Author name',
+                    mergetags_list: [
+                      { value: 'First.Name', title: 'First Name' },
+                      { value: 'Email', title: 'Email' },
+                    ] as { value: string; title: string }[],
+                //    ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                    }}
+          />
+          </FormControl>
+    
+          <Button type="submit" variant="contained" color="primary">
+            Submit
+          </Button>
+        </Box>
       </form>
 
       <Button onClick={signOut} variant="contained" color="primary">
