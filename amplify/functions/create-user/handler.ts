@@ -1,53 +1,42 @@
-import { type AppContext } from '@aws-amplify/backend';
-import { AdminCreateUserCommandInput, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { cognitoClient, USER_POOL_ID } from './resource';
+import type { Schema } from "../../data/resource";
 
-interface CreateUserEvent {
-  arguments: {
-    username: string;
-    email: string;
-    groups: string[];
-  };
+interface UserAttributes {
+  Name: string;
+  Value: string;
 }
 
 interface CreateUserResponse {
-  success: boolean;
-  message: string;
+  User?: {
+    Username?: string;
+  };
 }
 
-export const handler = async (event: CreateUserEvent, context: AppContext): Promise<CreateUserResponse> => {
-  const { username, email, groups } = event.arguments;
-  
-  try {
-    const cognito = context.amplify.auth.resources.userPool.client as CognitoIdentityProviderClient;
-    
-    const createUserParams: AdminCreateUserCommandInput = {
-      UserPoolId: context.amplify.auth.resources.userPool.id,
-      Username: username,
-      UserAttributes: [
-        { Name: 'email', Value: email },
-        { Name: 'email_verified', Value: 'true' }
-      ]
-    };
+export const handler: Schema["createUser"]["functionHandler"] = async (event) => {
+  const { email, password } = event.arguments as { email: string; password: string };
 
-    await cognito.adminCreateUser(createUserParams);
+  const createUserCommand = new AdminCreateUserCommand({
+    UserPoolId: USER_POOL_ID,
+    Username: email,
+    TemporaryPassword: password,
+    MessageAction: 'SUPPRESS',
+    UserAttributes: [
+      {
+        Name: 'email',
+        Value: email,
+      },
+      {
+        Name: 'email_verified',
+        Value: 'true',
+      },
+    ] as UserAttributes[],
+  });
 
-    for (const group of groups) {
-      await cognito.adminAddUserToGroup({
-        UserPoolId: context.amplify.auth.resources.userPool.id,
-        Username: username,
-        GroupName: group
-      });
-    }
+  const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
 
-    return {
-      success: true,
-      message: 'User created successfully'
-    };
-  } catch (error: unknown) {
-    console.error('Error creating user:', error);
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    };
-  }
+  return JSON.stringify({
+    message: 'User created successfully',
+    username: response.User?.Username,
+  });
 };

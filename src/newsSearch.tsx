@@ -62,6 +62,7 @@ const NewsSearch: React.FC = () => {
   const editorRef   = useRef<Editor | null>(null);
     
   const handleSearch = async () => {
+    console.log('Searching for:', searchString);
     try {
       const response = await client.queries.newsSearch({ searchString });
       setResults(response.data ? (JSON.parse(response.data) as News[]) : []);

@@ -1,0 +1,13 @@
+
+{
+  "name": "create-user",
+  "version": "1.0.0",
+  "description": "AWS Lambda function to create a user in Cognito",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.412.0"
+  }
+}
