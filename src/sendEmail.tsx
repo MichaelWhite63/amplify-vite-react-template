@@ -328,7 +328,7 @@ const SendEmail: React.FC = () => {
           <Paper sx={{ p: 2, mb: 3, backgroundColor: '#f5f5f5' }}>
             <Typography variant="h6" gutterBottom>Headlines:</Typography>
             <List>
-              {previewContent.map((news, index) => (
+              {previewContent.map((news) => (
                 <ListItem key={`title-${news.id}`}>
                   <ListItemText primary={`${news.title}`} />
                 </ListItem>
@@ -338,7 +338,7 @@ const SendEmail: React.FC = () => {
           
           {/* Full content */}
           <Typography variant="h6" gutterBottom>Full Content:</Typography>
-          {previewContent.map((news, index) => (
+          {previewContent.map((news) => (
             <Paper key={news.id} sx={{ p: 2, mb: 2 }}>
               <Typography variant="h6">
                 {news.title}
