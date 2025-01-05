@@ -6,6 +6,7 @@ import { getUnpublished } from "../functions/get-unpublished/resource";
 import { searchUsers } from "../functions/search-users/resource";
 import { getUser } from "../functions/get-user/resource";
 import { updateUser } from "../functions/update-user/resource";
+import { createUser } from "../functions/create-user/resource";
 
 const schema = a.schema({
 
@@ -79,6 +80,17 @@ const schema = a.schema({
     })
     .returns(a.string())
     .handler(a.handler.function(updateUser))
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  createUser: a
+    .query()
+    .arguments({
+      username: a.string(),
+      email: a.string(),
+      groups: a.string().array(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(createUser))
     .authorization((allow) => [allow.publicApiKey()]),
     
   Todo: a

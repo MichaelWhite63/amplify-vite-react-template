@@ -7,6 +7,8 @@ import { newsSearch } from './functions/newsSearch/resource';
 import { getUnpublished } from './functions/get-unpublished/resource';
 import { getUser } from './functions/get-user/resource';
 import { searchUsers } from './functions/search-users/resource';
+import { updateUser } from './functions/update-user/resource';
+import { createUser } from './functions/create-user/resource';
 
 defineBackend({
   auth,
@@ -16,5 +18,7 @@ defineBackend({
   newsSearch,
   getUnpublished,
   getUser,
-  searchUsers
+  searchUsers,
+  updateUser,
+  createUser
 });
