@@ -7,12 +7,6 @@ import { searchUsers } from "../functions/search-users/resource";
 import { getUser } from "../functions/get-user/resource";
 import { updateUser } from "../functions/update-user/resource";
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any user authenticated via an API key can "create", "read",
-"update", and "delete" any "Todo" records.
-=========================================================================*/
 const schema = a.schema({
 
   getUser: a
