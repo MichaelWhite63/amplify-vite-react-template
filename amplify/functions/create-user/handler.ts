@@ -1,6 +1,7 @@
 import { AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
-import { cognitoClient, USER_POOL_ID } from './resource';
+import { cognitoClient } from './resource';
 import type { Schema } from "../../data/resource";
+export const USER_POOL_ID = process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD';
 
 interface UserAttributes {
   Name: string;

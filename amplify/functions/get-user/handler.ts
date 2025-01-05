@@ -2,6 +2,7 @@ import type { Schema } from "../../data/resource"
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 const cognito = new CognitoIdentityServiceProvider();
+export const USER_POOL_ID = process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD';
 
 // Selects users by group. Grouping is done by type: steel, auto, aluminum
 export async function selectSingleUser(userPoolId: string, email: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
@@ -23,6 +24,6 @@ export async function selectSingleUser(userPoolId: string, email: string): Promi
 
 export const handler: Schema["getUser"]["functionHandler"] = async (event) => {
   const { name } = event.arguments as { name: string };
-  const user = await selectSingleUser('us-east-1_oy1KeDlsD', name);
+  const user = await selectSingleUser(USER_POOL_ID, name);
   return JSON.stringify(user);
 }
