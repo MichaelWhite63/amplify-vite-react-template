@@ -36,7 +36,7 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
   if (!/^[\w-]+$/.test(username)) {
     throw new Error('Username can only contain alphanumeric characters and hyphens');
   }
-
+*/
   const createUserCommand = new AdminCreateUserCommand({
     UserPoolId: USER_POOL_ID,
     Username: username,  // User name 
@@ -57,7 +57,7 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
       }
     ] as UserAttributes[],
   });
-*/
+
   try {
 //    const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
     return JSON.stringify({
