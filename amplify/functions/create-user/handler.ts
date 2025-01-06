@@ -59,7 +59,7 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
   });
 
   try {
-//    const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
+    const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
     return JSON.stringify({
       message: 'User created successfully',
      // username: response.User?.Username || username,
