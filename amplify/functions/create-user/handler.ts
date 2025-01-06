@@ -50,11 +50,11 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
       {
         Name: 'email_verified',
         Value: 'true',
-      },
+      }/*,
       {
         Name: 'custom:groups',  // Store groups as a custom attribute
         Value: groups.join(','),
-      }
+      }*/
     ] as UserAttributes[],
   });
 
