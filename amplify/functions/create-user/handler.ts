@@ -28,7 +28,7 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
     username: string;
     groups: string[];
   };
-
+/*
   // Validate username
   if (!username || username.length < 1) {
     throw new Error('Username is required');
@@ -57,13 +57,14 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
       }
     ] as UserAttributes[],
   });
-
+*/
   try {
-    const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
+//    const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
     return JSON.stringify({
       message: 'User created successfully',
-      username: response.User?.Username || username,
-      email: email,
+     // username: response.User?.Username || username,
+     username: username,
+     email: email,
       groups: groups
     });
   } catch (error) {
