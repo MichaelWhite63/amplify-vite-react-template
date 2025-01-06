@@ -209,7 +209,7 @@ export const config = {
   indexes: {
     byDate: {
       indexName: 'byDate',
-      partitionKey: ['type'],  // Add a partition key
+      partitionKey: ['date'],  // Changed from type to date
       sortKey: ['date'],
       queryField: 'newsByDate'
     }

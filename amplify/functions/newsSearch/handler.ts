@@ -22,7 +22,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
         ':searchString': searchString
       },
       Limit: 25,
-      ScanIndexForward: false // Get newest first
+      ScanIndexForward: false
     };
 
     const result = await dynamoDb.query(params).promise();
