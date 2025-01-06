@@ -89,14 +89,7 @@ const schema = a.schema({
       email: a.string(),
       groups: a.string().array(),
     })
-    .returns(
-      a.model({
-        message: a.string(),
-        username: a.string(),
-        email: a.string(),
-        groups: a.string().array()
-      })
-    )
+    .returns(a.string()) // Return a string instead of a model
     .handler(a.handler.function(createUser))
     .authorization((allow) => [allow.publicApiKey()]),
     

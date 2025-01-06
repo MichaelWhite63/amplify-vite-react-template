@@ -1,5 +1,4 @@
-//import type { Schema } from "../../data/resource";
-import type { AppSyncResolverHandler } from 'aws-lambda';
+import type { Schema } from "../../data/resource";
 export const USER_POOL_ID = process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD';
 
 import { AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
@@ -15,16 +14,15 @@ interface CreateUserResponse {
     Username?: string;
   };
 }
-/*
+
 interface CreateUserResult {
   message: string;
   username: string;  // Remove optional modifier to match schema
   email: string;
   groups: string[];
 }
-*/
-export const handler: AppSyncResolverHandler<{ username?: string; email?: string; groups?: string[] }, 
-  { message: string; username: string; email: string; groups: string[] }> = async (event) => {
+
+export const handler: Schema["createUser"]["functionHandler"] = async (event) => {
   const { email, username, groups } = event.arguments as { 
     email: string; 
     username: string;
@@ -62,14 +60,12 @@ export const handler: AppSyncResolverHandler<{ username?: string; email?: string
 
   try {
     const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
-    
-    // Return object directly instead of using JSON.stringify
-    return {
+    return JSON.stringify({
       message: 'User created successfully',
       username: response.User?.Username || username,
       email: email,
       groups: groups
-    };
+    });
   } catch (error) {
     console.error('Error creating user:', error);
     throw error; // Throw the original error for better debugging
