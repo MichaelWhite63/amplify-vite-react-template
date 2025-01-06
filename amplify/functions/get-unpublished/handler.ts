@@ -6,7 +6,7 @@ const dynamoDb = new DynamoDB.DocumentClient();
 const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum', date: string) => {
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-    FilterExpression: 'published = :published AND #type = :type AND #date = :date',
+    FilterExpression: '#type = :type AND #date = :date',
     ExpressionAttributeValues: { 
       ':type': type,
       ':date': date
