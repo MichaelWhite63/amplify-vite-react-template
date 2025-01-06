@@ -1,6 +1,6 @@
 import type { Schema } from "../../data/resource";
 export const USER_POOL_ID = process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD';
-/*
+
 import { AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { cognitoClient } from './resource';
 
@@ -13,17 +13,17 @@ interface CreateUserResponse {
   User?: {
     Username?: string;
   };
-}*/
+}
 
 export const handler: Schema["createUser"]["functionHandler"] = async (event) => {
-  const { email, password } = event.arguments as { email: string; password: string };
+  const { email } = event.arguments as { email: string; username: string };
 
-  return (USER_POOL_ID + " " + email + " " + password);
-/*
+//  return (USER_POOL_ID + " " + email + " " + username);
+
   const createUserCommand = new AdminCreateUserCommand({
     UserPoolId: USER_POOL_ID,
     Username: email,
-    TemporaryPassword: password,
+    TemporaryPassword: "kuro",
     MessageAction: 'SUPPRESS',
     UserAttributes: [
       {
@@ -43,5 +43,5 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
     message: 'User created successfully',
     username: response.User?.Username,
   });
-  */
+  
 };
