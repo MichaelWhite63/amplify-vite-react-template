@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
-import { TextField, Button, Card, CardContent, Typography, Stack, Alert } from '@mui/material';
+import { 
+  TextField, 
+  Button, 
+  Card, 
+  CardContent, 
+  Typography, 
+  Stack, 
+  Alert,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  FormLabel
+} from '@mui/material';
 
 const client = generateClient<Schema>();
 
@@ -9,17 +21,32 @@ const CreateUser: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    groups: '',
-    lastName: ''  // Add lastName to state
+    lastName: '',
+    groups: {
+      Steel: false,
+      Auto: false,
+      Aluminum: false
+    }
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    if (e.target.name.startsWith('group-')) {
+      const groupName = e.target.name.replace('group-', '');
+      setFormData(prev => ({
+        ...prev,
+        groups: {
+          ...prev.groups,
+          [groupName]: e.target.checked
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [e.target.name]: e.target.value
+      }));
+    }
     setError(null);
     setSuccess(false);
   };
@@ -29,26 +56,41 @@ const CreateUser: React.FC = () => {
     setError(null);
     setSuccess(false);
 
-    if (!formData.username || !formData.email || !formData.groups || !formData.lastName) {
-      setError('All fields are required');
+    if (!formData.username || !formData.email || !formData.lastName) {
+      setError('Username, email, and last name are required');
+      return;
+    }
+
+    const selectedGroups = Object.entries(formData.groups)
+      .filter(([_, checked]) => checked)
+      .map(([group]) => group);
+
+    if (selectedGroups.length === 0) {
+      setError('Please select at least one group');
       return;
     }
 
     try {
-      // Convert comma-separated groups string to array
-      const groupsArray = formData.groups.split(',').map(g => g.trim());
-      const groups = groupsArray.join(', ');
-      console.log(`Creating user with username: ${formData.username}, email: ${formData.email}, groups: ${groups}, lastName: ${formData.lastName}`);  // eslint-disable-line
-
+      console.log('Creating Group:', selectedGroups);
       const response = await client.queries.createUser({
         username: formData.username,
         email: formData.email,
-        groups: groupsArray,
-        lastName: formData.lastName  // Add lastName to query
+        lastName: formData.lastName,
+        groups: selectedGroups
       });
-      console.log('User created:', response);  // eslint-disable-line
+      
+      console.log('User created:', response);
       setSuccess(true);
-      setFormData({ username: '', email: '', groups: '', lastName: '' });
+      setFormData({
+        username: '',
+        email: '',
+        lastName: '',
+        groups: {
+          Steel: false,
+          Auto: false,
+          Aluminum: false
+        }
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while creating the user');
     }
@@ -64,24 +106,6 @@ const CreateUser: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <Stack spacing={3}>
             <TextField
-              name="username"
-              label="Username"
-              value={formData.username}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
-            
-            <TextField
-              name="lastName"
-              label="Last Name"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
-            
-            <TextField
               name="email"
               label="Email"
               type="email"
@@ -92,14 +116,58 @@ const CreateUser: React.FC = () => {
             />
             
             <TextField
-              name="groups"
-              label="Groups"
-              value={formData.groups}
+              name="username"
+              label="Name"
+              value={formData.username}
               onChange={handleInputChange}
               fullWidth
               required
-              helperText="Enter groups separated by commas (e.g., admin,user,editor)"
             />
+            
+            <TextField
+              name="lastName"
+              label="Company Name"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+            
+            <FormGroup>
+              <FormLabel component="legend">Groups</FormLabel>
+              <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox 
+                      checked={formData.groups.Steel}
+                      onChange={handleInputChange}
+                      name="group-Steel"
+                    />
+                  }
+                  label="Steel"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox 
+                      checked={formData.groups.Auto}
+                      onChange={handleInputChange}
+                      name="group-Auto"
+                    />
+                  }
+                  label="Auto"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox 
+                      checked={formData.groups.Aluminum}
+                      onChange={handleInputChange}
+                      name="group-Aluminum"
+                    />
+                  }
+                  label="Aluminum"
+                />
+              </Stack>
+            </FormGroup>
 
             {error && (
               <Alert severity="error">

@@ -28,24 +28,25 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
 
   const createUserCommand = new AdminCreateUserCommand({
     UserPoolId: USER_POOL_ID,
-    Username: username,
+    Username: email,  // Changed from username to email
     TemporaryPassword: "kuro611",
     MessageAction: 'SUPPRESS',
     UserAttributes: [
       { Name: 'email', Value: email },
       { Name: 'email_verified', Value: 'false' },
-      { Name: 'family_name', Value: lastName },  // Add lastName as family_name attribute
+      { Name: 'family_name', Value: lastName },
+      { Name: 'given_name', Value: username },  // Store username as given_name
     ] as UserAttributes[],
   });
 
   try {
     await client.send(createUserCommand);
 
-    // Assign user to groups
+    // Update group assignments to use email as Username
     for (const group of groups) {
       const addUserToGroupCommand = new AdminAddUserToGroupCommand({
         UserPoolId: USER_POOL_ID,
-        Username: username,
+        Username: email,  // Changed from username to email
         GroupName: group,
       });
       await client.send(addUserToGroupCommand);
