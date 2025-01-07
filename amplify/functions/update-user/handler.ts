@@ -55,8 +55,8 @@ async function updateUserGroups(userPoolId: string, username: string, newGroups:
 }
 
 export const handler: Schema["updateUser"]["functionHandler"] = async (event) => {
-  // username parameter is the original email for identification
-  const { username: originalEmail, email, lastName: familyName, groups, username: givenName } = event.arguments;
+  // Match the arguments defined in resource.ts
+  const { username: originalEmail, email, familyName, givenName, groups } = event.arguments;
   
   try {
     if (!originalEmail) {
