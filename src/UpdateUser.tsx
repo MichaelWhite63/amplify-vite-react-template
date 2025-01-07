@@ -13,6 +13,9 @@ const UpdateUser: React.FC = () => {
   const [groupMemberships, setGroupMemberships] = useState<string[]>([]);
   const availableGroups = ['Steel', 'Auto', 'Aluminum'];
   const [editableEmail, setEditableEmail] = useState('');
+  const [originalEmail, setOriginalEmail] = useState('');  
+  const [familyName, setFamilyName] = useState('');
+  const [givenName, setGivenName] = useState('');
 
   const handleSearchUsers = async () => {
     console.log('name', name);
@@ -39,11 +42,11 @@ const UpdateUser: React.FC = () => {
         : [...prev, group]
     );
   };
-  // This is an exact email match. It uses the same searchUsers
-  // as the initial search call.
+
   const handleSelectUser = async (email: string) => {
     setSelectedEmail(email);
-    setEditableEmail(email);  // Initialize editable email
+    setEditableEmail(email);  
+    setOriginalEmail(email);  
     console.log('email', email);
     try {
       const response = await client.queries.searchUsers({ name: email });
@@ -51,6 +54,12 @@ const UpdateUser: React.FC = () => {
       const data = response.data ? JSON.parse(response.data) : [];
       setSelectedDetails(data);
       setGroupMemberships(data[0]?.GroupMemberships || []);
+      
+      const attributes = data[0]?.Attributes || [];
+      const familyNameAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'family_name');
+      const givenNameAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'given_name');
+      setFamilyName(familyNameAttr?.Value || '');
+      setGivenName(givenNameAttr?.Value || '');
     } catch (error) {
       console.error('Error fetching user details:', error);
     }
@@ -61,12 +70,13 @@ const UpdateUser: React.FC = () => {
     
     try {
       const response = await client.queries.updateUser({ 
-        username: selectedDetails[0].Username,
-        email: editableEmail,
+        username: originalEmail,     // Cognito Username (identifier)
+        email: editableEmail,        // new email
+        givenName: givenName,        // renamed from username
+        familyName: familyName,      // renamed from lastName
         groups: groupMemberships
       });
       console.log('Update response:', response);
-      // Refresh user details after update
       await handleSelectUser(editableEmail);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -107,6 +117,18 @@ const UpdateUser: React.FC = () => {
                 label="Email"
                 value={editableEmail}
                 onChange={(e) => setEditableEmail(e.target.value)}
+                fullWidth
+              />
+              <TextField
+                label="Family Name"
+                value={familyName}
+                onChange={(e) => setFamilyName(e.target.value)}
+                fullWidth
+              />
+              <TextField
+                label="Given Name"
+                value={givenName}
+                onChange={(e) => setGivenName(e.target.value)}
                 fullWidth
               />
               

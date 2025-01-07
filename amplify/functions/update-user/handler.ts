@@ -55,30 +55,36 @@ async function updateUserGroups(userPoolId: string, username: string, newGroups:
 }
 
 export const handler: Schema["updateUser"]["functionHandler"] = async (event) => {
-  const { username, email, lastName, groups } = event.arguments;
+  // username parameter is the original email for identification
+  const { username: originalEmail, email, lastName: familyName, groups, username: givenName } = event.arguments;
   
   try {
-    if (!email) {
-      throw new Error('Email is required for updating user');
+    if (!originalEmail) {
+      throw new Error('Original email is required for updating user');
     }
 
-    if (email || lastName || username) {
-      const attributes: Record<string, string> = {};
-      if (email) {
-        attributes['email'] = email;
-        //attributes['email_verified'] = 'false';
-      }
-      if (lastName) attributes['family_name'] = lastName;
-      if (username) attributes['given_name'] = username;
-      
-      await updateCognitoUser('us-east-1_oy1KeDlsD', email, attributes);
+    const attributes: Record<string, string> = {};
+    if (email) {
+      attributes['email'] = email;
+      attributes['email_verified'] = 'false';
     }
-    /*
+    if (familyName) attributes['family_name'] = familyName;
+    if (givenName) attributes['given_name'] = givenName;
+    
+    if (Object.keys(attributes).length > 0) {
+      await updateCognitoUser(USER_POOL_ID, originalEmail, attributes);
+    }
+    
     if (groups) {
-      await updateUserGroups('us-east-1_oy1KeDlsD', email, groups.filter((group): group is string => group !== null && group !== undefined));
+      await updateUserGroups(USER_POOL_ID, originalEmail, groups);
     }
-*/
-    return JSON.stringify({ success: true, username });
+
+    return JSON.stringify({ 
+      success: true, 
+      email: email || originalEmail,
+      familyName,
+      givenName
+    });
   } catch (error) {
     console.error('Error updating user:', error);
     throw error;

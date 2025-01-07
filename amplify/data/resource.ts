@@ -74,10 +74,11 @@ const schema = a.schema({
   updateUser: a
     .query()
     .arguments({
-      username: a.string(), //given_name
-      email: a.string(),
-      groups: a.string().array(),
-      lastName: a.string(),  // family_name
+      username: a.string(),     // originalEmail (used as Cognito Username)
+      email: a.string(),        // new email address
+      givenName: a.string(),    // renamed from username
+      familyName: a.string(),   // renamed from lastName
+      groups: a.string().array()
     })
     .returns(a.string())
     .handler(a.handler.function(updateUser))
