@@ -37,7 +37,7 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
     MessageAction: 'SUPPRESS',
     UserAttributes: [
       { Name: 'email', Value: email },
-      { Name: 'email_verified', Value: 'true' },
+      { Name: 'email_verified', Value: 'false' },
     ] as UserAttributes[],
   });
 
@@ -57,6 +57,6 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
     return 'User created successfully';
   } catch (error) {
     console.error('Error creating user:', error);
-    throw new Error('Failed to create user. Please check the input and try again.');
+    throw new Error('Failed to create user: ' + error);
   }
 };
