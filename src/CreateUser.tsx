@@ -9,7 +9,8 @@ const CreateUser: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    groups: ''
+    groups: '',
+    lastName: ''  // Add lastName to state
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -28,7 +29,7 @@ const CreateUser: React.FC = () => {
     setError(null);
     setSuccess(false);
 
-    if (!formData.username || !formData.email || !formData.groups) {
+    if (!formData.username || !formData.email || !formData.groups || !formData.lastName) {
       setError('All fields are required');
       return;
     }
@@ -37,16 +38,17 @@ const CreateUser: React.FC = () => {
       // Convert comma-separated groups string to array
       const groupsArray = formData.groups.split(',').map(g => g.trim());
       const groups = groupsArray.join(', ');
-      console.log(`Creating user with username: ${formData.username}, email: ${formData.email}, groups: ${groups}`);  // eslint-disable-line
+      console.log(`Creating user with username: ${formData.username}, email: ${formData.email}, groups: ${groups}, lastName: ${formData.lastName}`);  // eslint-disable-line
 
       const response = await client.queries.createUser({
         username: formData.username,
         email: formData.email,
-        groups: groupsArray
+        groups: groupsArray,
+        lastName: formData.lastName  // Add lastName to query
       });
       console.log('User created:', response);  // eslint-disable-line
       setSuccess(true);
-      setFormData({ username: '', email: '', groups: '' });
+      setFormData({ username: '', email: '', groups: '', lastName: '' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while creating the user');
     }
@@ -65,6 +67,15 @@ const CreateUser: React.FC = () => {
               name="username"
               label="Username"
               value={formData.username}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+            
+            <TextField
+              name="lastName"
+              label="Last Name"
+              value={formData.lastName}
               onChange={handleInputChange}
               fullWidth
               required

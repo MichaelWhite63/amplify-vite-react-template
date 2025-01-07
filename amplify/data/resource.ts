@@ -88,8 +88,9 @@ const schema = a.schema({
       username: a.string(),
       email: a.string(),
       groups: a.string().array(),
+      lastName: a.string(),  // Add lastName argument
     })
-    .returns(a.string()) // Return a string instead of a model
+    .returns(a.string())
     .handler(a.handler.function(createUser))
     .authorization((allow) => [allow.publicApiKey()]),
     

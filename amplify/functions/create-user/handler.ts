@@ -14,17 +14,13 @@ interface UserAttributes {
 }
 
 export const handler: Schema["createUser"]["functionHandler"] = async (event): Promise<string | null> => {
-  const { email, username, groups } = event.arguments as { 
+  const { email, username, groups, lastName } = event.arguments as { 
     email: string; 
     username: string;
     groups: string[];
+    lastName: string;
   };
 
-  /* Validate username
-  if (!username || !/^[\w-]+$/.test(username)) {
-    throw new Error('Username is required and can only contain alphanumeric characters and hyphens.');
-  }
-*/
   // Validate email
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     throw new Error('Invalid email format.');
@@ -38,6 +34,7 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
     UserAttributes: [
       { Name: 'email', Value: email },
       { Name: 'email_verified', Value: 'false' },
+      { Name: 'family_name', Value: lastName },  // Add lastName as family_name attribute
     ] as UserAttributes[],
   });
 
