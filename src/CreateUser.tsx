@@ -117,7 +117,7 @@ const CreateUser: React.FC = () => {
             
             <TextField
               name="username"
-              label="Name"
+              label="名前"
               value={formData.username}
               onChange={handleInputChange}
               fullWidth
@@ -126,7 +126,7 @@ const CreateUser: React.FC = () => {
             
             <TextField
               name="lastName"
-              label="Company Name"
+              label="会社名"
               value={formData.lastName}
               onChange={handleInputChange}
               fullWidth

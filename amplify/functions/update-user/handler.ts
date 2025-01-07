@@ -47,19 +47,27 @@ async function updateUserGroups(userPoolId: string, username: string, newGroups:
 }
 
 export const handler: Schema["updateUser"]["functionHandler"] = async (event) => {
-  const { username, attributes, groups } = event.arguments as { 
-    username: string, 
-    attributes?: Record<string, string>,
-    groups?: string[]
-  };
+  const { username, email, lastName, groups } = event.arguments;
   
   try {
-    if (attributes) {
-      await updateCognitoUser('us-east-1_oy1KeDlsD', username, attributes);
+    if (!email) {
+      throw new Error('Email is required for updating user');
+    }
+
+    if (email || lastName || username) {
+      const attributes: Record<string, string> = {};
+      if (email) {
+        attributes['email'] = email;
+        attributes['email_verified'] = 'false';
+      }
+      if (lastName) attributes['family_name'] = lastName;
+      if (username) attributes['given_name'] = username;
+      
+      await updateCognitoUser('us-east-1_oy1KeDlsD', email, attributes);
     }
     
     if (groups) {
-      await updateUserGroups('us-east-1_oy1KeDlsD', username, groups);
+      await updateUserGroups('us-east-1_oy1KeDlsD', email, groups.filter((group): group is string => group !== null && group !== undefined));
     }
 
     return JSON.stringify({ success: true, username });

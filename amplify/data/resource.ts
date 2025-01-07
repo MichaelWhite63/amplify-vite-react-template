@@ -77,6 +77,7 @@ const schema = a.schema({
       username: a.string(),
       email: a.string(),
       groups: a.string().array(),
+      lastName: a.string(),  // Add lastName argument
     })
     .returns(a.string())
     .handler(a.handler.function(updateUser))
