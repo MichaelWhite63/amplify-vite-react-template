@@ -74,10 +74,10 @@ const schema = a.schema({
   updateUser: a
     .query()
     .arguments({
-      username: a.string(),
+      username: a.string(), //given_name
       email: a.string(),
       groups: a.string().array(),
-      lastName: a.string(),  // Add lastName argument
+      lastName: a.string(),  // family_name
     })
     .returns(a.string())
     .handler(a.handler.function(updateUser))
@@ -86,10 +86,10 @@ const schema = a.schema({
   createUser: a
     .query()
     .arguments({
-      username: a.string(),
+      username: a.string(),  //given_name
       email: a.string(),
       groups: a.string().array(),
-      lastName: a.string(),  // Add lastName argument
+      lastName: a.string(),  // family_name
     })
     .returns(a.string())
     .handler(a.handler.function(createUser))
