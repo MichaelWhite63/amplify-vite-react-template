@@ -1,8 +1,12 @@
 import type { Schema } from "../../data/resource";
-export const USER_POOL_ID = process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD';
+import { CognitoIdentityProviderClient, AdminCreateUserCommand } 
+    from "@aws-sdk/client-cognito-identity-provider"; // ES Modules import
 
-import { AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
-import { cognitoClient } from './resource';
+export const USER_POOL_ID = process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD';
+export const AWS_REGION = process.env.AWS_REGION || 'us-east-1'; 
+const config = { region: AWS_REGION };
+
+const client = new CognitoIdentityProviderClient(config);
 
 interface UserAttributes {
   Name: string;
@@ -59,7 +63,8 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event) =>
   });
 
   try {
-    const response: CreateUserResponse = await cognitoClient.send(createUserCommand);
+    const response = await client.send(createUserCommand);
+
     return JSON.stringify({
       message: 'User created successfully',
      // username: response.User?.Username || username,
