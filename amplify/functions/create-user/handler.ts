@@ -33,7 +33,7 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
   const createUserCommand = new AdminCreateUserCommand({
     UserPoolId: USER_POOL_ID,
     Username: username,
-    TemporaryPassword: "kuro",
+    TemporaryPassword: "kuro611",
     MessageAction: 'SUPPRESS',
     UserAttributes: [
       { Name: 'email', Value: email },
