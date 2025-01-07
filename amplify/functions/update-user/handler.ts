@@ -76,7 +76,7 @@ export const handler: Schema["updateUser"]["functionHandler"] = async (event) =>
     }
     
     if (groups) {
-      await updateUserGroups(USER_POOL_ID, originalEmail, groups);
+      await updateUserGroups(USER_POOL_ID, originalEmail, groups.filter((group): group is string => group !== null));
     }
 
     return JSON.stringify({ 
