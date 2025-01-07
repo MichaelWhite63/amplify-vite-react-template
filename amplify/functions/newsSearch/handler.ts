@@ -5,20 +5,23 @@ const dynamoDb = new DynamoDB.DocumentClient();
 
 export const handler: Schema["newsSearch"]["functionHandler"] = async (event): Promise<string | null> => {
   const { searchString } = event.arguments as { searchString: string };
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
   try {
     const params = {
       TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
       IndexName: 'byDate',
-      KeyConditionExpression: '#date <= :today',
+      KeyConditionExpression: '#date <= :tomorrow',
       FilterExpression: 'contains(#title, :searchString)',
       ExpressionAttributeNames: {
         '#date': 'date',
         '#title': 'title'
       },
       ExpressionAttributeValues: {
-        ':today': today,
+        ':tomorrow': tomorrowStr,
         ':searchString': searchString
       },
       Limit: 25,
