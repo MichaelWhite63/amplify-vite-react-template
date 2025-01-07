@@ -21,37 +21,71 @@ async function updateCognitoUser(userPoolId: string, username: string, attribute
   return await client.send(command);
 }
 
+const VALID_GROUPS = ['Steel', 'Auto', 'Aluminum'];
+const MAX_RETRIES = 3;
+
 async function updateUserGroups(userPoolId: string, username: string, newGroups: string[]) {
+  // Validate groups
+  const invalidGroups = newGroups.filter(g => !VALID_GROUPS.includes(g));
+  if (invalidGroups.length > 0) {
+    throw new Error(`Invalid groups: ${invalidGroups.join(', ')}`);
+  }
+
   const listCommand = new AdminListGroupsForUserCommand({
     UserPoolId: userPoolId,
     Username: username
   });
+  
   const currentGroups = await client.send(listCommand);
   const currentGroupNames = (currentGroups.Groups || []).map(g => g.GroupName!);
 
   const groupsToAdd = newGroups.filter(g => !currentGroupNames.includes(g));
   const groupsToRemove = currentGroupNames.filter(g => !newGroups.includes(g));
 
-  const operations = [
-    ...groupsToAdd.map(groupName =>
-      client.send(new AdminAddUserToGroupCommand({
-        UserPoolId: userPoolId,
-        Username: username,
-        GroupName: groupName
-      }))
-    ),
-    ...groupsToRemove.map(groupName =>
-      client.send(new AdminRemoveUserFromGroupCommand({
-        UserPoolId: userPoolId,
-        Username: username,
-        GroupName: groupName
-      }))
-    )
-  ];
+  const results = await Promise.allSettled([
+    ...groupsToAdd.map(async groupName => {
+      let lastError;
+      for (let i = 0; i < MAX_RETRIES; i++) {
+        try {
+          await client.send(new AdminAddUserToGroupCommand({
+            UserPoolId: userPoolId,
+            Username: username,
+            GroupName: groupName
+          }));
+          return { success: true, group: groupName, operation: 'add' };
+        } catch (error) {
+          lastError = error;
+          if (i < MAX_RETRIES - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+        }
+      }
+      throw lastError;
+    }),
+    ...groupsToRemove.map(async groupName => {
+      let lastError;
+      for (let i = 0; i < MAX_RETRIES; i++) {
+        try {
+          await client.send(new AdminRemoveUserFromGroupCommand({
+            UserPoolId: userPoolId,
+            Username: username,
+            GroupName: groupName
+          }));
+          return { success: true, group: groupName, operation: 'remove' };
+        } catch (error) {
+          lastError = error;
+          if (i < MAX_RETRIES - 1) await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+        }
+      }
+      throw lastError;
+    })
+  ]);
 
-  if (operations.length > 0) {
-    await Promise.all(operations);
+  const failures = results.filter(r => r.status === 'rejected');
+  if (failures.length > 0) {
+    const errors = failures.map(f => (f as PromiseRejectedResult).reason).join(', ');
+    throw new Error(`Failed to update some groups: ${errors}`);
   }
+
+  return results;
 }
 
 export const handler: Schema["updateUser"]["functionHandler"] = async (event) => {
