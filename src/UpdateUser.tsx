@@ -120,13 +120,13 @@ const UpdateUser: React.FC = () => {
                 fullWidth
               />
               <TextField
-                label="Family Name"
+                label="名前"
                 value={familyName}
                 onChange={(e) => setFamilyName(e.target.value)}
                 fullWidth
               />
               <TextField
-                label="Given Name"
+                label="会社名"
                 value={givenName}
                 onChange={(e) => setGivenName(e.target.value)}
                 fullWidth
@@ -144,7 +144,7 @@ const UpdateUser: React.FC = () => {
 
               <div>
                 <Typography variant="subtitle2" gutterBottom>
-                  Group Memberships:
+                メール配信グループ
                 </Typography>
                 <FormGroup row>
                   {availableGroups.map((group) => (
