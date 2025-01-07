@@ -20,11 +20,11 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
     groups: string[];
   };
 
-  // Validate username
+  /* Validate username
   if (!username || !/^[\w-]+$/.test(username)) {
     throw new Error('Username is required and can only contain alphanumeric characters and hyphens.');
   }
-
+*/
   // Validate email
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     throw new Error('Invalid email format.');
