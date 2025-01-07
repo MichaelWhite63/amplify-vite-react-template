@@ -1,11 +1,11 @@
 import type { Schema } from "../../data/resource";
-import { CognitoIdentityProviderClient, AdminCreateUserCommand } 
-    from "@aws-sdk/client-cognito-identity-provider"; // ES Modules import
+import { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminAddUserToGroupCommand } 
+    from "@aws-sdk/client-cognito-identity-provider";
 
 export const USER_POOL_ID = process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD';
-export const AWS_REGION = process.env.AWS_REGION || 'us-east-1'; 
-const config = { region: AWS_REGION };
+export const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 
+const config = { region: AWS_REGION };
 const client = new CognitoIdentityProviderClient(config);
 
 interface UserAttributes {
@@ -13,67 +13,50 @@ interface UserAttributes {
   Value: string;
 }
 
-interface CreateUserResponse {
-  User?: {
-    Username?: string;
-  };
-}
-
-interface CreateUserResult {
-  message: string;
-  username: string;  // Remove optional modifier to match schema
-  email: string;
-  groups: string[];
-}
-
-export const handler: Schema["createUser"]["functionHandler"] = async (event) => {
+export const handler: Schema["createUser"]["functionHandler"] = async (event): Promise<string | null> => {
   const { email, username, groups } = event.arguments as { 
     email: string; 
     username: string;
     groups: string[];
   };
-/*
+
   // Validate username
-  if (!username || username.length < 1) {
-    throw new Error('Username is required');
+  if (!username || !/^[\w-]+$/.test(username)) {
+    throw new Error('Username is required and can only contain alphanumeric characters and hyphens.');
   }
-  if (!/^[\w-]+$/.test(username)) {
-    throw new Error('Username can only contain alphanumeric characters and hyphens');
+
+  // Validate email
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('Invalid email format.');
   }
-*/
+
   const createUserCommand = new AdminCreateUserCommand({
     UserPoolId: USER_POOL_ID,
-    Username: username,  // User name 
+    Username: username,
     TemporaryPassword: "kuro",
     MessageAction: 'SUPPRESS',
     UserAttributes: [
-      {
-        Name: 'email',
-        Value: email,
-      },
-      {
-        Name: 'email_verified',
-        Value: 'true',
-      }/*,
-      {
-        Name: 'custom:groups',  // Store groups as a custom attribute
-        Value: groups.join(','),
-      }*/
+      { Name: 'email', Value: email },
+      { Name: 'email_verified', Value: 'true' },
     ] as UserAttributes[],
   });
 
   try {
-    const response = await client.send(createUserCommand);
+    await client.send(createUserCommand);
 
-    return JSON.stringify({
-      message: 'User created successfully',
-     // username: response.User?.Username || username,
-     username: username,
-     email: email,
-      groups: groups
-    });
+    // Assign user to groups
+    for (const group of groups) {
+      const addUserToGroupCommand = new AdminAddUserToGroupCommand({
+        UserPoolId: USER_POOL_ID,
+        Username: username,
+        GroupName: group,
+      });
+      await client.send(addUserToGroupCommand);
+    }
+
+    return 'User created successfully';
   } catch (error) {
     console.error('Error creating user:', error);
-    throw error; // Throw the original error for better debugging
+    throw new Error('Failed to create user. Please check the input and try again.');
   }
 };
