@@ -116,7 +116,8 @@ const UpdateUser: React.FC = () => {
               <TextField
                 label="Email"
                 value={editableEmail}
-                onChange={(e) => setEditableEmail(e.target.value)}
+                disabled
+                sx={{ bgcolor: 'action.disabledBackground' }}
                 fullWidth
               />
               <TextField

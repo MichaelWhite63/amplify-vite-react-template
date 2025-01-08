@@ -119,7 +119,13 @@ const schema = a.schema({
       newField: a.boolean(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
     })
-    .authorization((allow) => [allow.publicApiKey()]),
+    .authorization((allow) => [allow.publicApiKey()])
+    .indexes({
+      byDate: {
+        partitionKey: 'date',
+        sortKey: 'date'
+      }
+    }),
 
   NewsGroup: a
     .model({
@@ -206,18 +212,18 @@ export const data = defineData({
   },
 });
 
-// Add GSI configuration
-export const config = {
-  tableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-  indexes: {
-    byDate: {
-      indexName: 'byDate',
-      partitionKey: ['date'],  // Changed from type to date
-      sortKey: ['date'],
-      queryField: 'newsByDate'
-    }
-  }
-};
+// Remove or comment out the old config object
+// export const config = {
+//   tableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
+//   indexes: {
+//     byDate: {
+//       indexName: 'byDate',
+//       partitionKey: ['date'],
+//       sortKey: ['date'],
+//       queryField: 'newsByDate'
+//     }
+//   }
+// };
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a
