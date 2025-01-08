@@ -30,7 +30,9 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
     };
 
     const result = await dynamoDb.scan(params).promise();
-    return JSON.stringify(result) || "NADA";
+    return result.Items && result.Items.length > 0 ? JSON.stringify(result.Items) : "NADA";
+
+//    return JSON.stringify(result) || "NADA";
 
   } catch (error) {
     console.error('Search error:', error);
