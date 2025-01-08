@@ -119,10 +119,10 @@ const schema = a.schema({
       newField: a.boolean(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
     })
-    .authorization((allow) => [allow.publicApiKey()])
-    .secondaryIndexes(index => [
-      index('date')
-    ]),
+    .authorization((allow) => [allow.publicApiKey()]),
+    //.secondaryIndexes((index) => [
+    //  index('byDateAndTitle', { partitionKey: 'date', sortKey: 'title' })
+    //]),
 
   NewsGroup: a
     .model({

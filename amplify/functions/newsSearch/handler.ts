@@ -8,24 +8,24 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const todayStr = today.toISOString().split('T')[0];
 
   try {
     const params = {
       TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-      IndexName: 'byDate',
-      KeyConditionExpression: '#date <= :tomorrow',
-      FilterExpression: 'contains(#title, :searchString)',
+      IndexName: 'date-index',  // Ensure this matches the generated index name
+      KeyConditionExpression: '#date = :today',  // Use equality condition on partition key
+      FilterExpression: 'contains(#title, :searchString)',  // Additional filtering
       ExpressionAttributeNames: {
         '#date': 'date',
         '#title': 'title'
       },
       ExpressionAttributeValues: {
-        ':tomorrow': tomorrowStr,
+        ':today': todayStr,             // Define 'todayStr' as the specific date you want to query
         ':searchString': searchString
       },
       Limit: 25,
-      ScanIndexForward: false
+      ScanIndexForward: false    // Sorts results in descending order if a sort key is present
     };
 
     const result = await dynamoDb.query(params).promise();

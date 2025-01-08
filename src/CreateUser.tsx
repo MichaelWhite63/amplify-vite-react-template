@@ -72,6 +72,7 @@ const CreateUser: React.FC = () => {
 
     try {
       console.log('Creating Group:', selectedGroups);
+      console.log('Creating User :', formData.username, formData.email, " Last Name=> " , formData.lastName);  
       const response = await client.queries.createUser({
         username: formData.username,
         email: formData.email,
