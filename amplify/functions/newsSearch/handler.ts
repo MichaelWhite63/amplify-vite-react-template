@@ -1,7 +1,7 @@
 import type { Schema } from "../../data/resource";
-//import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from 'aws-sdk';
 
-//const dynamoDb = new DynamoDB.DocumentClient();
+const dynamoDb = new DynamoDB.DocumentClient();
 
 export const handler: Schema["newsSearch"]["functionHandler"] = async (event): Promise<string | null> => {
   const { searchString } = event.arguments as { searchString: string };
@@ -10,9 +10,9 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowStr = tomorrow.toISOString(); // Use full ISO string with time
 
-  
+
   try {
-    /*
+    
     const params = {
       TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
       // Remove IndexName as we're using Scan instead of Query
@@ -30,8 +30,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
     };
 
     const result = await dynamoDb.scan(params).promise();
-    */
-    return JSON.stringify(tomorrowStr) || "NADA";
+    return JSON.stringify(result) || "NADA";
 
   } catch (error) {
     console.error('Search error:', error);
