@@ -120,12 +120,9 @@ const schema = a.schema({
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
     })
     .authorization((allow) => [allow.publicApiKey()])
-    .indexes({
-      byDate: {
-        partitionKey: 'date',
-        sortKey: 'date'
-      }
-    }),
+    .secondaryIndexes(index => [
+      index('date')
+    ]),
 
   NewsGroup: a
     .model({
