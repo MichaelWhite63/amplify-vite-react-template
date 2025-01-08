@@ -118,11 +118,9 @@ const schema = a.schema({
       published: a.boolean(),
       newField: a.boolean(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
+      // fixedPartition: a.string().default('NEWS'), // Removed fixedPartition attribute
     })
     .authorization((allow) => [allow.publicApiKey()]),
-    //.secondaryIndexes((index) => [
-    //  index('byDateAndTitle', { partitionKey: 'date', sortKey: 'title' })
-    //]),
 
   NewsGroup: a
     .model({
