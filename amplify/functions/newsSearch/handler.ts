@@ -9,7 +9,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowStr = tomorrow.toISOString(); // Use full ISO string with time
-
+/*
   try {
     const params = {
       TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
@@ -28,7 +28,8 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
     };
 
     const result = await dynamoDb.scan(params).promise();
-    return JSON.stringify(result) || "NADA";
+    */
+    return JSON.stringify(tomorrowStr) || "NADA";
 
   } catch (error) {
     console.error('Search error:', error);
