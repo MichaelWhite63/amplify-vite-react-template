@@ -10,6 +10,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowStr = tomorrow.toISOString(); // Use full ISO string with time
 
+  
   try {
     /*
     const params = {
