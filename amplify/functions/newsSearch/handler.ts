@@ -8,23 +8,23 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const tomorrowStr = tomorrow.toISOString(); // Use full ISO string with time
 
   try {
     const params = {
       TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
       // Remove IndexName as we're using Scan instead of Query
       // IndexName: 'date-title-index',
-      FilterExpression: '#date <= :tomorrow AND contains(#title, :searchString)',
+      FilterExpression: '#createdAt <= :tomorrow AND contains(#title, :searchString)',
       ExpressionAttributeNames: {
-        '#date': 'date',
+        '#createdAt': 'createdAt',     // Updated attribute name
         '#title': 'title'
       },
       ExpressionAttributeValues: {
-        ':tomorrow': tomorrowStr,       // Tomorrow's date in 'YYYY-MM-DD' format
+        ':tomorrow': tomorrowStr,       // Full ISO string for tomorrow
         ':searchString': searchString
       },
-      Limit: 25
+      Limit: 35
     };
 
     const result = await dynamoDb.scan(params).promise();
