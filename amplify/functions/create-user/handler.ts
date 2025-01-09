@@ -55,6 +55,6 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
     return 'User created successfully';
   } catch (error) {
     console.error('Error creating user:', error);
-    throw new Error('Failed to create user: ' + error);
+    throw new Error('false:' + error);
   }
 };

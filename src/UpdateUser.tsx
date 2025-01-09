@@ -30,6 +30,7 @@ const UpdateUser: React.FC = () => {
         return emailAttr ? emailAttr.Value : 'No email found';
       });
       setUsers(emails);
+      setSelectedDetails(false);
     } catch (error) {
       console.error('Error fetching user:', error);
     }
@@ -72,7 +73,7 @@ const UpdateUser: React.FC = () => {
       const response = await client.queries.updateUser({ 
         username: originalEmail,     // Cognito Username (identifier)
         email: editableEmail,        // new email
-        givenName: givenName,        // renamed from username
+        givenName: givenName,        // Company Name
         familyName: familyName,      // renamed from lastName
         groups: groupMemberships
       });
@@ -93,17 +94,19 @@ const UpdateUser: React.FC = () => {
       <Button variant="contained" onClick={handleSearchUsers} style={{ marginLeft: '10px' }}>
         Get User
       </Button>
-      <List>
-        {users.map((email, idx) => (
-          <ListItem key={idx}>
-            <Radio
-              checked={selectedEmail === email}
-              onChange={() => handleSelectUser(email)}
-            />
-            <ListItemText primary={email} />
-          </ListItem>
-        ))}
-      </List>
+      {!selectedDetails && (
+        <List>
+          {users.map((email, idx) => (
+            <ListItem key={idx}>
+              <Radio
+                checked={selectedEmail === email}
+                onChange={() => handleSelectUser(email)}
+              />
+              <ListItemText primary={email} />
+            </ListItem>
+          ))}
+        </List>
+      )}
       {selectedDetails && selectedDetails[0] && (
         <Card sx={{ mt: 3, maxWidth: 600 }}>
           <CardContent>
@@ -169,7 +172,7 @@ const UpdateUser: React.FC = () => {
                 onClick={handleUpdate}
                 sx={{ mt: 2 }}
               >
-                Update User
+                Update User **
               </Button>
 
               <Typography variant="caption" color="text.secondary">

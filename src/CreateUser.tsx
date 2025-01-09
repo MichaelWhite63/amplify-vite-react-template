@@ -71,16 +71,16 @@ const CreateUser: React.FC = () => {
     }
 
     try {
-      console.log('Creating Group:', selectedGroups);
-      console.log('Creating User :', formData.username, formData.email, " Last Name=> " , formData.lastName);  
       const response = await client.queries.createUser({
-        username: formData.username,
+        lastName: formData.lastName,  // Person Name
+        username: formData.username,  //Company
         email: formData.email,
-        lastName: formData.lastName,
         groups: selectedGroups
       });
       
-      console.log('User created:', response);
+      if (response.errors && response.errors.length > 0) {
+        throw new Error(response.errors[0].message);
+      }
       setSuccess(true);
       setFormData({
         username: '',
@@ -108,7 +108,7 @@ const CreateUser: React.FC = () => {
           <Stack spacing={3}>
             <TextField
               name="email"
-              label="Email"
+              label="メールアドレス"
               type="email"
               value={formData.email}
               onChange={handleInputChange}
@@ -117,25 +117,25 @@ const CreateUser: React.FC = () => {
             />
             
             <TextField
-              name="username"
-              label="名前"
-              value={formData.username}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
-            
-            <TextField
               name="lastName"
-              label="会社名"
+              label="名前"
               value={formData.lastName}
               onChange={handleInputChange}
               fullWidth
               required
             />
             
+            <TextField
+              name="username"
+              label="会社名"
+              value={formData.username}
+              onChange={handleInputChange}
+              fullWidth
+              required
+            />
+            
             <FormGroup>
-              <FormLabel component="legend">Groups</FormLabel>
+              <FormLabel component="legend">カテゴリー</FormLabel>
               <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
                 <FormControlLabel
                   control={

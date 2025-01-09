@@ -87,10 +87,10 @@ const schema = a.schema({
   createUser: a
     .query()
     .arguments({
-      username: a.string(),  //given_name
+      username: a.string(),  //given_name; company name
       email: a.string(),
       groups: a.string().array(),
-      lastName: a.string(),  // family_name
+      lastName: a.string(),  // family_name; person name
     })
     .returns(a.string())
     .handler(a.handler.function(createUser))

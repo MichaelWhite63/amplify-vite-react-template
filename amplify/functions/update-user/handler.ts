@@ -121,6 +121,6 @@ export const handler: Schema["updateUser"]["functionHandler"] = async (event) =>
     });
   } catch (error) {
     console.error('Error updating user:', error);
-    throw error;
+    throw new Error('Error updating user:' + error);
   }
 }
