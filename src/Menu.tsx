@@ -26,7 +26,7 @@ const MenuComponent: React.FC = () => {
       case '/news-search': return 'ニュースの検索';
       case '/charts': return 'チャートの編集';
       case '/send-email': return 'ニュースの配信をする';
-      case '/users': return 'ユーザーの検索';
+      case '/update-users': return 'ユーザーの検索';
       case '/create-user': return 'ユーザーの作成';
       default: return 'News Entry';
     }
@@ -84,8 +84,8 @@ const MenuComponent: React.FC = () => {
         <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'red' }}>ニュースの検索</MenuItem>
         <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'yellow' }}>ニュースの配信をする</MenuItem>
         <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'orange' }}>チャートの編集</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/users')} sx={{ color: 'purple' }}>ユーザーの検索</MenuItem>
         <MenuItem onClick={() => handleNavigation('/create-user')} sx={{ color: 'purple' }}>ユーザーの作成</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/update-users')} sx={{ color: 'purple' }}>ユーザーの検索</MenuItem>
       </Menu>
       <Routes>
         <Route path="/send-email" element={<SendEmail />} />
@@ -93,7 +93,7 @@ const MenuComponent: React.FC = () => {
         <Route path="/news-entry" element={<App />} />
         <Route path="/" element={<App />} />
         <Route path="/news-search" element={<NewsSearch />} />
-        <Route path="/users" element={<UpdateUser />} />
+        <Route path="/update-users" element={<UpdateUser />} />
         <Route path="/create-user" element={<CreateUser />} />
       </Routes>
     </>

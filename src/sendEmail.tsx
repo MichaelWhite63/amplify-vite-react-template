@@ -163,8 +163,8 @@ const SendEmail: React.FC = () => {
                     <div>
                       <FormLabel>配信グループ</FormLabel>
                       <RadioGroup row value={recipient} onChange={(e) => setRecipient(e.target.value as 'everyone' | 'single')}>
-                        <FormControlLabel value="everyone" control={<Radio />} label="カテゴリー" />
-                        <FormControlLabel value="single" control={<Radio />} label="Single" />
+                        <FormControlLabel value="everyone" control={<Radio />} label="全員" />
+                        <FormControlLabel value="single" control={<Radio />} label="シングル" />
                       </RadioGroup>
                       {recipient === 'single' && (
                         <TextField

@@ -48,6 +48,8 @@ const UpdateUser: React.FC = () => {
     setSelectedEmail(email);
     setEditableEmail(email);  
     setOriginalEmail(email);  
+    setUsers([]);
+
     console.log('email', email);
     try {
       const response = await client.queries.searchUsers({ name: email });
@@ -78,7 +80,12 @@ const UpdateUser: React.FC = () => {
         groups: groupMemberships
       });
       console.log('Update response:', response);
+
+      if (response.errors && response.errors.length > 0) {
+        throw new Error(response.errors[0].message);
+      }
       await handleSelectUser(editableEmail);
+
     } catch (error) {
       console.error('Error updating user:', error);
     }
@@ -172,7 +179,7 @@ const UpdateUser: React.FC = () => {
                 onClick={handleUpdate}
                 sx={{ mt: 2 }}
               >
-                Update User **
+                Update User
               </Button>
 
               <Typography variant="caption" color="text.secondary">
