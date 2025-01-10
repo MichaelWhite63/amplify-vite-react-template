@@ -180,9 +180,9 @@ const SendEmail: React.FC = () => {
                     <div>
                       <FormLabel>カテゴリー</FormLabel>
                       <RadioGroup row value={selectedType} onChange={handleChange}>
-                        <FormControlLabel value="Steel" control={<Radio />} label="Steel" />
-                        <FormControlLabel value="Auto" control={<Radio />} label="Auto" />
-                        <FormControlLabel value="Aluminum" control={<Radio />} label="Aluminum" />
+                        <FormControlLabel value="Steel" control={<Radio />} label="鉄鋼" />
+                        <FormControlLabel value="Auto" control={<Radio />} label="自動車" />
+                        <FormControlLabel value="Aluminum" control={<Radio />} label="アルミ" />
                       </RadioGroup>
                     </div>
 

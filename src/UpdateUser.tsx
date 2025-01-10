@@ -11,7 +11,7 @@ const UpdateUser: React.FC = () => {
   const [selectedEmail, setSelectedEmail] = useState('');
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   const [groupMemberships, setGroupMemberships] = useState<string[]>([]);
-  const availableGroups = ['Steel', 'Auto', 'Aluminum'];
+  const availableGroups = ['鉄鋼', '自動車', 'アルミ'];
   const [editableEmail, setEditableEmail] = useState('');
   const [originalEmail, setOriginalEmail] = useState('');  
   const [familyName, setFamilyName] = useState('');

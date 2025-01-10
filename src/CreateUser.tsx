@@ -145,7 +145,7 @@ const CreateUser: React.FC = () => {
                       name="group-Steel"
                     />
                   }
-                  label="Steel"
+                  label="鉄鋼"
                 />
                 <FormControlLabel
                   control={
@@ -155,7 +155,7 @@ const CreateUser: React.FC = () => {
                       name="group-Auto"
                     />
                   }
-                  label="Auto"
+                  label="自動車"
                 />
                 <FormControlLabel
                   control={
@@ -165,7 +165,7 @@ const CreateUser: React.FC = () => {
                       name="group-Aluminum"
                     />
                   }
-                  label="Aluminum"
+                  label="アルミ"
                 />
               </Stack>
             </FormGroup>
