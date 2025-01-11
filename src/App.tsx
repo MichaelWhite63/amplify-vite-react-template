@@ -91,7 +91,7 @@ const App: React.FC = () => {
     rank: 0,
     header: '',
     published: false,
-    type: '鉄鋼',
+    type: 'Steel',
   });
 
   const [newsItems, setNewsItems] = useState<News[]>([]);
