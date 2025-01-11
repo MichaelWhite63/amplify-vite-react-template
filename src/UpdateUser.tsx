@@ -11,6 +11,13 @@ const UpdateUser: React.FC = () => {
   const [selectedEmail, setSelectedEmail] = useState('');
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   const [groupMemberships, setGroupMemberships] = useState<string[]>([]);
+  
+  const GROUP_MAPPING = {
+    '鉄鋼': 'Steel',
+    '自動車': 'Auto',
+    'アルミ': 'Aluminum'
+  } as const;
+  
   const availableGroups = ['鉄鋼', '自動車', 'アルミ'];
   const [editableEmail, setEditableEmail] = useState('');
   const [originalEmail, setOriginalEmail] = useState('');  
@@ -37,10 +44,11 @@ const UpdateUser: React.FC = () => {
   };
 
   const handleGroupChange = (group: string) => {
+    const englishGroup = GROUP_MAPPING[group as keyof typeof GROUP_MAPPING];
     setGroupMemberships(prev => 
-      prev.includes(group) 
-        ? prev.filter(g => g !== group)
-        : [...prev, group]
+      prev.includes(englishGroup) 
+        ? prev.filter(g => g !== englishGroup)
+        : [...prev, englishGroup]
     );
   };
 
@@ -163,7 +171,7 @@ const UpdateUser: React.FC = () => {
                       key={group}
                       control={
                         <Checkbox
-                          checked={groupMemberships.includes(group)}
+                          checked={groupMemberships.includes(GROUP_MAPPING[group as keyof typeof GROUP_MAPPING])}
                           onChange={() => handleGroupChange(group)}
                         />
                       }
