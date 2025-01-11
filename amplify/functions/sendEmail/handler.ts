@@ -71,11 +71,15 @@ const publishNews = async (newsIds: string[]) => {
 */
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
   const { name, email, type, title, header, selectedNewsIDs } = event.arguments as { name: string, 
-    email: string, type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ', 
+    email: string, 
+   // type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ', 
+    type: 'Steel' | 'Auto' | 'Aluminum', 
     title: string,
     header: string, selectedNewsIDs: string[] };
 
-    if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
+    if (type === 'Steel' || type === 'Auto' || type === 'Aluminum'
+//      || type === '鉄鋼' || type === '自動車' || type === 'アルミ'
+    ) {
       // Check if email should be sent to single individual.
       /*
       let users: CognitoIdentityServiceProvider.UserType[] = [];

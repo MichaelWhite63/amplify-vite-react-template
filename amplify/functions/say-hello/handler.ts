@@ -3,8 +3,9 @@ import { DynamoDB } from 'aws-sdk';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
-const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ') => {
-  const params = {
+const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum' ) => {
+//  const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ') => {
+    const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
     FilterExpression: 'published = :published AND #type = :type',
     ExpressionAttributeValues: { 
@@ -35,10 +36,11 @@ const publishNews = async (newsIds: string[]) => {
 
 export const handler: Schema["sayHello"]["functionHandler"] = async (event) => {
   // arguments typed from `.arguments()`
-  const { name, type } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ'};
+//  const { name, type } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ'};
+  const { name, type } = event.arguments as { name: string, type: 'Steel' | 'Auto' | 'Aluminum' };
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum'
-    || type === '鉄鋼' || type === '自動車' || type === 'アルミ'
+//    || type === '鉄鋼' || type === '自動車' || type === 'アルミ'
   ) {
     const unpublishedNews = await getUnpublishedNews(type);
     if (unpublishedNews) {

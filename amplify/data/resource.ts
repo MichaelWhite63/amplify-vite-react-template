@@ -42,8 +42,9 @@ const schema = a.schema({
     .arguments({
       name: a.string(),
       email: a.string(),
-      type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
-      title: a.string(),
+  //    type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
+  type: a.enum(['Steel', 'Auto', 'Aluminum']),
+  title: a.string(),
       header: a.string(),  // Add header field
       selectedNewsIDs: a.string().array(),
     })
@@ -54,7 +55,8 @@ const schema = a.schema({
   getUnpublished: a
     .query()
     .arguments({
-      type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
+  //    type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
+      type: a.enum(['Steel', 'Auto', 'Aluminum']),
       date: a.string(),  // Add date parameter
     })
     .returns(a.string())
@@ -65,7 +67,8 @@ const schema = a.schema({
     .query()
     .arguments({
       name: a.string(),
-      type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
+  //    type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
+      type: a.enum(['Steel', 'Auto', 'Aluminum']),
     })
     .returns(a.string())
     .handler(a.handler.function(sayHello))
@@ -117,8 +120,9 @@ const schema = a.schema({
       header: a.string(),
       published: a.boolean(),
       newField: a.boolean(),
-      type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
-    })
+  //    type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
+  type: a.enum(['Steel', 'Auto', 'Aluminum']),
+  })
     .authorization((allow) => [allow.publicApiKey()]),
 
   NewsGroup: a
