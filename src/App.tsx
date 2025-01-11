@@ -33,7 +33,7 @@ interface News {
   rank: number;
   header: string;
   published: boolean;
-  type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ';
+  type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
 }
 
 interface NewsForm {
@@ -48,7 +48,7 @@ interface NewsForm {
   rank: number;
   header: string;
   published: boolean;
-  type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ';
+  type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
 }
 
 /* Top of React Quill component
@@ -120,8 +120,9 @@ const App: React.FC = () => {
     }));
   }
 
-  function handleSelectChange(event: SelectChangeEvent<"Steel" | "Auto" | "Aluminum" | '鉄鋼' | '自動車' | 'アルミ'>) {
-    const { name, value } = event.target;
+  function handleSelectChange(event: SelectChangeEvent<"Steel" | "Auto" | "Aluminum">) {
+//    function handleSelectChange(event: SelectChangeEvent<"Steel" | "Auto" | "Aluminum" | '鉄鋼' | '自動車' | 'アルミ'>) {
+      const { name, value } = event.target;
     setNewsForm((prev) => ({
       ...prev,
       [name]: value,

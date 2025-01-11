@@ -34,7 +34,7 @@ interface News {
   header: string;
   published: boolean;
   newField: boolean;
-  type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ';
+  type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
 }
 
 interface NewsForm {
@@ -50,7 +50,7 @@ interface NewsForm {
   header: string;
   published: boolean;
   newField: boolean;
-  type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ';
+  type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
 }
  
 const NewsSearch: React.FC = () => {
@@ -178,9 +178,9 @@ const NewsSearch: React.FC = () => {
                       onChange={(e) => handleNewsFormChange('type', e.target.value)}
                       label="Type"
                     >
-                      <MenuItem value="鉄鋼" style={{ color: 'white' }}>鉄鋼</MenuItem>
-                      <MenuItem value="自動車" style={{ color: 'white' }}>自動車</MenuItem>
-                      <MenuItem value="アルミ" style={{ color: 'white' }}>アルミ</MenuItem>
+                      <MenuItem value="Steel" style={{ color: 'white' }}>鉄鋼</MenuItem>
+                      <MenuItem value="Auto" style={{ color: 'white' }}>自動車</MenuItem>
+                      <MenuItem value="Aluminum" style={{ color: 'white' }}>アルミ</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
