@@ -274,9 +274,9 @@ const App: React.FC = () => {
                     onChange={handleSelectChange}
                     label="Category"
                   >
-                    <MenuItem value="鉄鋼" style={{ color: 'white' }}>鉄鋼</MenuItem>
-                    <MenuItem value="自動車" style={{ color: 'white' }}>自動車</MenuItem>
-                    <MenuItem value="アルミ" style={{ color: 'white' }}>アルミ</MenuItem>
+                    <MenuItem value="Steel" style={{ color: 'white' }}>鉄鋼</MenuItem>
+                    <MenuItem value="Auto" style={{ color: 'white' }}>自動車</MenuItem>
+                    <MenuItem value="Aluminum" style={{ color: 'white' }}>アルミ</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
