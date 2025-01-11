@@ -33,7 +33,7 @@ interface News {
   rank: number;
   header: string;
   published: boolean;
-  type: 'Steel' | 'Auto' | 'Aluminum';
+  type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ';
 }
 
 interface NewsForm {
@@ -48,7 +48,7 @@ interface NewsForm {
   rank: number;
   header: string;
   published: boolean;
-  type: 'Steel' | 'Auto' | 'Aluminum';
+  type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ';
 }
 
 /* Top of React Quill component
@@ -91,7 +91,7 @@ const App: React.FC = () => {
     rank: 0,
     header: '',
     published: false,
-    type: 'Steel',
+    type: '鉄鋼',
   });
 
   const [newsItems, setNewsItems] = useState<News[]>([]);
@@ -120,7 +120,7 @@ const App: React.FC = () => {
     }));
   }
 
-  function handleSelectChange(event: SelectChangeEvent<"Steel" | "Auto" | "Aluminum">) {
+  function handleSelectChange(event: SelectChangeEvent<"Steel" | "Auto" | "Aluminum" | '鉄鋼' | '自動車' | 'アルミ'>) {
     const { name, value } = event.target;
     setNewsForm((prev) => ({
       ...prev,
@@ -162,7 +162,7 @@ const App: React.FC = () => {
       memo: memoContent,
       writtenBy: 'Anonymous',
       ord: newsItems.length + 1,
-      type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum',
+      type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum'  | '鉄鋼' | '自動車' | 'アルミ',
     };
 
     client.models.News.create(newNews)
@@ -272,9 +272,9 @@ const App: React.FC = () => {
                     onChange={handleSelectChange}
                     label="Category"
                   >
-                    <MenuItem value="Steel" style={{ color: 'white' }}>鉄鋼</MenuItem>
-                    <MenuItem value="Auto" style={{ color: 'white' }}>自動車</MenuItem>
-                    <MenuItem value="Aluminum" style={{ color: 'white' }}>アルミ</MenuItem>
+                    <MenuItem value="鉄鋼" style={{ color: 'white' }}>鉄鋼</MenuItem>
+                    <MenuItem value="自動車" style={{ color: 'white' }}>自動車</MenuItem>
+                    <MenuItem value="アルミ" style={{ color: 'white' }}>アルミ</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>

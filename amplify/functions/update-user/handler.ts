@@ -21,7 +21,7 @@ async function updateCognitoUser(userPoolId: string, username: string, attribute
   return await client.send(command);
 }
 
-const VALID_GROUPS = ['Steel', 'Auto', 'Aluminum'];
+const VALID_GROUPS = ['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ'];
 const MAX_RETRIES = 3;
 
 async function updateUserGroups(userPoolId: string, username: string, newGroups: string[]) {
