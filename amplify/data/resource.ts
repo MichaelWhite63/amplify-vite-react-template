@@ -120,8 +120,8 @@ const schema = a.schema({
       header: a.string(),
       published: a.boolean(),
       newField: a.boolean(),
-  //    type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
-  type: a.enum(['Steel', 'Auto', 'Aluminum']),
+      type: a.enum(['Steel', 'Auto', 'Aluminum', '鉄鋼', '自動車', 'アルミ']),
+  //type: a.enum(['Steel', 'Auto', 'Aluminum']),
   })
     .authorization((allow) => [allow.publicApiKey()]),
 

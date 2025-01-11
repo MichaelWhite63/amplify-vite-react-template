@@ -162,7 +162,8 @@ const App: React.FC = () => {
       memo: memoContent,
       writtenBy: 'Anonymous',
       ord: newsItems.length + 1,
-      type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum'  | '鉄鋼' | '自動車' | 'アルミ',
+    //  type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum'  | '鉄鋼' | '自動車' | 'アルミ',
+      type: newsForm.type as 'Steel' | 'Auto' | 'Aluminum',
     };
 
     client.models.News.create(newNews)
