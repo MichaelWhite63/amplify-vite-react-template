@@ -352,11 +352,12 @@ const App: React.FC = () => {
                     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
                     tinycomments_mode: 'embedded',
                     tinycomments_author: 'Author name',
+                    language: 'ja',
                     mergetags_list: [
                       { value: 'First.Name', title: 'First Name' },
                       { value: 'Email', title: 'Email' },
                     ] as { value: string; title: string }[],
-                //    ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                    ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
                     }}
           />
           </FormControl>

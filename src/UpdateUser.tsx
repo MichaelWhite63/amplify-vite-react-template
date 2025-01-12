@@ -58,10 +58,8 @@ const UpdateUser: React.FC = () => {
     setOriginalEmail(email);  
     setUsers([]);
 
-    console.log('email', email);
     try {
       const response = await client.queries.searchUsers({ name: email });
-      console.log('response', response);
       const data = response.data ? JSON.parse(response.data) : [];
       setSelectedDetails(data);
       setGroupMemberships(data[0]?.GroupMemberships || []);
@@ -87,7 +85,6 @@ const UpdateUser: React.FC = () => {
         familyName: familyName,      // renamed from lastName
         groups: groupMemberships
       });
-      console.log('Update response:', response);
 
       if (response.errors && response.errors.length > 0) {
         throw new Error(response.errors[0].message);
