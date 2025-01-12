@@ -1,8 +1,9 @@
 import type { Schema } from "../../data/resource"
-//import { DynamoDB } from 'aws-sdk';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityServiceProvider, DynamoDB, SES } from 'aws-sdk';
 
 const cognito = new CognitoIdentityServiceProvider();
+const dynamodb = new DynamoDB.DocumentClient();
+const ses = new SES();
 
 // Selects users by type/group. Cognito grouping is done by type: steel, auto, aluminum
 export async function selectUsersByType(userPoolId: string, groupName: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
@@ -34,78 +35,99 @@ export async function selectSingleUser(userPoolId: string, email: string): Promi
   }
 }
 
-/*
-const dynamoDb = new DynamoDB.DocumentClient();
-
-// Selecting unpublished news. It is likely that being published or not
-// is not important. If it is important, we can add a filter for it.
-const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum') => {
-  const params = {
-    TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-    FilterExpression: 'published = :published AND #type = :type',
-    ExpressionAttributeValues: { 
-      ':published': false,
-      ':type': type
-    },
-    ExpressionAttributeNames: {
-      '#type': 'type'
-    }
-  };
-  const result = await dynamoDb.scan(params).promise();
-  return result.Items;
-};
-
-const publishNews = async (newsIds: string[]) => {
-  const updatePromises = newsIds.map(id => {
+async function fetchNewsItems(newsIds: string[]): Promise<any[]> {
+  const tableName = process.env.NEWS_TABLE_NAME || 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE';
+  
+  const newsItems = await Promise.all(newsIds.map(async (id) => {
     const params = {
-      TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-      Key: { id },
-      UpdateExpression: 'set published = :published',
-      ExpressionAttributeValues: { ':published': true }
+      TableName: tableName,
+      Key: { id }
     };
-    return dynamoDb.update(params).promise();
-  });
+    
+    const result = await dynamodb.get(params).promise();
+    return result.Item;
+  }));
+  
+  return newsItems.filter(item => item !== undefined);
+}
 
-  await Promise.all(updatePromises);
-};
-*/
+async function formatEmailContent(newsItems: any[], header?: string): Promise<string> {
+  let emailContent = '';
+  
+  // Only add header if it exists and has content
+  if (header?.trim()) {
+    emailContent += `${header}\n\n`;
+  }
+  
+  emailContent += "概要:\n";
+  newsItems.forEach(item => {
+    emailContent += `• ${item.title}\n`;
+  });
+  
+  // Add detailed content
+  emailContent += "\n詳細:\n\n";
+  newsItems.forEach(item => {
+    emailContent += `${item.title}\n`;
+    emailContent += `${item.memo}\n\n`;
+  });
+  
+  return emailContent;
+}
+
+async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[], subject: string, content: string) {
+  for (const user of users) {
+    const emailAttribute = user.Attributes?.find(attr => attr.Name === 'email');
+    if (emailAttribute?.Value) {
+      const params = {
+        Destination: {
+          ToAddresses: [emailAttribute.Value]
+        },
+        Message: {
+          Body: {
+            Text: { Data: content }
+          },
+          Subject: { Data: subject }
+        },
+        Source: 'your-verified-email@domain.com' // Replace with your SES verified email
+      };
+      
+      await ses.sendEmail(params).promise();
+    }
+  }
+}
+
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
   const { name, email, type, title, header, selectedNewsIDs } = event.arguments as { name: string, 
     email: string, 
-   // type: 'Steel' | 'Auto' | 'Aluminum' | '鉄鋼' | '自動車' | 'アルミ', 
     type: 'Steel' | 'Auto' | 'Aluminum', 
     title: string,
-    header: string, selectedNewsIDs: string[] };
+    header: string, 
+    selectedNewsIDs: string[] };
 
-    if (type === 'Steel' || type === 'Auto' || type === 'Aluminum'
-//      || type === '鉄鋼' || type === '自動車' || type === 'アルミ'
-    ) {
-      // Check if email should be sent to single individual.
-      /*
-      let users: CognitoIdentityServiceProvider.UserType[] = [];
-      if (email){
-        users = await selectSingleUser('us-east-1_oy1KeDlsD', email);
-      } else {
-        users = await selectUsersByType('us-east-1_oy1KeDlsD', type); 
-      }
-      */
-    // email is populated if it is to be sent to a single individual
-    const users = (email) ? await selectSingleUser('us-east-1_oy1KeDlsD', email) 
-        : await selectUsersByType('us-east-1_oy1KeDlsD', type);
-      
-    //const unpublishedNews = await getUnpublishedNews(type);
-/*
-    if (unpublishedNews) {
-      const newsIds = unpublishedNews.map(news => news.id);
-      await publishNews(newsIds);
-    }
-    */
+  try {
+    // Get users to send email to
+    const users = (email) 
+      ? await selectSingleUser('us-east-1_oy1KeDlsD', email)
+      : await selectUsersByType('us-east-1_oy1KeDlsD', type);
+
+    // Fetch news items
+    const newsItems = await fetchNewsItems(selectedNewsIDs);
     
-    return JSON.stringify(users);
-    // return typed from `.returns()`
-//    return `Hello, ${name}! Unpublished ${type} news count: ${unpublishedNews ? unpublishedNews.length : 0} | type: ${type}`;
-  } else {
-    throw new Error(`Invalid type: ${type} | name : ${name}`);
-  } 
-
- }
+    // Format email content
+    const emailContent = await formatEmailContent(newsItems, header);
+    
+    // Send emails
+    await sendEmailToUsers(users, title, emailContent);
+    
+    return JSON.stringify({ 
+      success: true, 
+      recipientCount: users.length,
+      newsCount: newsItems.length,
+      emailContent: emailContent
+    });
+    
+  } catch (error) {
+    console.error('Error in sendEmail:', error);
+    throw new Error(`Failed to send email: ${error.message}`);
+  }
+}
