@@ -80,12 +80,12 @@ const MenuComponent: React.FC = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={() => handleNavigation('/news-entry')} sx={{ color: 'red' }}>ニュースの作成</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'red' }}>ニュースの検索</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'yellow' }}>ニュースの配信をする</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'orange' }}>チャートの編集</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/create-user')} sx={{ color: 'purple' }}>ユーザーの作成</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/update-users')} sx={{ color: 'purple' }}>ユーザーの検索</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/news-entry')} sx={{ color: 'white' }}>ニュースの作成</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'white' }}>ニュースの検索</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'white' }}>ニュースの配信をする</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'white' }}>チャートの編集</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/create-user')} sx={{ color: 'white' }}>ユーザーの作成</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/update-users')} sx={{ color: 'white' }}>ユーザーの検索</MenuItem>
       </Menu>
       <Routes>
         <Route path="/send-email" element={<SendEmail />} />

@@ -88,7 +88,7 @@ async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[]
           },
           Subject: { Data: subject }
         },
-        Source: 'your-verified-email@domain.com' // Replace with your SES verified email
+        Source: 'Kuromatsu@metalnews.com' // Replace with your SES verified email
       };
       
       await ses.sendEmail(params).promise();
@@ -117,7 +117,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
     const emailContent = await formatEmailContent(newsItems, header);
     
     // Send emails
-    //await sendEmailToUsers(users, title, emailContent);
+    await sendEmailToUsers(users, title, emailContent);
     
     return JSON.stringify({ 
       success: true, 
