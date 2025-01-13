@@ -117,12 +117,13 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
     const emailContent = await formatEmailContent(newsItems, header);
     
     // Send emails
-    await sendEmailToUsers(users, title, emailContent);
+    //await sendEmailToUsers(users, title, emailContent);
     
     return JSON.stringify({ 
       success: true, 
       recipientCount: users.length,
       newsCount: newsItems.length,
+      users: users.map(user => user.Username),
       emailContent: emailContent
     });
     
