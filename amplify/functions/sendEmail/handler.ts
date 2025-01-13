@@ -128,6 +128,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
     
   } catch (error) {
     console.error('Error in sendEmail:', error);
-    throw new Error(`Failed to send email: ${error.message}`);
+    const errorMessage = (error as any).message;
+    throw new Error(`Failed to send email: ${errorMessage}`);
   }
 }
