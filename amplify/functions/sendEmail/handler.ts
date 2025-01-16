@@ -51,30 +51,45 @@ async function fetchNewsItems(newsIds: string[]): Promise<any[]> {
   return newsItems.filter(item => item !== undefined);
 }
 
-async function formatEmailContent(newsItems: any[], header?: string): Promise<string> {
-  let emailContent = '';
+async function formatEmailContent(newsItems: any[], header?: string): Promise<{ html: string, text: string }> {
+  let htmlContent = '<div style="font-family: Arial, sans-serif;">';
+  let textContent = '';
   
-  // Only add header if it exists and has content
   if (header?.trim()) {
-    emailContent += `${header}\n\n`;
+    htmlContent += `<h2>${header}</h2>`;
+    textContent += `${header}\n\n`;
   }
   
-  emailContent += "概要:\n";
+  // Summary section
+  htmlContent += '<h3>概要:</h3><ul>';
+  textContent += "概要:\n";
+  
   newsItems.forEach(item => {
-    emailContent += `• ${item.title}\n`;
+    htmlContent += `<li>${item.title}</li>`;
+    textContent += `• ${item.title}\n`;
   });
   
-  // Add detailed content
-  emailContent += "\n詳細:\n\n";
+  htmlContent += '</ul>';
+  
+  // Details section
+  htmlContent += '<h3>詳細:</h3>';
+  textContent += "\n詳細:\n\n";
+  
   newsItems.forEach(item => {
-    emailContent += `${item.title}\n`;
-    emailContent += `${item.memo}\n\n`;
+    htmlContent += `<div style="margin-bottom: 20px;">
+      <h4 style="color: #2c5282;">${item.title}</h4>
+      <div>${item.memo}</div>
+    </div>`;
+    
+    textContent += `${item.title}\n${item.memo}\n\n`;
   });
   
-  return emailContent;
+  htmlContent += '</div>';
+  
+  return { html: htmlContent, text: textContent };
 }
 
-async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[], subject: string, content: string) {
+async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[], subject: string, content: { html: string, text: string }) {
   for (const user of users) {
     const emailAttribute = user.Attributes?.find(attr => attr.Name === 'email');
     if (emailAttribute?.Value) {
@@ -84,11 +99,21 @@ async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[]
         },
         Message: {
           Body: {
-            Text: { Data: content }
+            Html: { 
+              Data: content.html,
+              Charset: 'UTF-8'
+            },
+            Text: { 
+              Data: content.text,
+              Charset: 'UTF-8'
+            }
           },
-          Subject: { Data: subject }
+          Subject: { 
+            Data: subject,
+            Charset: 'UTF-8'
+          }
         },
-        Source: 'Kuromatsu@metalnews.com' // Replace with your SES verified email
+        Source: 'Kuromatsu@metalnews.com' 
       };
       
       await ses.sendEmail(params).promise();

@@ -108,6 +108,14 @@ const SendEmail: React.FC = () => {
   const handleSendEmail = async () => {
     console.log('Send Email');
     console.log(`email = ${email} | type = ${selectedType} | title = ${title} | header = ${header} | selectedNewsIDs = ${selectedNewsIDs}`);
+    console.log({ 
+      name: 'MetalNews Email',
+      email: recipient === 'single' ? email : null, 
+      type: selectedType,
+      title: title,
+      header: header,
+      selectedNewsIDs: selectedNewsIDs
+    });
     console.log(await client.queries.sendEmail({ 
       name: 'MetalNews Email',
       email: recipient === 'single' ? email : null, 
