@@ -77,8 +77,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   newsItems.forEach(item => {
     htmlContent += `<div style="margin-bottom: 20px;">
-      <h4 style="color: #2c5282;">${item.title}</h4>
-      <div>${item.memo}</div>
+      <h4 style="color: #2c5282; font-size: 18px; margin-bottom: 8px;">${item.title}</h4>
+      <div style="font-size: 14px;">${item.memo}</div>
     </div>`;
     
     textContent += `${item.title}\n${item.memo}\n\n`;
