@@ -56,9 +56,9 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
   
   let htmlContent = '<div style="font-family: Arial, sans-serif;">';
-  // Add logo at the top
+  // Add logo at the top with full width
   htmlContent += `<div style="text-align: center; margin-bottom: 20px;">
-    <img src="${logoUrl}" alt="Metal News Logo" style="max-width: 300px; height: auto;" />
+    <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
   </div>`;
   
   let textContent = 'METAL NEWS\n\n'; // Text version header
