@@ -52,8 +52,16 @@ async function fetchNewsItems(newsIds: string[]): Promise<any[]> {
 }
 
 async function formatEmailContent(newsItems: any[], header?: string): Promise<{ html: string, text: string }> {
+  // Replace this URL with your actual S3 public URL for the logo
+  const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
+  
   let htmlContent = '<div style="font-family: Arial, sans-serif;">';
-  let textContent = '';
+  // Add logo at the top
+  htmlContent += `<div style="text-align: center; margin-bottom: 20px;">
+    <img src="${logoUrl}" alt="Metal News Logo" style="max-width: 300px; height: auto;" />
+  </div>`;
+  
+  let textContent = 'METAL NEWS\n\n'; // Text version header
   
   if (header?.trim()) {
     htmlContent += `<h2>${header}</h2>`;
@@ -77,7 +85,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   newsItems.forEach(item => {
     htmlContent += `<div style="margin-bottom: 20px;">
-      <h4 style="color: #2c5282; font-size: 18px; margin-bottom: 8px;">${item.title}</h4>
+      <h4 style="color: #2c5282; font-size: 20px; margin-bottom: 10px;">${item.title}</h4>
       <div style="font-size: 14px;">${item.memo}</div>
     </div>`;
     
