@@ -68,25 +68,25 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     textContent += `${header}\n\n`;
   }
   
-  // Summary section
-  htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">';
+  // Summary section - title same size as bullet points (12pt)
+  htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt; list-style-type: none; padding-left: 0;">';
   textContent += "概要:\n";
   
   newsItems.forEach(item => {
-    htmlContent += `<li style="margin-bottom: 5px;">${item.title}</li>`;
+    htmlContent += `<li style="margin-bottom: 8px; font-size: 12pt;">${item.title}</li>`;
     textContent += `• ${item.title}\n`;
   });
   
   htmlContent += '</ul>';
   
-  // Details section
+  // Details section - larger title (14pt)
   htmlContent += '<h3>詳細:</h3>';
   textContent += "\n詳細:\n\n";
   
   newsItems.forEach(item => {
-    htmlContent += `<div style="margin-bottom: 14px;">
-      <h4 style="color: #2c5282; font-size: 14px; margin-bottom: 10px;">${item.title}</h4>
-      <div style="font-size: 12px;">${item.memo}</div>
+    htmlContent += `<div style="margin-bottom: 20px;">
+      <div style="color: #2c5282; font-size: 14pt; margin-bottom: 8px;">${item.title}</div>
+      <div style="font-size: 12pt;">${item.memo}</div>
     </div>`;
     
     textContent += `${item.title}\n${item.memo}\n\n`;
