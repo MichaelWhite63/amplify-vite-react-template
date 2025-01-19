@@ -69,11 +69,11 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   }
   
   // Summary section
-  htmlContent += '<h3>概要:</h3><ul>';
+  htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">';
   textContent += "概要:\n";
   
   newsItems.forEach(item => {
-    htmlContent += `<li>${item.title}</li>`;
+    htmlContent += `<li style="margin-bottom: 5px;">${item.title}</li>`;
     textContent += `• ${item.title}\n`;
   });
   
@@ -84,9 +84,9 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   textContent += "\n詳細:\n\n";
   
   newsItems.forEach(item => {
-    htmlContent += `<div style="margin-bottom: 20px;">
-      <h4 style="color: #2c5282; font-size: 20px; margin-bottom: 10px;">${item.title}</h4>
-      <div style="font-size: 14px;">${item.memo}</div>
+    htmlContent += `<div style="margin-bottom: 14px;">
+      <h4 style="color: #2c5282; font-size: 14px; margin-bottom: 10px;">${item.title}</h4>
+      <div style="font-size: 12px;">${item.memo}</div>
     </div>`;
     
     textContent += `${item.title}\n${item.memo}\n\n`;
