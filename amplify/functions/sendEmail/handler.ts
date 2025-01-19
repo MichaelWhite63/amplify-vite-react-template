@@ -68,8 +68,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     textContent += `${header}\n\n`;
   }
   
-  // Summary section - title same size as bullet points (12pt)
-  htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt; list-style-type: none; padding-left: 0;">';
+  // Summary section with bullet points restored
+  htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">';
   textContent += "概要:\n";
   
   newsItems.forEach(item => {
