@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body, html, #root {
   margin: 0;
   padding: 0;
@@ -16,7 +22,7 @@ body {
 }
 
 #root {
-  padding-top: 64px; /* Adjust this value as needed to match the height of the AppBar */
+  padding-top: 14px; /* Adjust this value as needed to match the height of the AppBar */
 }
 
 main {

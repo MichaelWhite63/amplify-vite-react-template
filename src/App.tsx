@@ -20,6 +20,9 @@ import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel
 import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Detail from './Detail';
+
 interface News {
   id: number;
   title: string;
@@ -374,7 +377,14 @@ const App: React.FC = () => {
     </main>
   );
 
-  return renderFormScreen();
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={renderFormScreen()} />
+        <Route path="/detail/:id" element={<Detail />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
