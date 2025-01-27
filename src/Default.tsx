@@ -162,7 +162,6 @@ const Default: React.FC = () => {
   // Helper component for news display
   const NewsColumn = ({ title, news, isAuthenticated }: { title: string, news: NewsItem[], isAuthenticated: boolean }) => {
     const navigate = useNavigate();
-    const isAuth = isAuthenticated;
     
     return (
       <Grid size={3}>
