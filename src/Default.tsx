@@ -18,7 +18,7 @@ interface NewsItem {
 }
 
 const Default: React.FC = () => {
-  const navigate = useNavigate();
+//  const navigate = useNavigate();
   const [steelNews, setSteelNews] = useState<NewsItem[]>([]);
   const [autoNews, setAutoNews] = useState<NewsItem[]>([]);
   const [aluminumNews, setAluminumNews] = useState<NewsItem[]>([]);
@@ -81,8 +81,8 @@ const Default: React.FC = () => {
           .map(item => ({
             Order: item.Order ?? 0,
             Title: item.Title ?? '',
-            ThisWeek: item.ThisWeek ?? 0,
-            LastWeek: item.LastWeek ?? 0,
+            ThisMonth: item.ThisMonth ?? 0,
+            LastMonth: item.LastMonth ?? 0,
             LastYear: item.LastYear ?? 0,
           }))
           .sort((a, b) => a.Order - b.Order);
@@ -162,6 +162,7 @@ const Default: React.FC = () => {
   // Helper component for news display
   const NewsColumn = ({ title, news, isAuthenticated }: { title: string, news: NewsItem[], isAuthenticated: boolean }) => {
     const navigate = useNavigate();
+    const isAuth = isAuthenticated;
     
     return (
       <Grid size={3}>
