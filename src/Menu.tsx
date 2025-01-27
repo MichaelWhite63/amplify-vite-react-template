@@ -8,11 +8,46 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import './index.css';
+import { fetchAuthSession } from '@aws-amplify/auth';
+
+const useUserGroups = () => {
+  const [groups, setGroups] = React.useState<string[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const session = await fetchAuthSession();
+        const cognitoGroups = session.tokens?.accessToken?.payload['cognito:groups'] || [];
+        console.log('Cognito Groups:', cognitoGroups);
+        setGroups(cognitoGroups as string[]);
+      } catch (error) {
+        console.error('Error fetching groups:', error);
+        setGroups([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGroups();
+  }, []);
+
+  return {
+    isInGroup: (groupName: string) => groups.includes(groupName),
+    loading
+  };
+};
 
 const MenuComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { isInGroup, loading } = useUserGroups();
   const navigate = useNavigate();
   const location = useLocation();
+
+  if (loading || !isInGroup('Administrator')) {
+    console.log('Menu Component Returning Null Administrator => ' + isInGroup('Administrator'));
+    return null;
+  }
 
   const getPageTitle = (path: string) => {
     switch (path) {

@@ -52,44 +52,43 @@ async function fetchNewsItems(newsIds: string[]): Promise<any[]> {
 }
 
 async function formatEmailContent(newsItems: any[], header?: string): Promise<{ html: string, text: string }> {
-  // Replace this URL with your actual S3 public URL for the logo
   const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
+  const baseUrl = 'https://main.de7wz8ekh1b3f.amplifyapp.com';
   
   let htmlContent = '<div style="font-family: Arial, sans-serif;">';
-  // Add logo at the top with full width
   htmlContent += `<div style="text-align: center; margin-bottom: 20px;">
     <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
   </div>`;
   
-  let textContent = 'METAL NEWS\n\n'; // Text version header
+  let textContent = 'METAL NEWS\n\n';
   
   if (header?.trim()) {
     htmlContent += `<h2>${header}</h2>`;
     textContent += `${header}\n\n`;
   }
   
-  // Summary section with bullet points restored
   htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">';
   textContent += "概要:\n";
   
   newsItems.forEach(item => {
-    htmlContent += `<li style="margin-bottom: 8px; font-size: 12pt;">${item.title}</li>`;
-    textContent += `• ${item.title}\n`;
+    const fullUrl = `${baseUrl}/detail/${item.id}`;
+    htmlContent += `<li style="margin-bottom: 8px; font-size: 12pt;"><a href="${fullUrl}">${item.title}</a></li>`;
+    textContent += `• ${item.title} (${fullUrl})\n`;
   });
   
   htmlContent += '</ul>';
   
-  // Details section - larger title (14pt)
   htmlContent += '<h3>詳細:</h3>';
   textContent += "\n詳細:\n\n";
   
   newsItems.forEach(item => {
+    const fullUrl = `${baseUrl}/detail/${item.id}`;
     htmlContent += `<div style="margin-bottom: 20px;">
-      <div style="color: #2c5282; font-size: 14pt; margin-bottom: 8px;">${item.title}</div>
+      <div style="color: #2c5282; font-size: 14pt; margin-bottom: 8px;"><a href="${fullUrl}">${item.title}</a></div>
       <div style="font-size: 12pt;">${item.memo}</div>
     </div>`;
     
-    textContent += `${item.title}\n${item.memo}\n\n`;
+    textContent += `${item.title} (${fullUrl})\n${item.memo}\n\n`;
   });
   
   htmlContent += '</div>';
@@ -128,7 +127,11 @@ async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[]
     }
   }
 }
-
+/**
+ * 
+ * @param event 
+ * @returns 
+ */
 export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => {
   const { name, email, type, title, header, selectedNewsIDs } = event.arguments as { name: string, 
     email: string, 
