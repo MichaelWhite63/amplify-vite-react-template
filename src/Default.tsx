@@ -160,7 +160,7 @@ const Default: React.FC = () => {
   }, []);
 
   // Helper component for news display
-  const NewsColumn = ({ title, news, isAuthenticated }: { title: string, news: NewsItem[], isAuthenticated: boolean }) => {
+  const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
     const navigate = useNavigate();
     
     return (
@@ -208,9 +208,9 @@ const Default: React.FC = () => {
       boxShadow: 1
     }}>
       <Grid container spacing={3}>
-        <NewsColumn title="Steel" news={steelNews} isAuthenticated={false} />
-        <NewsColumn title="Auto" news={autoNews} isAuthenticated={false} />
-        <NewsColumn title="Aluminum" news={aluminumNews} isAuthenticated={false} />
+        <NewsColumn title="Steel" news={steelNews} />
+        <NewsColumn title="Auto" news={autoNews} />
+        <NewsColumn title="Aluminum" news={aluminumNews} />
         {/* Authentication Column */}
         <Grid size={3}>
           <Paper sx={{ p: 2, height: '100%' }}>
@@ -267,8 +267,8 @@ const Default: React.FC = () => {
                               {chart2Data.map((row, index) => (
                                 <TableRow key={index}>
                                   <TableCell>{row.Title}</TableCell>
-                                  <TableCell align="right">{row.ThisWeek.toFixed(1)}</TableCell>
-                                  <TableCell align="right">{row.LastWeek.toFixed(1)}</TableCell>
+                                  <TableCell align="right">{row.ThisMonth.toFixed(1)}</TableCell>
+                                  <TableCell align="right">{row.LastMonth.toFixed(1)}</TableCell>
                                   <TableCell align="right">{row.LastYear.toFixed(1)}</TableCell>
                                 </TableRow>
                               ))}
