@@ -18,7 +18,6 @@ interface NewsItem {
 }
 
 const Default: React.FC = () => {
-//  const navigate = useNavigate();
   const [steelNews, setSteelNews] = useState<NewsItem[]>([]);
   const [autoNews, setAutoNews] = useState<NewsItem[]>([]);
   const [aluminumNews, setAluminumNews] = useState<NewsItem[]>([]);

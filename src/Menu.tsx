@@ -9,27 +9,46 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import './index.css';
 import { fetchAuthSession } from '@aws-amplify/auth';
+import { Hub } from 'aws-amplify/utils';
+import { useEffect, useState } from 'react';
 
 const useUserGroups = () => {
-  const [groups, setGroups] = React.useState<string[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [groups, setGroups] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const session = await fetchAuthSession();
-        const cognitoGroups = session.tokens?.accessToken?.payload['cognito:groups'] || [];
-        console.log('Cognito Groups:', cognitoGroups);
-        setGroups(cognitoGroups as string[]);
-      } catch (error) {
-        console.error('Error fetching groups:', error);
-        setGroups([]);
-      } finally {
-        setLoading(false);
+  const fetchGroups = async () => {
+    try {
+      const session = await fetchAuthSession();
+      const cognitoGroups = session.tokens?.accessToken?.payload['cognito:groups'] || [];
+      console.log('Cognito Groups:', cognitoGroups);
+      setGroups(cognitoGroups as string[]);
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+      setGroups([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGroups(); // Initial fetch
+
+    const listener = Hub.listen('auth', ({ payload }) => {
+      switch (payload.event) {
+        case 'signedIn':
+          console.log('User signed in');
+          fetchGroups(); // Fetch groups when user signs in
+          break;
+        case 'signedOut':
+          console.log('User signed out');
+          setGroups([]); // Clear groups when user signs out
+          break;
       }
-    };
+    });
 
-    fetchGroups();
+    return () => {
+      listener(); // Clean up the listener when the component unmounts
+    };
   }, []);
 
   return {
@@ -52,12 +71,12 @@ const MenuComponent: React.FC = () => {
   const getPageTitle = (path: string) => {
     switch (path) {
       case '/': return 'ホーム';  // Updated title
-      case '/admin/news-entry': return 'ニュースの作成';
-      case '/admin/news-search': return 'ニュースの検索';
-      case '/admin/charts': return 'チャートの編集';
-      case '/admin/send-email': return 'ニュースの配信をする';
-      case '/admin/update-users': return 'ユーザーの検索';
-      case '/admin/create-user': return 'ユーザーの作成';
+      case '/news-entry': return 'ニュースの作成';
+      case '/news-search': return 'ニュースの検索';
+      case '/charts': return 'チャートの編集';
+      case '/send-email': return 'ニュースの配信をする';
+      case '/update-users': return 'ユーザーの検索';
+      case '/create-user': return 'ユーザーの作成';
       default: return 'Admin Portal';
     }
   };
@@ -111,12 +130,12 @@ const MenuComponent: React.FC = () => {
         onClose={handleClose}
       >
         <MenuItem onClick={() => handleNavigation('/')} sx={{ color: 'white' }}>ホーム</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/admin/news-entry')} sx={{ color: 'white' }}>ニュースの作成</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/admin/news-search')} sx={{ color: 'white' }}>ニュースの検索</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/admin/send-email')} sx={{ color: 'white' }}>ニュースの配信をする</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/admin/charts')} sx={{ color: 'white' }}>チャートの編集</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/admin/create-user')} sx={{ color: 'white' }}>ユーザーの作成</MenuItem>
-        <MenuItem onClick={() => handleNavigation('/admin/update-users')} sx={{ color: 'white' }}>ユーザーの検索</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/news-entry')} sx={{ color: 'white' }}>ニュースの作成</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/news-search')} sx={{ color: 'white' }}>ニュースの検索</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/send-email')} sx={{ color: 'white' }}>ニュースの配信をする</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'white' }}>チャートの編集</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/create-user')} sx={{ color: 'white' }}>ユーザーの作成</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/update-users')} sx={{ color: 'white' }}>ユーザーの検索</MenuItem>
       </Menu>
     </>
   );

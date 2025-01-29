@@ -85,7 +85,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     const fullUrl = `${baseUrl}/detail/${item.id}`;
     htmlContent += `<div style="margin-bottom: 20px;">
       <div style="color: #2c5282; font-size: 14pt; margin-bottom: 8px;"><a href="${fullUrl}">${item.title}</a></div>
-      <div style="font-size: 12pt;">${item.memo}</div>
+      <div style="font-size: 12pt; font-weight: bold;">${item.memo}</div>
     </div>`;
     
     textContent += `${item.title} (${fullUrl})\n${item.memo}\n\n`;

@@ -77,29 +77,28 @@ const Detail: React.FC = () => {
                 {news.title}
               </Typography>
 
-              <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                {new Date(news.date).toLocaleDateString()}
-              </Typography>
-
               <Box sx={{ mt: 3 }}>
+                <Typography variant="body1" sx={{ mb: 3, fontWeight: 'bold' }}>
+                  <Box 
+                    dangerouslySetInnerHTML={{ __html: news.memo }}
+                  />
+                </Typography>
+
+                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}
+                </Typography>
+
                 <Typography variant="body1" gutterBottom>
                   <strong>Type:</strong> {news.type}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  <strong>Written By:</strong> {news.writtenBy}
+                  <strong>著者:</strong> {news.writtenBy}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   <strong>Source:</strong> {news.source}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   <strong>Header:</strong> {news.header}
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                  <strong>Memo:</strong>
-                  <Box 
-                    sx={{ mt: 1 }}
-                    dangerouslySetInnerHTML={{ __html: news.memo }}
-                  />
                 </Typography>
               </Box>
             </Paper>
