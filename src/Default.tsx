@@ -186,6 +186,7 @@ const Default: React.FC = () => {
               <Typography variant="body2" color="text.secondary">
                 {new Date(item.date).toLocaleDateString()}
               </Typography>
+              <br></br><hr></hr>
             </Box>
           ))}
         </Paper>

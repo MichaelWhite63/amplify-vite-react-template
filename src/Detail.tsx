@@ -22,11 +22,13 @@ interface NewsDetail {
 
 const Detail: React.FC = () => {
   const { id } = useParams();
-
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsDetail | null>(null);
+  const [hasHistory, setHasHistory] = useState(false);
 
   useEffect(() => {
+    setHasHistory(window.history.length > 1);
+
     const fetchNewsDetail = async () => {
       if (!id) return;
       
@@ -65,13 +67,15 @@ const Detail: React.FC = () => {
         return (
           <Box sx={{ p: 3, maxWidth: '800px', margin: '20px auto' }}>
             <Paper elevation={3} sx={{ p: 4 }}>
-              <Button 
-                variant="outlined" 
-                onClick={() => navigate(-1)} 
-                sx={{ mb: 2 }}
-              >
-                Back
-              </Button>
+              {hasHistory && (
+                <Button 
+                  variant="outlined" 
+                  onClick={() => navigate(-1)} 
+                  sx={{ mb: 2 }}
+                >
+                  Back
+                </Button>
+              )}
 
               <Typography variant="h4" gutterBottom>
                 {news.title}
