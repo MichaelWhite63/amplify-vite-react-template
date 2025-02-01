@@ -4,7 +4,6 @@ import { DynamoDB } from 'aws-sdk';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
-
 const getTopTen = async (type: 'Steel' | 'Auto' | 'Aluminum', count: integer) => {
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
