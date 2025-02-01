@@ -54,9 +54,9 @@ const Default: React.FC = () => {
         });
 
         // Map and set the news data
-        setSteelNews(mapNewsResponse(steelData));
-        setAutoNews(mapNewsResponse(autoResponse.data));
-        setAluminumNews(mapNewsResponse(aluminumResponse.data));
+        setSteelNews(mapNewsResponse(Array.isArray(steelResponse.data) ? steelResponse.data : []));
+        setAutoNews(mapNewsResponse(autoResponse.data ?? []));
+        setAluminumNews(mapNewsResponse(aluminumResponse.data ?? []));
 
         // Fetch Chart1 data
         const chart1Response = await client.models.Chart1.list();
