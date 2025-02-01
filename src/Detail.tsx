@@ -7,6 +7,7 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 
 const client = generateClient<Schema>();
+const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
 
 interface NewsDetail {
   id: string;
@@ -65,48 +66,69 @@ const Detail: React.FC = () => {
         }
 
         return (
-          <Box sx={{ p: 3, maxWidth: '800px', margin: '20px auto' }}>
-            <Paper elevation={3} sx={{ p: 4 }}>
-              {hasHistory && (
-                <Button 
-                  variant="outlined" 
-                  onClick={() => navigate(-1)} 
-                  sx={{ mb: 2 }}
-                >
-                  Back
-                </Button>
-              )}
+          <>
+            <div style={{ 
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              margin: 0,
+              padding: 0,
+              backgroundColor: '#191970',
+              height: '65px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              <div style={{ width: '950px', margin: '0 auto' }}>
+                <img 
+                  src={logoUrl} 
+                  alt="Metal News Logo" 
+                  style={{ 
+                    display: 'block',
+                    backgroundColor: 'white',
+                    height: '65px'
+                  }} 
+                />
+              </div>
+            </div>
 
-              <Typography variant="h4" gutterBottom>
-                {news.title}
-              </Typography>
+            <Box sx={{ p: 3, maxWidth: '800px', margin: '20px auto' }}>
+              <Paper elevation={3} sx={{ p: 4 }}>
+                {hasHistory && (
+                  <Button 
+                    variant="outlined" 
+                    onClick={() => navigate(-1)} 
+                    sx={{ mb: 2 }}
+                  >
+                    Back
+                  </Button>
+                )}
 
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="body1" sx={{ mb: 3, fontWeight: 'bold' }}>
-                  <Box 
-                    dangerouslySetInnerHTML={{ __html: news.memo }}
-                  />
+                <Typography variant="h4" gutterBottom>
+                  {news.title}
                 </Typography>
 
-                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}
-                </Typography>
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="body1" sx={{ mb: 3, fontWeight: 'bold' }}>
+                    <Box 
+                      dangerouslySetInnerHTML={{ __html: news.memo }}
+                    />
+                  </Typography>
 
-                <Typography variant="body1" gutterBottom>
-                  <strong>Type:</strong> {news.type}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  <strong>著者:</strong> {news.writtenBy}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  <strong>Source:</strong> {news.source}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  <strong>Header:</strong> {news.header}
-                </Typography>
-              </Box>
-            </Paper>
-          </Box>
+                  <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                  <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>カテゴリー:</strong> {news.type}
+                  </Typography>
+                  <Typography variant="body1" gutterBottom>
+                    <strong>著者:</strong> {news.writtenBy}
+                  </Typography>
+                </Box>
+              </Paper>
+            </Box>
+          </>
         );
       }}
     </Authenticator>

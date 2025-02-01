@@ -3,6 +3,7 @@ import { sayHello }   from "../functions/say-hello/resource"
 import { sendEmail }  from "../functions/sendEmail/resource"
 import { newsSearch } from "../functions/newsSearch/resource";
 import { getUnpublished } from "../functions/get-unpublished/resource";
+import { getTopTen } from "../functions/get-TopTen/resource";
 import { searchUsers } from "../functions/search-users/resource";
 import { getUser } from "../functions/get-user/resource";
 import { updateUser } from "../functions/update-user/resource";
@@ -61,6 +62,17 @@ const schema = a.schema({
     .handler(a.handler.function(getUnpublished))
     .authorization((allow) => [allow.publicApiKey()]),
   
+  getTopTen: a
+    .query()
+    .arguments({
+      type: a.enum(['Steel', 'Auto', 'Aluminum']),
+      count: a.integer(),  // Add the number of rows to return
+    })
+    .returns(a.string())
+    .handler(a.handler.function(getTopTen))
+    .authorization((allow) => [allow.publicApiKey()]),
+  
+
   sayHello: a
     .query()
     .arguments({
@@ -118,7 +130,11 @@ const schema = a.schema({
       published: a.boolean(),
       newField: a.boolean(),
       type: a.enum(['Steel', 'Auto', 'Aluminum']),
-  })
+  }).secondaryIndexes((index) => [
+    index('type')
+      .sortKeys(['date'])
+      .queryField('listNewsByTypeAndDate')
+  ])
     .authorization((allow) => [allow.publicApiKey()]),
 
   NewsGroup: a

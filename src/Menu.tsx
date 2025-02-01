@@ -77,6 +77,7 @@ const MenuComponent: React.FC = () => {
       case '/send-email': return 'ニュースの配信をする';
       case '/update-users': return 'ユーザーの検索';
       case '/create-user': return 'ユーザーの作成';
+      case '/privacy-policy': return 'プライバシーポリシー';
       default: return 'Admin Portal';
     }
   };
@@ -136,6 +137,7 @@ const MenuComponent: React.FC = () => {
         <MenuItem onClick={() => handleNavigation('/charts')} sx={{ color: 'white' }}>チャートの編集</MenuItem>
         <MenuItem onClick={() => handleNavigation('/create-user')} sx={{ color: 'white' }}>ユーザーの作成</MenuItem>
         <MenuItem onClick={() => handleNavigation('/update-users')} sx={{ color: 'white' }}>ユーザーの検索</MenuItem>
+        <MenuItem onClick={() => handleNavigation('/privacy-policy')} sx={{ color: 'white' }}>プライバシーポリシー</MenuItem>
       </Menu>
     </>
   );

@@ -10,6 +10,7 @@ import NewsSearch from './newsSearch';
 import UpdateUser from './UpdateUser';
 import CreateUser from './CreateUser';
 import Detail from './Detail';
+import PrivacyPolicy from './PrivacyPolicy';
 
 const AppRouter: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const AppRouter: React.FC = () => {
           <Route path="/news-search" element={<NewsSearch />} />
           <Route path="/update-users" element={<UpdateUser />} />
           <Route path="/create-user" element={<CreateUser />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Routes>
       </Box>
     </>

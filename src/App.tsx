@@ -1,27 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CSSProperties } from 'react';
-
-import { useAuthenticator } from '@aws-amplify/ui-react';
+//import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from 'aws-amplify/data';
 import { Schema } from '../amplify/data/resource';
-
-//import ReactQuill from 'react-quill';
-//import 'react-quill/dist/quill.snow.css';
-
 import { Editor } from '@tinymce/tinymce-react';
-
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
-Amplify.configure(outputs);
-
-const client = generateClient<Schema>();
-
 import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Detail from './Detail';
+Amplify.configure(outputs);
+const client = generateClient<Schema>();
 
 interface News {
   id: number;
@@ -54,34 +44,13 @@ interface NewsForm {
   type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
 }
 
-/* Top of React Quill component
-
-const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-    ['link', 'image'],
-    ['clean']
-  ],
-};
-
-const formats = [
-  'header',
-  'bold', 'italic', 'underline', 'strike', 'blockquote',
-  'list', 'bullet', 'indent',
-  'link', 'image'
-];
-// Bottom of React Quill component
-*/
-
 const App: React.FC = () => {
   const getTomorrowDate = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow.toISOString().split('T')[0];
   };
-  
+  console.log('1) getTomorrowDate:', getTomorrowDate());
   const [newsForm, setNewsForm] = useState<NewsForm>({
     title: '',
     group: 1,
@@ -98,7 +67,7 @@ const App: React.FC = () => {
   });
 
   const [newsItems, setNewsItems] = useState<News[]>([]);
-  const { signOut } = useAuthenticator();
+//  const { signOut } = useAuthenticator();
   const [formWidth, setFormWidth] = useState('80%');
   const editorRef   = useRef<Editor | null>(null);
 
@@ -237,17 +206,7 @@ const App: React.FC = () => {
     height: '100vh',
     overflowY: 'auto'
   };
-/*
-  const newsItemStyle = {
-    borderBottom: '1px solid #ccc',
-    padding: '10px 0',
-  };
 
-  const newsItemHeaderStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-  };
-*/
   const renderFormScreen = () => (
     <main style={mainStyle}>
       <form onSubmit={submitNewsForm} style={formStyle}>
@@ -338,6 +297,7 @@ const App: React.FC = () => {
             </Grid>
           </Box>
 
+
           <FormControl fullWidth style={{ marginBottom: '40px' }}>
             <FormLabel>本文</FormLabel>
             <Editor
@@ -365,54 +325,17 @@ const App: React.FC = () => {
           />
           </FormControl>
     
+
           <Button type="submit" variant="contained" color="primary">
             Submit
           </Button>
         </Box>
       </form>
 
-      <Button onClick={signOut} variant="contained" color="primary">
-        Sign out
-      </Button>
     </main>
   );
 
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={renderFormScreen()} />
-        <Route path="/detail/:id" element={<Detail />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  return renderFormScreen();
 };
 
 export default App;
-/*Lower section that displayed the news
-
-      <section>
-        <h2>News Items</h2>
-        <ul style={{ listStyleType: 'none', padding: 0 }}>
-          {newsItems.map((news) => (
-            <li key={news.id} style={newsItemStyle}>
-              <div style={newsItemHeaderStyle}>
-                <div>
-                  <h3>{news.title}</h3>
-                  <p><strong>Group:</strong> {news.group}</p>
-                  <p><strong>Written by:</strong> {news.writtenBy}</p>
-                  <p><strong>Type:</strong> {news.type}</p>
-                </div>
-                <div>
-                  <p><strong>Date:</strong> {new Date(news.date).toLocaleDateString()}</p>
-                  <p><strong>Last Date:</strong> {new Date(news.lDate).toLocaleDateString()}</p>
-                  <p><strong>Source:</strong> {news.source}</p>
-                </div>
-              </div>
-              <p><strong>Memo:</strong> <div dangerouslySetInnerHTML={{ __html: news.memo }} /></p>
-              <p><strong>Header:</strong> {news.header}</p>
-              <p><strong>Published:</strong> {news.published ? 'Yes' : 'No'}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-*/
