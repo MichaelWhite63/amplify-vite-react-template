@@ -9,6 +9,7 @@ import { getUser }     from './functions/get-user/resource';
 import { searchUsers } from './functions/search-users/resource';
 import { updateUser } from './functions/update-user/resource';
 import { createUser } from './functions/create-user/resource';
+import { getTopTen } from "./functions/get-TopTen/resource";
 
 defineBackend({
   auth,
@@ -20,5 +21,6 @@ defineBackend({
   getUser,
   searchUsers,
   updateUser,
-  createUser
+  createUser,
+  getTopTen
 });
