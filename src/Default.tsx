@@ -33,13 +33,9 @@ const Default: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch Steel News
-        const steelResponse = await client.models.News.list({
-          filter: {
-            type: { eq: 'Steel' },
-          },
-        }); 
-              
+        // Fetch Steel News using getTopTen
+        const steelResponse = await client.queries.getTopTen({ type: 'Steel', count: 10 });
+        console.log('Steel News:', steelResponse);
         // Fetch Auto News
         const autoResponse = await client.models.News.list({
           limit: 10,
@@ -58,7 +54,7 @@ const Default: React.FC = () => {
         });
 
         // Map and set the news data
-        setSteelNews(mapNewsResponse(steelResponse.data));
+        setSteelNews(mapNewsResponse(steelData));
         setAutoNews(mapNewsResponse(autoResponse.data));
         setAluminumNews(mapNewsResponse(aluminumResponse.data));
 
