@@ -72,7 +72,6 @@ const schema = a.schema({
     .handler(a.handler.function(getTopTen))
     .authorization((allow) => [allow.publicApiKey()]),
   
-
   sayHello: a
     .query()
     .arguments({

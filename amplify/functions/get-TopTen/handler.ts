@@ -4,7 +4,7 @@ import { DynamoDB } from 'aws-sdk';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
-const getTopTen = async (type: 'Steel' | 'Auto' | 'Aluminum', count: integer) => {
+const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: number) => {
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
     FilterExpression: '#type = :type',
@@ -25,11 +25,12 @@ const getTopTen = async (type: 'Steel' | 'Auto' | 'Aluminum', count: integer) =>
   return sortedItems || [];
 };
 
-export const handler: Schema["get-TopTen"]["functionHandler"] = async (event) => {
-  const { type, count } = event.arguments as { type: 'Steel' | 'Auto' | 'Aluminum', count: integer };
+export const handler: Schema["getTopTen"]["functionHandler"] = async (event) => {
+  const { type, count = 10 } = event.arguments as { type: 'Steel' | 'Auto' | 'Aluminum', count: integer };
+  const actualCount = count ?? 10;
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
-    const topTen = await getTopTen(type, count);
+    const topTen = await getTopTenArticles(type, actualCount);
     return JSON.stringify(topTen);
   } else {
     throw new Error(`Invalid type: ${type}`);
