@@ -6,6 +6,8 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
@@ -20,6 +22,8 @@ interface NewsItem {
 
 const Default: React.FC = () => {
   const navigate = useNavigate();
+  const [firstSteelItem, setFirstSteelItem] = useState<{title: string, id: string, date: string}>({ title: '', id: '', date: '' });
+  const [firstAutoItem, setFirstAutoItem] = useState<{title: string, id: string, date: string}>({ title: '', id: '', date: '' });
   const [steelNews, setSteelNews] = useState<NewsItem[]>([]);
   const [autoNews, setAutoNews] = useState<NewsItem[]>([]);
   const [aluminumNews, setAluminumNews] = useState<NewsItem[]>([]);
@@ -29,13 +33,31 @@ const Default: React.FC = () => {
   const [chart4Data, setChart4Data] = useState<any[]>([]);
   const [chart5Data, setChart5Data] = useState<any[]>([]);
   const [chart6Data, setChart6Data] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch Steel News using getTopTen
-        const steelResponse = await client.queries.getTopTen({ type: 'Steel', count: 10 });
-        console.log('Steel News:', steelResponse);
+        const steelTopTen = await client.queries.getTopTen({ type: 'Steel', count: 10 });
+        const parsedSteelData = JSON.parse(steelTopTen.data as string);
+        setFirstSteelItem({
+          title: parsedSteelData[0]?.title || 'Loading...',
+          id: parsedSteelData[0]?.id || '',
+          date: parsedSteelData[0]?.date || ''
+        });
+
+        const autoTopTen = await client.queries.getTopTen({ type: 'Auto', count: 10 });
+        const parsedAutoData = JSON.parse(autoTopTen.data as string);
+        setFirstAutoItem({
+          title: parsedAutoData[0]?.title || 'Loading...',
+          id: parsedAutoData[0]?.id || '',
+          date: parsedAutoData[0]?.date || ''
+        });
+
+        const aluminumTopTen = await client.queries.getTopTen({ type: 'Aluminum', count: 10 });
+
+        /*
         // Fetch Auto News
         const autoResponse = await client.models.News.list({
           limit: 10,
@@ -52,11 +74,11 @@ const Default: React.FC = () => {
             published: { eq: true }
           },
         });
-
+*/
         // Map and set the news data
-        setSteelNews(mapNewsResponse(Array.isArray(steelResponse.data) ? steelResponse.data : []));
-        setAutoNews(mapNewsResponse(autoResponse.data ?? []));
-        setAluminumNews(mapNewsResponse(aluminumResponse.data ?? []));
+        setSteelNews(mapNewsResponse(JSON.parse(steelTopTen.data as string)));
+        setAutoNews(mapNewsResponse(JSON.parse(autoTopTen.data as string)));
+        setAluminumNews(mapNewsResponse(JSON.parse(aluminumTopTen.data as string)));
 
         // Fetch Chart1 data
         const chart1Response = await client.models.Chart1.list();
@@ -232,9 +254,79 @@ const Default: React.FC = () => {
         boxShadow: 1
       }}>
         <Grid container spacing={3}>
+          <Grid size={9}>
+            <Box sx={{
+              p: 2,
+              mb: 2,
+              backgroundColor: 'white',
+              borderRadius: '4px',
+              boxShadow: 1,
+              textAlign: 'left'  // Changed from 'center' to 'left'
+            }}>
+              <Typography 
+                variant="h6"
+                onClick={() => navigate(`/detail/${firstSteelItem.id}`)}
+                sx={{ 
+                  cursor: 'pointer',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                    color: 'primary.main'
+                  }
+                }}
+              >
+                {firstSteelItem.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {new Date(firstSteelItem.date).toLocaleDateString()}
+              </Typography>
+              <Typography 
+                variant="h6"
+                onClick={() => navigate(`/detail/${firstAutoItem.id}`)}
+                sx={{ 
+                  cursor: 'pointer',
+                  mt: 2,
+                  '&:hover': {
+                    textDecoration: 'underline',
+                    color: 'primary.main'
+                  }
+                }}
+              >
+                {firstAutoItem.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {new Date(firstAutoItem.date).toLocaleDateString()}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid size={3}>
+            <div style={{ 
+              padding: '20px',
+              backgroundColor: 'white',
+              borderRadius: '4px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.12)'
+            }}>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date: Date) => setSelectedDate(date)}
+                dateFormat="yyyy/MM/dd"
+                customInput={
+                  <input
+                    style={{
+                      padding: '8px',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                      width: '100%',
+                      fontSize: '16px'
+                    }}
+                  />
+                }
+              />
+            </div>
+          </Grid>
           <NewsColumn title="鉄鋼" news={steelNews} />
           <NewsColumn title="自動車" news={autoNews} />
           <NewsColumn title="アルミ" news={aluminumNews} />
+  
           {/* Authentication Column */}
           <Grid size={3}>
             <Paper sx={{ p: 2, height: '100%' }}>
