@@ -307,7 +307,7 @@ const Default: React.FC = () => {
             }}>
               <DatePicker
                 selected={selectedDate}
-                onChange={(date: Date) => setSelectedDate(date)}
+                onChange={(date: Date | null) => date && setSelectedDate(date)}
                 dateFormat="yyyy/MM/dd"
                 customInput={
                   <input
