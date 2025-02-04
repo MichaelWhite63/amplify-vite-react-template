@@ -8,6 +8,7 @@ import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DOMPurify from 'dompurify';
+import { useNavigate } from 'react-router-dom';
 
 const client = generateClient<Schema>();
 
@@ -27,7 +28,7 @@ interface NewsItem {
   title:  string | null;
   group: number | null;
   writtenBy: string | null;
-  date: string | number | Date;
+  date: string | null;
   lDate: string | null;
   source: string | null;
   memo: string | null;
@@ -64,6 +65,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const Archive: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [newsType, setNewsType] = useState('Steel');
   const [archiveResults, setArchiveResults] = useState<NewsItem[]>([]);
@@ -347,7 +349,7 @@ const Archive: React.FC = () => {
                           variant="body2" 
                           color="text.secondary"
                         >
-                          {new Date(item.date).toLocaleDateString()} - {item.type}
+                          {item.date} - {item.type}
                         </Typography>
                       </Box>
                     </AccordionSummary>
@@ -374,8 +376,30 @@ const Archive: React.FC = () => {
           </Paper>
         </Grid>
       </Box>
+      <Box sx={{ 
+        width: '100%', 
+        textAlign: 'center', 
+        mt: 2, 
+        mb: 2 
+      }}>
+        <Typography 
+          variant="body2" 
+          component="span" 
+          onClick={() => navigate('/')}
+          sx={{ 
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline',
+              color: 'primary.main'
+            }
+          }}
+        >
+          ホームに戻る
+        </Typography>
+      </Box>
     </>
   );
 };
 
 export default Archive;
+//        Line 352{new Date(item.date).toLocaleDateString()} - {item.type}
