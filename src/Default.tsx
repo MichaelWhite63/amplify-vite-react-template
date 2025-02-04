@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Typography, Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useNavigate } from 'react-router-dom';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
@@ -33,7 +31,6 @@ const Default: React.FC = () => {
   const [chart4Data, setChart4Data] = useState<any[]>([]);
   const [chart5Data, setChart5Data] = useState<any[]>([]);
   const [chart6Data, setChart6Data] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,24 +54,6 @@ const Default: React.FC = () => {
 
         const aluminumTopTen = await client.queries.getTopTen({ type: 'Aluminum', count: 10 });
 
-        /*
-        // Fetch Auto News
-        const autoResponse = await client.models.News.list({
-          limit: 10,
-          filter: {
-            type: { eq: 'Auto' },
-            published: { eq: true },
-          },
-        });
-
-        // Fetch Aluminum News
-        const aluminumResponse = await client.models.News.list({
-          filter: {
-            type: { eq: 'Aluminum' },
-            published: { eq: true }
-          },
-        });
-*/
         // Map and set the news data
         setSteelNews(mapNewsResponse(JSON.parse(steelTopTen.data as string)));
         setAutoNews(mapNewsResponse(JSON.parse(autoTopTen.data as string)));
@@ -177,6 +156,11 @@ const Default: React.FC = () => {
 
     fetchData();
   }, []);
+
+  const handleArchiveClick = () => {
+    // You can implement archive functionality here
+    navigate('/archive');
+  };
 
   // Helper component for news display
   const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
@@ -299,29 +283,28 @@ const Default: React.FC = () => {
             </Box>
           </Grid>
           <Grid size={3}>
-            <div style={{ 
-              padding: '20px',
-              backgroundColor: 'white',
-              borderRadius: '4px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.12)'
+            <Paper sx={{ 
+              p: 2, 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center',
+              height: '100%'
             }}>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date: Date | null) => date && setSelectedDate(date)}
-                dateFormat="yyyy/MM/dd"
-                customInput={
-                  <input
-                    style={{
-                      padding: '8px',
-                      border: '1px solid #ccc',
-                      borderRadius: '4px',
-                      width: '100%',
-                      fontSize: '16px'
-                    }}
-                  />
-                }
-              />
-            </div>
+              <Button
+                variant="contained"
+                onClick={handleArchiveClick}
+                sx={{
+                  backgroundColor: '#191970',
+                  fontSize: '1rem',
+                  padding: '10px 20px',
+                  '&:hover': {
+                    backgroundColor: '#1e1e90'
+                  }
+                }}
+              >
+                アーカイブ
+              </Button>
+            </Paper>
           </Grid>
           <NewsColumn title="鉄鋼" news={steelNews} />
           <NewsColumn title="自動車" news={autoNews} />

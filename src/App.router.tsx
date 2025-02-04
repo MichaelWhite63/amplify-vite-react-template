@@ -11,6 +11,7 @@ import UpdateUser from './UpdateUser';
 import CreateUser from './CreateUser';
 import Detail from './Detail';
 import PrivacyPolicy from './PrivacyPolicy';
+import Archive from './Archive';
 
 const AppRouter: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ const AppRouter: React.FC = () => {
           <Route path="/update-users" element={<UpdateUser />} />
           <Route path="/create-user" element={<CreateUser />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/archive" element={<Archive />} />
         </Routes>
       </Box>
     </>
