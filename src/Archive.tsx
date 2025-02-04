@@ -23,10 +23,11 @@ interface NewsItem {
 }
 */
 interface NewsItem {
+  id: string | null;
   title:  string | null;
   group: number | null;
   writtenBy: string | null;
-  date: string | null;
+  date: string | number | Date;
   lDate: string | null;
   source: string | null;
   memo: string | null;
@@ -125,7 +126,7 @@ const Archive: React.FC = () => {
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    console.log('Tab changed to:', newValue);
+    console.log('Tab changed to:', newValue, event);
     // Reset all states when changing tabs
     setSelectedDate(new Date());
     setKeyword('');
