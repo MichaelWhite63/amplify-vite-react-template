@@ -12,7 +12,7 @@ import DOMPurify from 'dompurify';
 const client = generateClient<Schema>();
 
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
-
+/*
 interface NewsItem {
   id: string;
   title: string;
@@ -20,6 +20,21 @@ interface NewsItem {
   type: 'Steel' | 'Auto' | 'Aluminum';
   published: boolean;
   memo?: string; // Add memo field
+}
+*/
+interface NewsItem {
+  title:  string | null;
+  group: number | null;
+  writtenBy: string | null;
+  date: string | null;
+  lDate: string | null;
+  source: string | null;
+  memo: string | null;
+  ord: number | null;
+  rank: number | null;
+  header: string | null;
+  published: boolean | null;
+  type: 'Steel' | 'Auto' | 'Aluminum' | null;
 }
 
 interface TabPanelProps {
@@ -67,8 +82,6 @@ const Archive: React.FC = () => {
             title: { contains: keyword.trim() }
           }
         });
-        console.log('Searching news: Keyword .<'+ keyword.trim() +'>.');  
-        console.log(response.data);
         setArchiveResults(response.data);
       } else {
         // If no keyword, search by type and date
@@ -78,8 +91,6 @@ const Archive: React.FC = () => {
             date: { eq: formattedDate }
           }
         });
-        console.log('Searching news: Date .<'+ formattedDate +'>.');
-        console.log(response.data);
         setArchiveResults(response.data);
       }
     } catch (error) {
