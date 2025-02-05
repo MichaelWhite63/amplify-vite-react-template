@@ -81,7 +81,7 @@ const Archive: React.FC = () => {
         // If keyword exists, search by type and keyword
         const response = await client.models.News.list({
           filter: {
-            type: { eq: newsType },
+//            type: { eq: newsType },
             title: { contains: keyword.trim() }
           }
         });
