@@ -19,7 +19,7 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   
   // Sort by date descending and limit to count
   const sortedItems = result.Items?.sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   ).slice(0, count);
   
   return sortedItems || [];

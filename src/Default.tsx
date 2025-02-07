@@ -21,7 +21,7 @@ interface NewsItem {
 const Default: React.FC = () => {
   const navigate = useNavigate();
   const [firstSteelItem, setFirstSteelItem] = useState<{title: string, id: string, date: string}>({ title: '', id: '', date: '01/01/01' });
-  const [firstAutoItem, setFirstAutoItem] = useState<{title: string, id: string, date: string}>({ title: '', id: '', date: '01/10/01' });
+  const [firstAutoItem, setFirstAutoItem] = useState<{title: string, id: string, date: string}>({ title: '', id: '', date: '01/01/01' });
   const [steelNews, setSteelNews] = useState<NewsItem[]>([]);
   const [autoNews, setAutoNews] = useState<NewsItem[]>([]);
   const [aluminumNews, setAluminumNews] = useState<NewsItem[]>([]);
@@ -41,7 +41,7 @@ const Default: React.FC = () => {
         setFirstSteelItem({
           title: parsedSteelData[0]?.title || 'Loading...',
           id: parsedSteelData[0]?.id || '',
-          date: parsedSteelData[0]?.date || '12/12/01'
+          date: parsedSteelData[0]?.date || '01/01/1900'
         });
 
         const autoTopTen = await client.queries.getTopTen({ type: 'Auto', count: 10 });
@@ -49,7 +49,7 @@ const Default: React.FC = () => {
         setFirstAutoItem({
           title: parsedAutoData[0]?.title || 'Loading...',
           id: parsedAutoData[0]?.id || '',
-          date: parsedAutoData[0]?.date || '12/12/01'
+          date: parsedAutoData[0]?.date || '01/01/1900'
         });
 
         const aluminumTopTen = await client.queries.getTopTen({ type: 'Aluminum', count: 10 });
@@ -178,9 +178,13 @@ const Default: React.FC = () => {
                 variant="subtitle1" 
                 sx={{ 
                   cursor: 'pointer',
+                  color: '#0000EE', // Standard hyperlink blue color
+                  textDecoration: 'underline',
                   '&:hover': {
-                    textDecoration: 'underline',
-                    color: 'primary.main'
+                    color: '#551A8B' // Visited link color on hover
+                  },
+                  '&:active': {
+                    color: '#FF0000' // Active link color
                   }
                 }}
                 onClick={() => navigate(`/detail/${item.id}`)}
@@ -252,6 +256,7 @@ const Default: React.FC = () => {
                 onClick={() => navigate(`/detail/${firstSteelItem.id}`)}
                 sx={{ 
                   cursor: 'pointer',
+                  fontWeight: 'bold', // Add this line
                   '&:hover': {
                     textDecoration: 'underline',
                     color: 'primary.main'
@@ -261,7 +266,7 @@ const Default: React.FC = () => {
                 {firstSteelItem.title}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {new Date(firstSteelItem.date).toLocaleDateString()}
+              {new Date(firstSteelItem.date).toLocaleDateString()}
               </Typography>
               <Typography 
                 variant="h6"
@@ -269,6 +274,7 @@ const Default: React.FC = () => {
                 sx={{ 
                   cursor: 'pointer',
                   mt: 2,
+                  fontWeight: 'bold', // Add this line
                   '&:hover': {
                     textDecoration: 'underline',
                     color: 'primary.main'
