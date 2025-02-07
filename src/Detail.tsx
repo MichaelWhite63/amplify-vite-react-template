@@ -110,7 +110,7 @@ const Detail: React.FC = () => {
                 </Typography>
 
                 <Box sx={{ mt: 3 }}>
-                  <Typography variant="body1" sx={{ mb: 3, fontWeight: 'bold', fontSize: '1.2rem' }}>
+                  <Typography variant="body1" sx={{ mb: 3, fontWeight: 'bold', fontSize: '1.5rem' }}>
                     <Box 
                       dangerouslySetInnerHTML={{ __html: news.memo }}
                     />
