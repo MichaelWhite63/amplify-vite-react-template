@@ -18,10 +18,53 @@ interface NewsItem {
   published: boolean;
 }
 
+interface FirstItem {
+  title: string;
+  id: string;
+  date: string;
+  memo: string;
+  type: string;
+  source: string;
+}
+
+// Helper function to truncate HTML content - add this before the Default component
+const truncateHtml = (html: string, maxLength: number) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const text = div.textContent || div.innerText || '';
+  if (text.length <= maxLength) return html;
+  return text.substring(0, maxLength) + '...';
+};
+
+// First, add a date formatting helper function at the top of the file with other helpers
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('ja-JP', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
 const Default: React.FC = () => {
   const navigate = useNavigate();
-  const [firstSteelItem, setFirstSteelItem] = useState<{title: string, id: string, date: string}>({ title: '', id: '', date: '01/01/01' });
-  const [firstAutoItem, setFirstAutoItem] = useState<{title: string, id: string, date: string}>({ title: '', id: '', date: '01/01/01' });
+  const [firstSteelItem, setFirstSteelItem] = useState<FirstItem>({
+    title: '',
+    id: '',
+    date: '01/01/01',
+    memo: '',
+    type: '',
+    source: ''
+  });
+  const [firstAutoItem, setFirstAutoItem] = useState<FirstItem>({
+    title: '',
+    id: '',
+    date: '01/01/01',
+    memo: '',
+    type: '',
+    source: ''
+  });
   const [steelNews, setSteelNews] = useState<NewsItem[]>([]);
   const [autoNews, setAutoNews] = useState<NewsItem[]>([]);
   const [aluminumNews, setAluminumNews] = useState<NewsItem[]>([]);
@@ -41,7 +84,10 @@ const Default: React.FC = () => {
         setFirstSteelItem({
           title: parsedSteelData[0]?.title || 'Loading...',
           id: parsedSteelData[0]?.id || '',
-          date: parsedSteelData[0]?.date || '01/01/1900'
+          date: parsedSteelData[0]?.date || '01/01/1900',
+          memo: parsedSteelData[0]?.memo || '',
+          type: parsedSteelData[0]?.type || 'Steel',
+          source: parsedSteelData[0]?.source || ''
         });
 
         const autoTopTen = await client.queries.getTopTen({ type: 'Auto', count: 10 });
@@ -49,7 +95,10 @@ const Default: React.FC = () => {
         setFirstAutoItem({
           title: parsedAutoData[0]?.title || 'Loading...',
           id: parsedAutoData[0]?.id || '',
-          date: parsedAutoData[0]?.date || '01/01/1900'
+          date: parsedAutoData[0]?.date || '01/01/1900',
+          memo: parsedAutoData[0]?.memo || '',
+          type: parsedAutoData[0]?.type || 'Auto',
+          source: parsedAutoData[0]?.source || ''
         });
 
         const aluminumTopTen = await client.queries.getTopTen({ type: 'Aluminum', count: 10 });
@@ -249,43 +298,80 @@ const Default: React.FC = () => {
               backgroundColor: 'white',
               borderRadius: '4px',
               boxShadow: 1,
-              textAlign: 'left'  // Changed from 'center' to 'left'
+              textAlign: 'left'
             }}>
+              {/* Steel News */}
               <Typography 
                 variant="h6"
                 onClick={() => navigate(`/detail/${firstSteelItem.id}`)}
                 sx={{ 
                   cursor: 'pointer',
-                  fontWeight: 'bold', // Add this line
+                  fontWeight: 'bold',
+                  color: '#0000EE', // Standard hyperlink blue color
                   '&:hover': {
                     textDecoration: 'underline',
                     color: 'primary.main'
                   }
                 }}
               >
-                {firstSteelItem.title}
+                最新 鉄鋼: {firstSteelItem.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-              {new Date(firstSteelItem.date).toLocaleDateString()}
-              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ mt: 1, mb: 2 }}
+                dangerouslySetInnerHTML={{ __html: truncateHtml(firstSteelItem.memo, 200) }}
+              />
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                mt: 1 
+              }}>
+                <Typography variant="body2" color="text.secondary">
+                  日付: {formatDate(firstSteelItem.date)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {firstSteelItem.source}
+                </Typography>
+              </Box>
+
+              {/* Divider */}
+              <Box sx={{ my: 2, borderTop: '1px solid #eee' }} />
+
+              {/* Auto News */}
               <Typography 
                 variant="h6"
                 onClick={() => navigate(`/detail/${firstAutoItem.id}`)}
                 sx={{ 
                   cursor: 'pointer',
-                  mt: 2,
-                  fontWeight: 'bold', // Add this line
+                  fontWeight: 'bold',
+                  color: '#0000EE', // Standard hyperlink blue color
                   '&:hover': {
                     textDecoration: 'underline',
                     color: 'primary.main'
                   }
                 }}
               >
-                {firstAutoItem.title}
+                最新 自動車: {firstAutoItem.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {new Date(firstAutoItem.date).toLocaleDateString()}
-              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ mt: 1, mb: 2 }}
+                dangerouslySetInnerHTML={{ __html: truncateHtml(firstAutoItem.memo, 200) }}
+              />
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                mt: 1 
+              }}>
+                <Typography variant="body2" color="text.secondary">
+                  日付: {formatDate(firstAutoItem.date)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {firstAutoItem.source}
+                </Typography>
+              </Box>
             </Box>
           </Grid>
           <Grid size={3}>
