@@ -301,6 +301,16 @@ const Default: React.FC = () => {
               textAlign: 'left'
             }}>
               {/* Steel News */}
+              <img 
+                src="https://metal-news-image.s3.us-east-1.amazonaws.com/MetalNewsNewImage.png"
+                alt="Metal News New"
+                style={{
+                  width: '25px', // Reduced from 50px to 25px (50% reduction)
+                  height: 'auto',
+                  marginRight: '10px',
+                  verticalAlign: 'middle'
+                }}
+              />
               <Typography 
                 variant="h6"
                 onClick={() => navigate(`/detail/${firstSteelItem.id}`)}
@@ -311,10 +321,11 @@ const Default: React.FC = () => {
                   '&:hover': {
                     textDecoration: 'underline',
                     color: 'primary.main'
-                  }
+                  },
+                  display: 'inline-block' // Add this to keep the text on the same line as the image
                 }}
               >
-                最新 鉄鋼: {firstSteelItem.title}
+                 {firstSteelItem.title}
               </Typography>
               <Typography 
                 variant="body2" 
@@ -328,32 +339,57 @@ const Default: React.FC = () => {
                 mt: 1 
               }}>
                 <Typography variant="body2" color="text.secondary">
-                  日付: {formatDate(firstSteelItem.date)}
+                鉄鋼 日付: {formatDate(firstSteelItem.date)}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {firstSteelItem.source}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <img 
+                    src="https://metal-news-image.s3.us-east-1.amazonaws.com/tagAndKeywordImage.png"
+                    alt="Tag and Keyword"
+                    style={{
+                      width: '25px',
+                      height: 'auto',
+                      marginRight: '10px',
+                      verticalAlign: 'middle'
+                    }}
+                  />
+                  <Typography variant="body2" color="text.secondary">
+                  タグ: {firstSteelItem.source}
+                  </Typography>
+                </Box>
               </Box>
 
               {/* Divider */}
               <Box sx={{ my: 2, borderTop: '1px solid #eee' }} />
 
               {/* Auto News */}
-              <Typography 
-                variant="h6"
-                onClick={() => navigate(`/detail/${firstAutoItem.id}`)}
-                sx={{ 
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  color: '#0000EE', // Standard hyperlink blue color
-                  '&:hover': {
-                    textDecoration: 'underline',
-                    color: 'primary.main'
-                  }
-                }}
-              >
-                最新 自動車: {firstAutoItem.title}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <img 
+                  src="https://metal-news-image.s3.us-east-1.amazonaws.com/MetalNewsNewImage.png"
+                  alt="Metal News New"
+                  style={{
+                    width: '25px',
+                    height: 'auto',
+                    marginRight: '10px',
+                    verticalAlign: 'middle'
+                  }}
+                />
+                <Typography 
+                  variant="h6"
+                  onClick={() => navigate(`/detail/${firstAutoItem.id}`)}
+                  sx={{ 
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    color: '#0000EE',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                      color: 'primary.main'
+                    },
+                    display: 'inline-block'
+                  }}
+                >
+                  最新 自動車: {firstAutoItem.title}
+                </Typography>
+              </Box>
               <Typography 
                 variant="body2" 
                 sx={{ mt: 1, mb: 2 }}
@@ -366,11 +402,23 @@ const Default: React.FC = () => {
                 mt: 1 
               }}>
                 <Typography variant="body2" color="text.secondary">
-                  日付: {formatDate(firstAutoItem.date)}
+                自動車 日付: {formatDate(firstAutoItem.date)}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {firstAutoItem.source}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <img 
+                    src="https://metal-news-image.s3.us-east-1.amazonaws.com/tagAndKeywordImage.png"
+                    alt="Tag and Keyword"
+                    style={{
+                      width: '25px',
+                      height: 'auto',
+                      marginRight: '10px',
+                      verticalAlign: 'middle'
+                    }}
+                  />
+                  <Typography variant="body2" color="text.secondary">
+                  タグ: {firstAutoItem.source}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Grid>

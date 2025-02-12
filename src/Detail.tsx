@@ -93,7 +93,7 @@ const Detail: React.FC = () => {
               </div>
             </div>
 
-            <Box sx={{ p: 3, maxWidth: '800px', margin: '20px auto' }}>
+            <Box sx={{ p: 3, maxWidth: '1200px', margin: '20px auto' }}>
               <Paper elevation={3} sx={{ p: 4 }}>
                 {hasHistory && (
                   <Button 
@@ -109,13 +109,25 @@ const Detail: React.FC = () => {
                   {news.title}
                 </Typography>
 
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="body1" sx={{ mb: 3, fontWeight: 'bold', fontSize: '1.5rem' }}>
+                <Box sx={{ 
+                  mt: 3,
+                  width: '100%',  // Set width to 75% of parent container
+                  margin: '0 auto' // Center the box horizontally
+                }}>
+                  <Typography 
+                    variant="body1" 
+                    sx={{ 
+                      mb: 3, 
+                      fontWeight: 'bold', 
+                      fontSize: '1.2rem',
+                      width: '100%' // Make Typography take full width of parent Box
+                    }}
+                  >
                     <Box 
+                      sx={{ width: '100%' }} // Make inner Box take full width
                       dangerouslySetInnerHTML={{ __html: news.memo }}
                     />
                   </Typography>
-
                   <Typography variant="subtitle1" color="text.secondary" gutterBottom>
                   <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}
                   </Typography>
