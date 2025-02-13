@@ -67,8 +67,9 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     textContent += `${header}\n\n`;
   }
   
-  htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">';
-  textContent += "概要:\n";
+  //htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">'
+  htmlContent   += '<ul style="color: #2c5282; font-size: 12pt;">';
+  //textContent += "概要:\n";
   
   newsItems.forEach(item => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
@@ -78,17 +79,18 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   htmlContent += '</ul>';
   
-  htmlContent += '<h3>詳細:</h3>';
-  textContent += "\n詳細:\n\n";
+  //htmlContent += '<h3>詳細:</h3>';
+  //textContent += "\n詳細:\n\n";
   
   newsItems.forEach(item => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
     htmlContent += `<div style="margin-bottom: 20px;">
-      <div style="color: #2c5282; font-size: 14pt; margin-bottom: 8px;"><a href="${fullUrl}">${item.title}</a></div>
+//      <div style="color: #2c5282; font-size: 14pt; margin-bottom: 8px;"><a href="${fullUrl}">${item.title}</a></div>
       <div style="font-size: 13pt; font-weight: bold;">${item.memo}</div>
     </div>`;
     
-    textContent += `${item.title} (${fullUrl})\n${item.memo}\n\n`;
+    //textContent += `${item.title} (${fullUrl})\n${item.memo}\n\n`;
+    textContent += `\n${item.memo}\n\n`;
   });
   
   htmlContent += '</div>';
