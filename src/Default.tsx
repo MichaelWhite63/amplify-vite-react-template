@@ -216,7 +216,7 @@ const Default: React.FC = () => {
     const navigate = useNavigate();
     
     return (
-      <Grid size={3}>
+      <Grid size={4}>
         <Paper sx={{ p: 2, height: '100%' }}>
           <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
             {title}<hr></hr>
@@ -421,38 +421,16 @@ const Default: React.FC = () => {
                 </Box>
               </Box>
             </Box>
+            <Grid container spacing={3}>
+              <NewsColumn title="鉄鋼" news={steelNews} />
+              <NewsColumn title="自動車" news={autoNews} />
+              <NewsColumn title="アルミ" news={aluminumNews} />
+              </Grid>
           </Grid>
-          <Grid size={3}>
-            <Paper sx={{ 
-              p: 2, 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center',
-              height: '100%'
-            }}>
-              <Button
-                variant="contained"
-                onClick={handleArchiveClick}
-                sx={{
-                  backgroundColor: '#191970',
-                  fontSize: '1rem',
-                  padding: '10px 20px',
-                  '&:hover': {
-                    backgroundColor: '#1e1e90'
-                  }
-                }}
-              >
-                アーカイブ
-              </Button>
-            </Paper>
-          </Grid>
-          <NewsColumn title="鉄鋼" news={steelNews} />
-          <NewsColumn title="自動車" news={autoNews} />
-          <NewsColumn title="アルミ" news={aluminumNews} />
-  
+
           {/* Authentication Column */}
           <Grid size={3}>
-            <Paper sx={{ p: 2, height: '100%' }}>
+            <Paper sx={{ p: 1, height: '100%' }}>
               <div style={{ 
                 transform: 'scale(0.5)',
                 transformOrigin: 'top left',
@@ -462,8 +440,16 @@ const Default: React.FC = () => {
                 <Authenticator>
                   {({ signOut, user }) => (
                     <div>
-                      {user ? (
-                        <>
+                      {user ? (                      
+                          <Box sx={{ mt: 2, textAlign: 'center' }}>
+                            <button onClick={signOut}>Sign out</button>
+                          </Box>
+                      ) : (
+                        <Typography>Please sign in</Typography>
+                      )}
+                    </div>
+                  )}
+                </Authenticator><br></br><br></br>
                           <Typography 
                             variant="h3" 
                             sx={{ 
@@ -613,18 +599,37 @@ const Default: React.FC = () => {
                               </TableBody>
                             </Table>
                           </TableContainer>
-
-                          {/* Move Sign Out button here, after all charts */}
-                          <Box sx={{ mt: 2, textAlign: 'center' }}>
-                            <button onClick={signOut}>Sign out</button>
-                          </Box>
-                        </>
-                      ) : (
-                        <Typography>Please sign in</Typography>
-                      )}
-                    </div>
-                  )}
-                </Authenticator>
+              </div>
+            </Paper>
+          </Grid>
+          <Grid size={3}>
+            <Paper sx={{ 
+              p: 2, 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center',
+              height: '100%'
+            }}>
+              <div style={{ 
+                transform: 'scale(0.5)',
+                transformOrigin: 'top left',
+                width: '100%',
+                height: '100%'
+              }}>
+                <Button
+                  variant="contained"
+                  onClick={handleArchiveClick}
+                  sx={{
+                    backgroundColor: '#191970',
+                    fontSize: '1rem',
+                    padding: '10px 20px',
+                    '&:hover': {
+                      backgroundColor: '#1e1e90'
+                    }
+                  }}
+                >
+                  アーカイブ
+                </Button>
               </div>
             </Paper>
           </Grid>
