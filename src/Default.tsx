@@ -214,9 +214,10 @@ const Default: React.FC = () => {
   // Helper component for news display
   const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
     const navigate = useNavigate();
-    
+
+    //      <Grid size={4}> // Changed to Grid size={{ xs: 12, md: 4 }}    
     return (
-      <Grid size={4}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <Paper sx={{ p: 2, height: '100%' }}>
           <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
             {title}<hr></hr>
@@ -290,8 +291,9 @@ const Default: React.FC = () => {
         borderRadius: '8px',
         boxShadow: 1
       }}>
+        {/* Changing Grid sizing */}
         <Grid container spacing={3}>
-          <Grid size={9}>
+          <Grid size={{ xs: 12, md: 9}}>
             <Box sx={{
               p: 2,
               mb: 2,
@@ -428,8 +430,8 @@ const Default: React.FC = () => {
               </Grid>
           </Grid>
 
-          {/* Authentication Column */}
-          <Grid size={3}>
+          {/* Authentication Column size={3}   */}
+          <Grid size={{ xs: 12, md: 3 }}>
             <Paper sx={{ p: 1, height: '100%' }}>
               <div style={{ 
                 transform: 'scale(0.5)',
@@ -602,6 +604,7 @@ const Default: React.FC = () => {
               </div>
             </Paper>
           </Grid>
+          <Grid size={3}></Grid>
           <Grid size={3}>
             <Paper sx={{ 
               p: 2, 
@@ -611,9 +614,8 @@ const Default: React.FC = () => {
               height: '100%'
             }}>
               <div style={{ 
-                transform: 'scale(0.5)',
-                transformOrigin: 'top left',
-                width: '100%',
+                transformOrigin: 'center',
+//                width: '100%',
                 height: '100%'
               }}>
                 <Button

@@ -34,7 +34,7 @@ interface News {
   header: string;
   published: boolean;
   newField: boolean;
-  type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
+  type: 'Steel' | 'Auto' | 'Aluminum';
 }
 
 interface NewsForm {
@@ -101,6 +101,19 @@ const NewsSearch: React.FC = () => {
         handleSearch(); // Refresh the search results
       } catch (error) {
         console.error('Error updating news:', error);
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    if (editingNews) {
+      try {
+        await client.models.News.delete({ id: editingNews.id.toString() });
+        setEditingNews(null);
+        setNewsForm(null);
+        handleSearch(); // Refresh the search results
+      } catch (error) {
+        console.error('Error deleting news:', error);
       }
     }
   };
@@ -238,7 +251,7 @@ const NewsSearch: React.FC = () => {
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
                     // Your account includes a free trial of TinyMCE premium features
                     // Try the most popular premium features until Jan 14, 2025:
-                    'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+                    //'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
                 ],
                 toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
                 tinycomments_mode: 'embedded',
@@ -247,18 +260,49 @@ const NewsSearch: React.FC = () => {
                   { value: 'First.Name', title: 'First Name' },
                   { value: 'Email', title: 'Email' },
                 ] as { value: string; title: string }[],
-                ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject(`See docs to implement AI Assistant ${request}`)),
                 }}
               />
             </FormControl>
 
-            {/* Add other fields as needed */}
-            <Button type="submit" variant="contained" color="primary">
-              Update
-            </Button>
-            <Button type="button" onClick={() => { setEditingNews(null); setNewsForm(null); }}>
-              Cancel
-            </Button>
+            {/* Update the Box styling that contains the buttons */}
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 2, 
+              mt: 2,
+              justifyContent: 'center' // Add this line to center the buttons
+            }}>
+              <Button 
+                type="submit" 
+                variant="contained" 
+                color="primary"
+              >
+                Update
+              </Button>
+              <Button 
+                type="button" 
+                variant="contained" 
+                color="error" 
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+              <Button 
+                type="button" 
+                variant="outlined"
+                onClick={() => { 
+                  setEditingNews(null); 
+                  setNewsForm(null); 
+                }}
+                sx={{ 
+                  backgroundColor: 'white',
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5' // slightly darker on hover
+                  }
+                }}
+              >
+                Cancel
+              </Button>
+            </Box>
           </form>
           </div>
 
