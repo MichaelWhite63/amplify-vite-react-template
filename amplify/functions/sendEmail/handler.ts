@@ -68,11 +68,11 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   }
   
   //htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">'
-  htmlContent   += '<ul style="color:rgb(200, 93, 93); font-size: 12pt;">';
+  htmlContent   += '<ul style="color: #191970; font-size: 12pt;">';
   
   newsItems.forEach(item => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
-    htmlContent += `<li style="margin-bottom: 8px; font-size: 12pt;"><a href="${fullUrl}" style="font-weight: bold;">${item.title}</a></li>`;
+    htmlContent += `<li style="margin-bottom: 8px; font-size: 12pt;"><a href="${fullUrl}" style="font-weight: bold;  color: #191970;">${item.title}</a></li>`;
     textContent += `• ${item.title} (${fullUrl})\n\n`;
   });
   

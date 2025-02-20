@@ -5,6 +5,7 @@ import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
+import DOMPurify from 'dompurify';
 
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
@@ -55,6 +56,13 @@ const Detail: React.FC = () => {
 
     fetchNewsDetail();
   }, [id]);
+
+  // Assists with the display of the article content
+  const createMarkup = (html: string) => {
+    return {
+      __html: DOMPurify.sanitize(html)
+    };
+  };
 
   return (
     <Authenticator>
@@ -117,15 +125,21 @@ const Detail: React.FC = () => {
                   <Typography 
                     variant="body1" 
                     sx={{ 
-                      mb: 3, 
-                      fontWeight: 'bold', 
-                      fontSize: '1.2rem',
+                      mb: 1, 
                       width: '100%' // Make Typography take full width of parent Box
                     }}
                   >
                     <Box 
-                      sx={{ width: '100%' }} // Make inner Box take full width
-                      dangerouslySetInnerHTML={{ __html: news.memo }}
+                      component="div"
+                      sx={{ width: '100%',
+                          px: 2,
+                          py: 1,
+                          backgroundColor: '#f5f5f5',
+                          borderRadius: 1
+                       }} // Make inner Box take full width
+                      dangerouslySetInnerHTML={createMarkup(news.memo)}
+
+                //      dangerouslySetInnerHTML={{ __html: news.memo }}
                     />
                   </Typography>
                   <Typography variant="subtitle1" color="text.secondary" gutterBottom>
