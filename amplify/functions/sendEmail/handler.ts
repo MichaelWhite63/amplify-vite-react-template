@@ -81,11 +81,12 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   newsItems.forEach(item => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
     htmlContent += `<div style="margin-bottom: 20px;">
-      <div style="color:rgb(215, 96, 96); font-size: 16pt; margin-bottom: 8px;"><a href="${fullUrl}" style="font-weight: bold;">${item.title}</a></div>
+      <div style="color: #191970; font-size: 16pt; margin-bottom: 8px;">
+        <a href="${fullUrl}" style="font-weight: bold; color: #191970; text-decoration: none;">${item.title}</a>
+      </div>
       <div style="font-size: 13pt; font-weight: bold;">${item.memo}</div>
     </div>`;
     
-    //textContent += `${item.title} (${fullUrl})\n${item.memo}\n\n`;
     textContent += `\n${item.memo}\n\n`;
   });
   
