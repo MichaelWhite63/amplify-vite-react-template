@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
+import { Typography, Box, Paper, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, TextField, Button } 
+  from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useNavigate } from 'react-router-dom';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -10,12 +12,29 @@ import type { Schema } from '../amplify/data/resource';
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
 
+
 interface NewsItem {
   id: string;
   title: string;
   date: string;
   type: 'Steel' | 'Auto' | 'Aluminum';
   published: boolean;
+}
+
+interface NewsSearchResponse {
+  id: string | null;
+  title:  string | null;
+  group: number | null;
+  writtenBy: string | null;
+  date: string | null;
+  lDate: string | null;
+  source: string | null;
+  memo: string | null;
+  ord: number | null;
+  rank: number | null;
+  header: string | null;
+  published: boolean | null;
+  type: 'Steel' | 'Auto' | 'Aluminum' | null;
 }
 
 interface FirstItem {
@@ -74,6 +93,8 @@ const Default: React.FC = () => {
   const [chart4Data, setChart4Data] = useState<any[]>([]);
   const [chart5Data, setChart5Data] = useState<any[]>([]);
   const [chart6Data, setChart6Data] = useState<any[]>([]);
+  const [keyword, setKeyword] = useState('');
+  const [archiveResults, setArchiveResults] = useState<NewsSearchResponse[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -205,10 +226,42 @@ const Default: React.FC = () => {
 
     fetchData();
   }, []);
-
+/*
   const handleArchiveClick = () => {
     // You can implement archive functionality here
     navigate('/archive');
+  };
+*/
+  const handleArchiveSearch = async () => {
+    try {
+      if (keyword.trim()) {
+        const response = await client.models.News.list({
+          filter: {
+            title: { contains: keyword.trim() },
+            // Use the date field in the filter instead
+            and: [
+              { date: { gt: '1900-01-01' } } // Include all dates after 1900
+            ]
+          }
+        });
+        
+        // Sort the results after fetching
+        const sortedResults = response.data.sort((a, b) => {
+          const dateA = new Date(a.date || '');
+          const dateB = new Date(b.date || '');
+          return dateB.getTime() - dateA.getTime(); // descending order
+        });
+
+        console.log('Search results:', sortedResults);
+        setArchiveResults(sortedResults);
+      } 
+    } catch (error) {
+      console.error('Error searching news:', error);
+    }
+  };
+
+  const handleKeywordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(event.target.value);
   };
 
   // Helper component for news display
@@ -604,44 +657,113 @@ const Default: React.FC = () => {
               </div>
             </Paper>
           </Grid>
-          <Grid size={3}></Grid>
-          <Grid size={3}>
+          <Grid size={12}>
             <Paper sx={{ 
               p: 2, 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center',
-              height: '100%'
-            }}>
-              <div style={{ 
-                transformOrigin: 'center',
-//                width: '100%',
-                height: '100%'
+              height: '100%',
+              minHeight: '100px', // Changed from 200px to match first tab
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center', // Added for vertical centering
+              gap: 2
               }}>
-                <Button
-                  variant="contained"
-                  onClick={handleArchiveClick}
-                  sx={{
-                    backgroundColor: '#191970',
-                    fontSize: '1rem',
-                    padding: '10px 20px',
-                    '&:hover': {
+                <Typography variant="h6" gutterBottom>
+                  ニュースの検索
+                </Typography>
+                <Box sx={{ 
+                  display: 'flex', 
+                  gap: 1,
+                  justifyContent: 'left' // Add this to center the TextField
+                }}>
+                  <TextField
+                    sx={{
+                      width: '50%', // Set to half width
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                          borderColor: '#191970',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#1e1e90',
+                        },
+                      },
+                    }}
+                    placeholder="キーワードを入力"
+                    value={keyword}
+                    onChange={handleKeywordChange}
+                  />
+                  <Button 
+                    variant="contained"
+                    onClick={handleArchiveSearch}
+                    sx={{
+                      backgroundColor: '#191970',
+                      '&:hover': {
                       backgroundColor: '#1e1e90'
                     }
-                  }}
-                >
-                  アーカイブ
+                    }}
+                    >
+                  ニュースの検索
                 </Button>
-              </div>
+              </Box>
+              {archiveResults.length > 0 ? (
+                <Box sx={{ mt: 2 }}>
+                  {archiveResults.map((result) => (
+                    <Box 
+                      key={result.id} 
+                      sx={{ 
+                        mb: 2, 
+                        p: 2, 
+                        borderRadius: 1,
+                        backgroundColor: '#f8f8f8',
+                        '&:hover': {
+                          backgroundColor: '#f0f0f0'
+                        }
+                      }}
+                    >
+                      <Typography 
+                        variant="h6" 
+                        onClick={() => navigate(`/detail/${result.id}`)}
+                        sx={{ 
+                          cursor: 'pointer',
+                          color: '#191970',
+                          '&:hover': {
+                            textDecoration: 'underline'
+                          }
+                        }}
+                      >
+                        {result.title}
+                      </Typography>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        mt: 1 
+                      }}>
+                        <Typography variant="body2" color="text.secondary">
+                        日付: {formatDate(result.date || '')}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          タグ: {result.source}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                keyword.trim() && <Typography sx={{ mt: 2 }}>検索結果がありません</Typography>
+              )}
             </Paper>
           </Grid>
+        
         </Grid>
       </Box>
+      {/* Privacy Policy Section */}
       <Box sx={{ 
         width: '100%', 
-        textAlign: 'center', 
+        display: 'flex',  // Add display flex
+        justifyContent: 'flex-start',  // Align items to the left
+        alignItems: 'center',
         mt: 2, 
-        mb: 2 
+        mb: 2,
+        pl: 2  // Add left padding
       }}>
         <Typography 
           variant="body2" 
