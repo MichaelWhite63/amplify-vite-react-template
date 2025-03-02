@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
-import { TextField, Button, List, ListItem, ListItemText, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel } from '@mui/material';
+import { TextField, Button, List, ListItem, ListItemText, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box } from '@mui/material';
+import NewsAppBar from './components/NewsAppBar';
 
 const client = generateClient<Schema>();
 
@@ -97,106 +98,114 @@ const UpdateUser: React.FC = () => {
   };
 
   return (
-    <div style={{ margin: '20px' }}>
-      <TextField
-        label="Enter Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <Button variant="contained" onClick={handleSearchUsers} style={{ marginLeft: '10px' }}>
-        Get User
-      </Button>
-      {!selectedDetails && (
-        <List>
-          {users.map((email, idx) => (
-            <ListItem key={idx}>
-              <Radio
-                checked={selectedEmail === email}
-                onChange={() => handleSelectUser(email)}
-              />
-              <ListItemText primary={email} />
-            </ListItem>
-          ))}
-        </List>
-      )}
-      {selectedDetails && selectedDetails[0] && (
-        <Card sx={{ mt: 3, maxWidth: 600 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              User Details
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            
-            <Stack spacing={2}>
-              <TextField
-                label="Email"
-                value={editableEmail}
-                disabled
-                sx={{ bgcolor: 'action.disabledBackground' }}
-                fullWidth
-              />
-              <TextField
-                label="名前"
-                value={familyName}
-                onChange={(e) => setFamilyName(e.target.value)}
-                fullWidth
-              />
-              <TextField
-                label="会社名"
-                value={givenName}
-                onChange={(e) => setGivenName(e.target.value)}
-                fullWidth
-              />
-              
-              <Typography>
-                <strong>Status:</strong> {selectedDetails[0].UserStatus}
-                {selectedDetails[0].Enabled && <Chip 
-                  size="small" 
-                  color="success" 
-                  label="Enabled" 
-                  sx={{ ml: 1 }} 
-                />}
-              </Typography>
-
-              <div>
-                <Typography variant="subtitle2" gutterBottom>
-                メール配信グループ
+    <>
+      <NewsAppBar />
+      <Box sx={{ 
+        mt: '130px', // Add margin top to account for NewsAppBar and logo
+        mx: 3 // Add horizontal margin
+      }}>
+        <div style={{ margin: '20px' }}>
+          <TextField
+            label="Enter Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Button variant="contained" onClick={handleSearchUsers} style={{ marginLeft: '10px' }}>
+            Get User
+          </Button>
+          {!selectedDetails && (
+            <List>
+              {users.map((email, idx) => (
+                <ListItem key={idx}>
+                  <Radio
+                    checked={selectedEmail === email}
+                    onChange={() => handleSelectUser(email)}
+                  />
+                  <ListItemText primary={email} />
+                </ListItem>
+              ))}
+            </List>
+          )}
+          {selectedDetails && selectedDetails[0] && (
+            <Card sx={{ mt: 3, maxWidth: 600 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  User Details
                 </Typography>
-                <FormGroup row>
-                  {availableGroups.map((group) => (
-                    <FormControlLabel
-                      key={group}
-                      control={
-                        <Checkbox
-                          checked={groupMemberships.includes(GROUP_MAPPING[group as keyof typeof GROUP_MAPPING])}
-                          onChange={() => handleGroupChange(group)}
+                <Divider sx={{ mb: 2 }} />
+                
+                <Stack spacing={2}>
+                  <TextField
+                    label="Email"
+                    value={editableEmail}
+                    disabled
+                    sx={{ bgcolor: 'action.disabledBackground' }}
+                    fullWidth
+                  />
+                  <TextField
+                    label="名前"
+                    value={familyName}
+                    onChange={(e) => setFamilyName(e.target.value)}
+                    fullWidth
+                  />
+                  <TextField
+                    label="会社名"
+                    value={givenName}
+                    onChange={(e) => setGivenName(e.target.value)}
+                    fullWidth
+                  />
+                  
+                  <Typography>
+                    <strong>Status:</strong> {selectedDetails[0].UserStatus}
+                    {selectedDetails[0].Enabled && <Chip 
+                      size="small" 
+                      color="success" 
+                      label="Enabled" 
+                      sx={{ ml: 1 }} 
+                    />}
+                  </Typography>
+
+                  <div>
+                    <Typography variant="subtitle2" gutterBottom>
+                    メール配信グループ
+                    </Typography>
+                    <FormGroup row>
+                      {availableGroups.map((group) => (
+                        <FormControlLabel
+                          key={group}
+                          control={
+                            <Checkbox
+                              checked={groupMemberships.includes(GROUP_MAPPING[group as keyof typeof GROUP_MAPPING])}
+                              onChange={() => handleGroupChange(group)}
+                            />
+                          }
+                          label={group}
                         />
-                      }
-                      label={group}
-                    />
-                  ))}
-                </FormGroup>
-              </div>
+                      ))}
+                    </FormGroup>
+                  </div>
 
-              <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={handleUpdate}
-                sx={{ mt: 2 }}
-              >
-                Update User
-              </Button>
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={handleUpdate}
+                    sx={{ mt: 2 }}
+                  >
+                    Update User
+                  </Button>
 
-              <Typography variant="caption" color="text.secondary">
-                Created: {new Date(selectedDetails[0].UserCreateDate).toLocaleDateString()}
-                <br />
-                Last Modified: {new Date(selectedDetails[0].UserLastModifiedDate).toLocaleDateString()}
-              </Typography>
-            </Stack>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+                  <Typography variant="caption" color="text.secondary">
+                    Created: {new Date(selectedDetails[0].UserCreateDate).toLocaleDateString()}
+                    <br />
+                    Last Modified: {new Date(selectedDetails[0].UserLastModifiedDate).toLocaleDateString()}
+                  </Typography>
+                </Stack>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </Box>
+    </>
   );
 };
 

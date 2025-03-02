@@ -12,11 +12,11 @@ import CreateUser from './CreateUser';
 import Detail from './Detail';
 import PrivacyPolicy from './PrivacyPolicy';
 import Archive from './Archive';
+//      <MenuComponent />
 
 const AppRouter: React.FC = () => {
   return (
     <>
-      <MenuComponent />
       <Box sx={{ mt: '64px' }}>
         <Routes>
           <Route path="/" element={<Default />} />

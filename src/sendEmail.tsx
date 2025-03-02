@@ -24,6 +24,8 @@ Amplify.configure(outputs);
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import IconButton from '@mui/material/IconButton';
+import NewsAppBar from './components/NewsAppBar';
+import Box from '@mui/material/Box';
 
 const client = generateClient<Schema>();
 
@@ -148,226 +150,231 @@ const SendEmail: React.FC = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handlePreview}>
-        <FormControl sx={{ m: 2 }} variant="standard">
-          {/* Entry fields container */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center',
-            width: '100%',
-            marginBottom: '20px'
-          }}>
-            <Grid 
-              container 
-              spacing={2} 
-              sx={{
-                width: '80%',
-              }}
-            >
-              <Grid size={6}>
-                <Paper sx={{ p: 2 }}>
-                  <Stack spacing={2}>
-                    <div>
-                      <FormLabel>配信グループ</FormLabel>
-                      <RadioGroup row value={recipient} onChange={(e) => setRecipient(e.target.value as 'everyone' | 'single')}>
-                        <FormControlLabel value="everyone" control={<Radio />} label="全員" />
-                        <FormControlLabel value="single" control={<Radio />} label="シングル" />
-                      </RadioGroup>
-                      {recipient === 'single' && (
+    <>
+      <NewsAppBar />
+      <Box sx={{ mt: '130px' }}> {/* Add margin top to account for NewsAppBar */}
+        <div>
+          <form onSubmit={handlePreview}>
+            <FormControl sx={{ m: 2 }} variant="standard">
+              {/* Entry fields container */}
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center',
+                width: '100%',
+                marginBottom: '20px'
+              }}>
+                <Grid 
+                  container 
+                  spacing={2} 
+                  sx={{
+                    width: '80%',
+                  }}
+                >
+                  <Grid size={6}>
+                    <Paper sx={{ p: 2 }}>
+                      <Stack spacing={2}>
+                        <div>
+                          <FormLabel>配信グループ</FormLabel>
+                          <RadioGroup row value={recipient} onChange={(e) => setRecipient(e.target.value as 'everyone' | 'single')}>
+                            <FormControlLabel value="everyone" control={<Radio />} label="全員" />
+                            <FormControlLabel value="single" control={<Radio />} label="シングル" />
+                          </RadioGroup>
+                          {recipient === 'single' && (
+                            <TextField
+                              id="email"
+                              label="Email Address"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              fullWidth
+                              margin="normal"
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <FormLabel>カテゴリー</FormLabel>
+                          <RadioGroup row value={selectedType} onChange={handleChange}>
+                            <FormControlLabel value="Steel" control={<Radio />} label="鉄鋼" />
+                            <FormControlLabel value="Auto" control={<Radio />} label="自動車" />
+                            <FormControlLabel value="Aluminum" control={<Radio />} label="アルミ" />
+                          </RadioGroup>
+                        </div>
+
                         <TextField
-                          id="email"
-                          label="Email Address"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          id="title"
+                          label="タイトル"
+                          value={title}
+                          onChange={(e) => setTitle(e.target.value)}
                           fullWidth
-                          margin="normal"
                         />
-                      )}
-                    </div>
-                    <div>
-                      <FormLabel>カテゴリー</FormLabel>
-                      <RadioGroup row value={selectedType} onChange={handleChange}>
-                        <FormControlLabel value="Steel" control={<Radio />} label="鉄鋼" />
-                        <FormControlLabel value="Auto" control={<Radio />} label="自動車" />
-                        <FormControlLabel value="Aluminum" control={<Radio />} label="アルミ" />
-                      </RadioGroup>
-                    </div>
 
-                    <TextField
-                      id="title"
-                      label="タイトル"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      fullWidth
-                    />
+                        <TextField
+                          label="発行日"
+                          type="date"
+                          value={queryDate}
+                          onChange={(e) => setQueryDate(e.target.value)}
+                          fullWidth
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                        />
+                      </Stack>
+                    </Paper>
+                  </Grid>
+                  <Grid size={6}>
+                    <Paper sx={{ p: 2, height: '100%' }}>
+                      <TextField
+                        id="header"
+                        label="ヘッダー"
+                        value={header}
+                        onChange={(e) => setHeader(e.target.value)}
+                        multiline
+                        rows={10}
+                        fullWidth
+                      />
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </div>
 
-                    <TextField
-                      label="発行日"
-                      type="date"
-                      value={queryDate}
-                      onChange={(e) => setQueryDate(e.target.value)}
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </Stack>
-                </Paper>
-              </Grid>
-              <Grid size={6}>
-                <Paper sx={{ p: 2, height: '100%' }}>
-                  <TextField
-                    id="header"
-                    label="ヘッダー"
-                    value={header}
-                    onChange={(e) => setHeader(e.target.value)}
-                    multiline
-                    rows={10}
-                    fullWidth
+              {/* Table container */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%'
+              }}>
+                <TableContainer component={Paper} sx={{ width: '90%' }}>
+                  <Table>
+                    <TableHead>
+                      <StyledTableHeadRow>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            indeterminate={selectedNewsIDs.length > 0 && selectedNewsIDs.length < unpublishedNews.length}
+                            checked={unpublishedNews.length > 0 && selectedNewsIDs.length === unpublishedNews.length}
+                            onChange={(e) => setSelectedNewsIDs(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
+                          />
+                        </TableCell> 
+                        <TableCell style={{ width: '75%', color: 'white' }}>カテゴリー {selectedType}</TableCell>
+                        <TableCell style={{ width: '15%', color: 'white' }}>ニュースの日付</TableCell>
+                        <TableCell style={{ width: '10%', color: 'white' }}>移動</TableCell>
+                      </StyledTableHeadRow>
+                    </TableHead> 
+                    <TableBody>
+                      {unpublishedNews.map((news, index) => (
+                        <TableRow
+                          key={news.id}
+                          hover
+                          onClick={() => handleSelectNews(news.id)}
+                          role="checkbox"
+                          aria-checked={isSelected(news.id)}
+                          selected={isSelected(news.id)}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox checked={isSelected(news.id)} />
+                          </TableCell>
+                          <TableCell style={{ width: '65%' }}>{news.title}</TableCell>
+                          <TableCell style={{ width: '15%' }}>{news.date}</TableCell>
+                          <TableCell style={{ width: '10%' }}>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveRow(index, 'up');
+                              }}
+                              disabled={index === 0}
+                            >
+                              <ArrowUpwardIcon />
+                            </IconButton>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveRow(index, 'down');
+                              }}
+                              disabled={index === unpublishedNews.length - 1}
+                            >
+                              <ArrowDownwardIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',  // Changed to center
+                width: '90%',
+                margin: '0 auto',
+                marginTop: '20px'
+              }}>
+                <Button 
+                  type="submit" 
+                  variant="contained"       // Changed from outlined
+                  sx={{
+                    backgroundColor: '#1a237e', // Dark blue background
+                    color: 'white',            // White text
+                    '&:hover': {
+                      backgroundColor: '#0d47a1' // Slightly different blue on hover
+                    }
+                  }}
+                >
+                  プレビュー
+                </Button>
+              </div>
+            </FormControl>
+          </form>
+
+          <Dialog
+            open={previewOpen}
+            onClose={() => setPreviewOpen(false)}
+            maxWidth="md"
+            fullWidth
+          >
+            <DialogTitle sx={{ textAlign: 'center' }}>メールのプレビュー</DialogTitle>
+            <DialogContent>
+              <div style={{ marginBottom: 20 }}>
+                <Typography paragraph>{header}</Typography>
+              </div>
+
+              {/* Add title list */}
+              <Paper sx={{ p: 2, mb: 3, backgroundColor: '#f5f5f5' }}>
+                <Typography variant="h6" gutterBottom>Headlines:</Typography>
+                <List>
+                  {previewContent.map((news) => (
+                    <ListItem key={`title-${news.id}`}>
+                      <ListItemText primary={`${news.title}`} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+
+              {/* Full content */}
+              <Typography variant="h6" gutterBottom>Full Content:</Typography>
+              {previewContent.map((news) => (
+                <Paper key={news.id} sx={{ p: 2, mb: 2 }}>
+                  <Typography variant="h6">
+                    {news.title}
+                  </Typography>
+                  <Typography 
+                    dangerouslySetInnerHTML={{ __html: news.memo }}
+                    sx={{ mt: 1 }}
                   />
                 </Paper>
-              </Grid>
-            </Grid>
-          </div>
-
-          {/* Table container */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            width: '100%'
-          }}>
-            <TableContainer component={Paper} sx={{ width: '90%' }}>
-              <Table>
-                <TableHead>
-                  <StyledTableHeadRow>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        indeterminate={selectedNewsIDs.length > 0 && selectedNewsIDs.length < unpublishedNews.length}
-                        checked={unpublishedNews.length > 0 && selectedNewsIDs.length === unpublishedNews.length}
-                        onChange={(e) => setSelectedNewsIDs(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
-                      />
-                    </TableCell> 
-                    <TableCell style={{ width: '75%', color: 'white' }}>カテゴリー {selectedType}</TableCell>
-                    <TableCell style={{ width: '15%', color: 'white' }}>ニュースの日付</TableCell>
-                    <TableCell style={{ width: '10%', color: 'white' }}>移動</TableCell>
-                  </StyledTableHeadRow>
-                </TableHead> 
-                <TableBody>
-                  {unpublishedNews.map((news, index) => (
-                    <TableRow
-                      key={news.id}
-                      hover
-                      onClick={() => handleSelectNews(news.id)}
-                      role="checkbox"
-                      aria-checked={isSelected(news.id)}
-                      selected={isSelected(news.id)}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox checked={isSelected(news.id)} />
-                      </TableCell>
-                      <TableCell style={{ width: '65%' }}>{news.title}</TableCell>
-                      <TableCell style={{ width: '15%' }}>{news.date}</TableCell>
-                      <TableCell style={{ width: '10%' }}>
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveRow(index, 'up');
-                          }}
-                          disabled={index === 0}
-                        >
-                          <ArrowUpwardIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveRow(index, 'down');
-                          }}
-                          disabled={index === unpublishedNews.length - 1}
-                        >
-                          <ArrowDownwardIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',  // Changed to center
-            width: '90%',
-            margin: '0 auto',
-            marginTop: '20px'
-          }}>
-            <Button 
-              type="submit" 
-              variant="contained"       // Changed from outlined
-              sx={{
-                backgroundColor: '#1a237e', // Dark blue background
-                color: 'white',            // White text
-                '&:hover': {
-                  backgroundColor: '#0d47a1' // Slightly different blue on hover
-                }
-              }}
-            >
-              プレビュー
-            </Button>
-          </div>
-        </FormControl>
-      </form>
-
-      <Dialog
-        open={previewOpen}
-        onClose={() => setPreviewOpen(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle sx={{ textAlign: 'center' }}>メールのプレビュー</DialogTitle>
-        <DialogContent>
-          <div style={{ marginBottom: 20 }}>
-            <Typography paragraph>{header}</Typography>
-          </div>
-
-          {/* Add title list */}
-          <Paper sx={{ p: 2, mb: 3, backgroundColor: '#f5f5f5' }}>
-            <Typography variant="h6" gutterBottom>Headlines:</Typography>
-            <List>
-              {previewContent.map((news) => (
-                <ListItem key={`title-${news.id}`}>
-                  <ListItemText primary={`${news.title}`} />
-                </ListItem>
               ))}
-            </List>
-          </Paper>
-
-          {/* Full content */}
-          <Typography variant="h6" gutterBottom>Full Content:</Typography>
-          {previewContent.map((news) => (
-            <Paper key={news.id} sx={{ p: 2, mb: 2 }}>
-              <Typography variant="h6">
-                {news.title}
-              </Typography>
-              <Typography 
-                dangerouslySetInnerHTML={{ __html: news.memo }}
-                sx={{ mt: 1 }}
-              />
-            </Paper>
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPreviewOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSendEmail} variant="contained" color="primary">
-            Send Email
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setPreviewOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSendEmail} variant="contained" color="primary">
+                Send Email
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+      </Box>
+    </>
   );
 };
 

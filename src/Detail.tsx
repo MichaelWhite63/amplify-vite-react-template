@@ -119,7 +119,7 @@ const Detail: React.FC = () => {
                   style={{ 
                     display: 'block',
                     backgroundColor: 'white',
-                    height: '65px'
+                    height: '63px'
                   }} 
                 />
               </div>

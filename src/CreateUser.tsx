@@ -12,8 +12,10 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  FormLabel
+  FormLabel,
+  Box
 } from '@mui/material';
+import NewsAppBar from './components/NewsAppBar';
 
 const client = generateClient<Schema>();
 
@@ -98,102 +100,107 @@ const CreateUser: React.FC = () => {
   };
 
   return (
-    <Card sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Create New User
-        </Typography>
-        
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={3}>
-            <TextField
-              name="email"
-              label="メールアドレス"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
+    <>
+      <NewsAppBar />
+      <Box sx={{ mt: '130px' }}> {/* Add margin top to account for NewsAppBar */}
+        <Card sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Create New User
+            </Typography>
             
-            <TextField
-              name="lastName"
-              label="名前"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
-            
-            <TextField
-              name="username"
-              label="会社名"
-              value={formData.username}
-              onChange={handleInputChange}
-              fullWidth
-              required
-            />
-            
-            <FormGroup>
-              <FormLabel component="legend">カテゴリー</FormLabel>
-              <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox 
-                      checked={formData.groups.Steel}
-                      onChange={handleInputChange}
-                      name="group-Steel"
-                    />
-                  }
-                  label="鉄鋼"
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+                <TextField
+                  name="email"
+                  label="メールアドレス"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  fullWidth
+                  required
                 />
-                <FormControlLabel
-                  control={
-                    <Checkbox 
-                      checked={formData.groups.Auto}
-                      onChange={handleInputChange}
-                      name="group-Auto"
-                    />
-                  }
-                  label="自動車"
+                
+                <TextField
+                  name="lastName"
+                  label="名前"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  fullWidth
+                  required
                 />
-                <FormControlLabel
-                  control={
-                    <Checkbox 
-                      checked={formData.groups.Aluminum}
-                      onChange={handleInputChange}
-                      name="group-Aluminum"
-                    />
-                  }
-                  label="アルミ"
+                
+                <TextField
+                  name="username"
+                  label="会社名"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  fullWidth
+                  required
                 />
+                
+                <FormGroup>
+                  <FormLabel component="legend">カテゴリー</FormLabel>
+                  <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox 
+                          checked={formData.groups.Steel}
+                          onChange={handleInputChange}
+                          name="group-Steel"
+                        />
+                      }
+                      label="鉄鋼"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox 
+                          checked={formData.groups.Auto}
+                          onChange={handleInputChange}
+                          name="group-Auto"
+                        />
+                      }
+                      label="自動車"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox 
+                          checked={formData.groups.Aluminum}
+                          onChange={handleInputChange}
+                          name="group-Aluminum"
+                        />
+                      }
+                      label="アルミ"
+                    />
+                  </Stack>
+                </FormGroup>
+
+                {error && (
+                  <Alert severity="error">
+                    {error}
+                  </Alert>
+                )}
+
+                {success && (
+                  <Alert severity="success">
+                    User created successfully!
+                  </Alert>
+                )}
+
+                <Button 
+                  type="submit"
+                  variant="contained" 
+                  color="primary"
+                  size="large"
+                >
+                  Create User
+                </Button>
               </Stack>
-            </FormGroup>
-
-            {error && (
-              <Alert severity="error">
-                {error}
-              </Alert>
-            )}
-
-            {success && (
-              <Alert severity="success">
-                User created successfully!
-              </Alert>
-            )}
-
-            <Button 
-              type="submit"
-              variant="contained" 
-              color="primary"
-              size="large"
-            >
-              Create User
-            </Button>
-          </Stack>
-        </form>
-      </CardContent>
-    </Card>
+            </form>
+          </CardContent>
+        </Card>
+      </Box>
+    </>
   );
 };
 
