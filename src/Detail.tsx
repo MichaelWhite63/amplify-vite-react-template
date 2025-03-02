@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Box, Paper, Button } from '@mui/material';
+import { Typography, Box, Paper, Button, createTheme } from '@mui/material';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import DOMPurify from 'dompurify';
+import './ResponsiveTable.css';
 
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
@@ -28,6 +29,17 @@ const Detail: React.FC = () => {
   const [news, setNews] = useState<NewsDetail | null>(null);
   const [hasHistory, setHasHistory] = useState(false);
 
+  const theme = createTheme();
+  theme.typography.h3 = {
+    fontSize: '1.2rem',
+    '@media (min-width:600px)': {
+      fontSize: '1.5rem',
+    },
+    [theme.breakpoints.up('md')]: {
+      fontSize: '2.4rem',
+    },
+  };
+  
   useEffect(() => {
     setHasHistory(window.history.length > 1);
 
@@ -56,13 +68,25 @@ const Detail: React.FC = () => {
 
     fetchNewsDetail();
   }, [id]);
-
+/*
   // Assists with the display of the article content
   const createMarkup = (html: string) => {
     return {
       __html: DOMPurify.sanitize(html)
     };
   };
+*/
+
+  // Assists with the display of the article content
+  const createMarkup = (html: string) => {
+    const modifiedHtml = html.replace('<table', '<div class="table-wrapper"><table class="responsive-table"') + '</div>';
+    return {
+      __html: DOMPurify.sanitize(modifiedHtml)
+    };
+  };
+  
+
+
 
   return (
     <Authenticator>
@@ -129,18 +153,12 @@ const Detail: React.FC = () => {
                       width: '100%' // Make Typography take full width of parent Box
                     }}
                   >
-                    <Box 
-                      component="div"
-                      sx={{ width: '100%',
-                          px: 2,
-                          py: 1,
-                          backgroundColor: '#f5f5f5',
-                          borderRadius: 1
-                       }} // Make inner Box take full width
-                      dangerouslySetInnerHTML={createMarkup(news.memo)}
-
-                //      dangerouslySetInnerHTML={{ __html: news.memo }}
-                    />
+                
+                      <div 
+                        className="custom-content"
+                        dangerouslySetInnerHTML={createMarkup(news.memo)} 
+                      />
+                    
                   </Typography>
                   <Typography variant="subtitle1" color="text.secondary" gutterBottom>
                   <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}
