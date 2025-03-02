@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
-import MenuComponent from './Menu';
+//import MenuComponent from './Menu';
 import Default from './Default';
 import Charts from './Charts';
 import SendEmail from './sendEmail';

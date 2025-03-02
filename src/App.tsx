@@ -10,7 +10,7 @@ import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel
 import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
 import NewsAppBar from './components/NewsAppBar';
-const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
+//const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
