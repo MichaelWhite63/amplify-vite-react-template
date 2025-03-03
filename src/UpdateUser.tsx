@@ -3,6 +3,7 @@ import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { TextField, Button, List, ListItem, ListItemText, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box } from '@mui/material';
 import NewsAppBar from './components/NewsAppBar';
+import { Authenticator } from '@aws-amplify/ui-react';
 
 const client = generateClient<Schema>();
 
@@ -98,7 +99,7 @@ const UpdateUser: React.FC = () => {
   };
 
   return (
-    <>
+    <Authenticator>
       <NewsAppBar />
       <Box sx={{ 
         mt: '130px', // Add margin top to account for NewsAppBar and logo
@@ -205,7 +206,7 @@ const UpdateUser: React.FC = () => {
           )}
         </div>
       </Box>
-    </>
+    </Authenticator>
   );
 };
 

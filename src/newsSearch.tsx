@@ -4,6 +4,7 @@ import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
+import { Authenticator } from '@aws-amplify/ui-react';
 
 import { Editor } from '@tinymce/tinymce-react';
 
@@ -135,6 +136,8 @@ const NewsSearch: React.FC = () => {
   };
 */
   return (
+          <Authenticator>
+    
     <div style={{ 
       paddingTop: '45px' // Add padding to account for fixed NewsAppBar
     }}>
@@ -319,6 +322,8 @@ const NewsSearch: React.FC = () => {
         )}
       </div>
     </div>
+          </Authenticator>
+    
   );
 };
 

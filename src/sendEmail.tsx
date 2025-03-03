@@ -16,6 +16,7 @@ import { styled } from '@mui/material/styles';
 import { Stack } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { List, ListItem, ListItemText } from '@mui/material';
+import { Authenticator } from '@aws-amplify/ui-react';
 
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
@@ -150,7 +151,7 @@ const SendEmail: React.FC = () => {
   };
 
   return (
-    <>
+    <Authenticator>
       <NewsAppBar />
       <Box sx={{ mt: '130px' }}> {/* Add margin top to account for NewsAppBar */}
         <div>
@@ -374,7 +375,7 @@ const SendEmail: React.FC = () => {
           </Dialog>
         </div>
       </Box>
-    </>
+    </Authenticator>
   );
 };
 

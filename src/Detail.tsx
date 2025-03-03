@@ -85,9 +85,6 @@ const Detail: React.FC = () => {
     };
   };
   
-
-
-
   return (
     <Authenticator>
       {({ user }) => {

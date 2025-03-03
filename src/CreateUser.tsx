@@ -16,6 +16,7 @@ import {
   Box
 } from '@mui/material';
 import NewsAppBar from './components/NewsAppBar';
+import { Authenticator } from '@aws-amplify/ui-react';
 
 const client = generateClient<Schema>();
 
@@ -100,7 +101,7 @@ const CreateUser: React.FC = () => {
   };
 
   return (
-    <>
+    <Authenticator>
       <NewsAppBar />
       <Box sx={{ mt: '130px' }}> {/* Add margin top to account for NewsAppBar */}
         <Card sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
@@ -200,7 +201,7 @@ const CreateUser: React.FC = () => {
           </CardContent>
         </Card>
       </Box>
-    </>
+    </Authenticator>
   );
 };
 

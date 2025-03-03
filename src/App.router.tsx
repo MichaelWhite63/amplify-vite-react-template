@@ -23,6 +23,7 @@ const AppRouter: React.FC = () => {
           <Route path="/detail/:id" element={<Detail />} />
           <Route path="/send-email" element={<SendEmail />} />
           <Route path="charts" element={<Charts />} />
+          <Route path="/admin" element={<App />} />
           <Route path="/news-entry" element={<App />} />
           <Route path="/news-search" element={<NewsSearch />} />
           <Route path="/update-users" element={<UpdateUser />} />

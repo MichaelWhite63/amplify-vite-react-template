@@ -11,6 +11,7 @@ import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
 import NewsAppBar from './components/NewsAppBar';
 //const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
+import { Authenticator } from '@aws-amplify/ui-react';
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
@@ -203,6 +204,7 @@ const App: React.FC = () => {
   };
 
   const renderFormScreen = () => (
+     <Authenticator>
     <>
       <main style={mainStyle}>
         <NewsAppBar />
@@ -322,7 +324,6 @@ const App: React.FC = () => {
                 />
               </FormControl>
       
-
               <Button type="submit" variant="contained" color="primary">
                 Submit
               </Button>
@@ -331,6 +332,8 @@ const App: React.FC = () => {
         </Box>
       </main>
     </>
+      </Authenticator>
+  
   );
 
   return renderFormScreen();

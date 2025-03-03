@@ -8,9 +8,11 @@ import Chart4Component from './Chart4';
 import Chart5Component from './Chart5';
 import Chart6Component from './Chart6'; // Import Chart6Component
 import NewsAppBar from './components/NewsAppBar';
+import { Authenticator } from '@aws-amplify/ui-react';
 
 const Charts: React.FC = () => {
   return (
+    <Authenticator>
     <>
       <NewsAppBar />
       <Box sx={{
@@ -35,6 +37,8 @@ const Charts: React.FC = () => {
         </Grid>
       </Box>
     </>
+    </Authenticator>
+    
   );
 };
 

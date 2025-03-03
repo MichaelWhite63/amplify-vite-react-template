@@ -123,7 +123,7 @@ const NewsAppBar: React.FC = () => {
               }}
             >
               <MenuItem 
-                onClick={() => handleMenuItemClick('/news-entry')}
+                onClick={() => handleMenuItemClick('/admin')}
                 sx={{ 
                   minWidth: '200px',
                   color: 'white'
