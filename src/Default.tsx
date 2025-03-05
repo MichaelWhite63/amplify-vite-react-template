@@ -725,6 +725,7 @@ const Default: React.FC = () => {
                         sx={{ 
                           cursor: 'pointer',
                           color: '#191970',
+                          fontWeight: 'bold', // Added bold formatting
                           '&:hover': {
                             textDecoration: 'underline'
                           }
