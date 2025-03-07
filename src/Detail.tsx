@@ -68,14 +68,6 @@ const Detail: React.FC = () => {
 
     fetchNewsDetail();
   }, [id]);
-/*
-  // Assists with the display of the article content
-  const createMarkup = (html: string) => {
-    return {
-      __html: DOMPurify.sanitize(html)
-    };
-  };
-*/
 
   // Assists with the display of the article content
   const createMarkup = (html: string) => {
@@ -122,7 +114,14 @@ const Detail: React.FC = () => {
               </div>
             </div>
 
-            <Box sx={{ p: 3, maxWidth: '1200px', margin: '20px auto' }}>
+            <Box sx={{ 
+              p: 3, 
+              width: {
+                xs: '95%', // Width for extra-small screens (phones)
+                sm: '75%'  // Width for small screens and up
+              },
+              margin: '20px auto'
+            }}>
               <Paper elevation={3} sx={{ p: 4 }}>
                 {hasHistory && (
                   <Button 
