@@ -216,7 +216,7 @@ export const data = defineData({
     defaultAuthorizationMode: "apiKey",
     // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
-      expiresInDays: 5000,
+      expiresInDays: 364,
     },
   },
 });
