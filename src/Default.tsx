@@ -101,6 +101,7 @@ const Default: React.FC = () => {
       try {
         // Fetch Steel News using getTopTen
         const steelTopTen = await client.queries.getTopTen({ type: 'Steel', count: 10 });
+        console.log('Steel Top Ten:', steelTopTen);
         const parsedSteelData = JSON.parse(steelTopTen.data as string);
         setFirstSteelItem({
           title: parsedSteelData[0]?.title || 'Loading...',

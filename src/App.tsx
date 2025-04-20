@@ -302,7 +302,7 @@ const App: React.FC = () => {
                 <FormLabel>本文</FormLabel>
                 <Editor
                   onInit={(_evt, editor) => editorRef.current = editor as any}
-                  apiKey='nlumqbl8xd3g3re2cf0oi2p8q65cjiodifj3oux9zuz7813p'
+                  apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
                   initialValue=""
                   init={{
                     plugins: [
@@ -310,7 +310,7 @@ const App: React.FC = () => {
                       'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
                       // Your account includes a free trial of TinyMCE premium features
                       // Try the most popular premium features until Mar 20, 2025:
-                      'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+                      //'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
                     ],
                     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
                     powerpaste_word_import: 'merge',
