@@ -12,7 +12,6 @@ import type { Schema } from '../amplify/data/resource';
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
 
-
 interface NewsItem {
   id: string;
   title: string;
