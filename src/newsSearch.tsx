@@ -13,7 +13,7 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 import { Paper, TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, Box } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

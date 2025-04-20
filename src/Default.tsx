@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Typography, Box, Paper, Table, TableBody, TableCell, 
   TableContainer, TableHead, TableRow, TextField, Button } 
   from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';

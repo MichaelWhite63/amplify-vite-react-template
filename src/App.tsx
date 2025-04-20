@@ -7,7 +7,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
 import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import NewsAppBar from './components/NewsAppBar';
 //const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';

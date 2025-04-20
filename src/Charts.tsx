@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import Grid from '@mui/material/Grid2'; // Import the stable version of Grid2
+import Grid from '@mui/material/Grid'; // Import the stable version of Grid2
 import Chart1Component from './Chart1';
 import Chart2Component from './Chart2';
 import Chart3Component from './Chart3';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Box, Paper, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, 
          Accordion, AccordionSummary, AccordionDetails, TextField, Button, Tabs, Tab } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { generateClient } from 'aws-amplify/data';

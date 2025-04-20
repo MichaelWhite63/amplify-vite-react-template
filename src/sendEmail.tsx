@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import { TextField, Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import { Stack } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
