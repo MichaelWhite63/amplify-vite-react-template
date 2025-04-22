@@ -53,6 +53,22 @@ const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const formStyle = {
+  width: '100%',
+  maxWidth: '1200px',
+  margin: '0 auto',
+  padding: '20px',
+};
+
+const mainStyle = {
+  display: 'flex',
+  flexDirection: 'column' as const,
+  alignItems: 'center',
+  width: '100%',
+  minHeight: '100vh',
+  backgroundColor: '#f5f5f5',
+};
+
 const SendEmail: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'Steel' | 'Auto' | 'Aluminum'>('Steel');
   const [recipient, setRecipient] = useState<'everyone' | 'single'>('everyone');
@@ -153,10 +169,10 @@ const SendEmail: React.FC = () => {
   return (
     <Authenticator>
       <NewsAppBar />
-      <Box sx={{ mt: '130px' }}> {/* Add margin top to account for NewsAppBar */}
-        <div>
+      <Box sx={mainStyle}>
+        <Box sx={{ ...formStyle, mt: '50px' }}>
           <form onSubmit={handlePreview}>
-            <FormControl sx={{ m: 2 }} variant="standard">
+            <FormControl sx={{ width: '100%' }} variant="standard">
               {/* Entry fields container */}
               <div style={{ 
                 display: 'flex', 
@@ -168,7 +184,7 @@ const SendEmail: React.FC = () => {
                   container 
                   spacing={2} 
                   sx={{
-                    width: '80%',
+                    width: '100%',
                   }}
                 >
                   <Grid size={6}>
@@ -243,7 +259,7 @@ const SendEmail: React.FC = () => {
                 justifyContent: 'center',
                 width: '100%'
               }}>
-                <TableContainer component={Paper} sx={{ width: '90%' }}>
+                <TableContainer component={Paper} sx={{ width: '100%' }}>
                   <Table>
                     <TableHead>
                       <StyledTableHeadRow>
@@ -254,9 +270,9 @@ const SendEmail: React.FC = () => {
                             onChange={(e) => setSelectedNewsIDs(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
                           />
                         </TableCell> 
-                        <TableCell style={{ width: '75%', color: 'white' }}>カテゴリー {selectedType}</TableCell>
-                        <TableCell style={{ width: '15%', color: 'white' }}>ニュースの日付</TableCell>
-                        <TableCell style={{ width: '10%', color: 'white' }}>移動</TableCell>
+                        <TableCell style={{ width: '77%', color: 'white' }}>カテゴリー {selectedType}</TableCell>
+                        <TableCell style={{ width: '20%', color: 'white' }}>ニュースの日付</TableCell>
+                        <TableCell style={{ width: '5%', color: 'white' }}>移動</TableCell>
                       </StyledTableHeadRow>
                     </TableHead> 
                     <TableBody>
@@ -373,7 +389,7 @@ const SendEmail: React.FC = () => {
               </Button>
             </DialogActions>
           </Dialog>
-        </div>
+        </Box>
       </Box>
     </Authenticator>
   );
