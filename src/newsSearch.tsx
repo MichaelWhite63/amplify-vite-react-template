@@ -144,12 +144,20 @@ const NewsSearch: React.FC = () => {
       }}>
         <NewsAppBar />
         <div style={{ 
-          maxWidth: '1600px',
+          maxWidth: '1200px',
           margin: '0px auto 0',
           padding: '0px'
         }}>
           {!editingNews && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '0 auto', paddingTop: '20px' }}>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', // Add this to center the content
+              gap: '10px', 
+              margin: '0 auto', 
+              paddingTop: '20px',
+              width: '100%' // Add this to ensure full width
+            }}>
               キーワード 検索
               <TextField
                 sx={{
@@ -175,13 +183,23 @@ const NewsSearch: React.FC = () => {
           {!editingNews && (
             <div style={{ paddingTop: '10px' }}>
               {results.length > 0 ? (
-                <TableContainer component={Paper} style={{ width: '100%', margin: '0 auto' }}>
+                <TableContainer component={Paper} sx={{ 
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  margin: '0 auto',
+                  '& .MuiTable-root': {
+                    width: '80%',
+                    margin: '20px 0',
+                    tableLayout: 'fixed' // Add this to enforce column widths
+                  }
+                }}>
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={tableStyles}>タイトル</TableCell>
-                        <TableCell sx={tableStyles}>Date</TableCell>
-                        <TableCell sx={tableStyles}>Edit</TableCell>
+                        <TableCell sx={{ ...tableStyles, width: '60%' }}>タイトル</TableCell>
+                        <TableCell sx={{ ...tableStyles, width: '25%' }}>Date</TableCell>
+                        <TableCell sx={{ ...tableStyles, width: '15%' }}>Edit</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -205,7 +223,7 @@ const NewsSearch: React.FC = () => {
 
           {editingNews && newsForm && (
             <div style={{ 
-              maxWidth: '80%', 
+              maxWidth: '100%', 
               margin: '0 auto',
               marginBottom: '20px',
               marginTop: '30px',
@@ -274,8 +292,7 @@ const NewsSearch: React.FC = () => {
                       />
                     </Grid>
                   </Grid>
-                </Box>
-                <FormControl fullWidth>
+                <FormControl fullWidth style={{ marginBottom: '40px' }}>
                   <FormLabel>本文</FormLabel>
                   <Editor
                     onInit={(_evt, editor) => editorRef.current = editor as any}
@@ -308,6 +325,7 @@ const NewsSearch: React.FC = () => {
                         fullWidth
                       />
                     </Grid>
+                </Box>
                 <Box sx={{ 
                   display: 'flex', 
                   gap: 2, 

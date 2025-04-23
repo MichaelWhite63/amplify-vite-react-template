@@ -198,7 +198,7 @@ const App: React.FC = () => {
   
   const mainStyle: CSSProperties = {
     padding: '20px',
-    maxWidth: '1600px',
+    maxWidth: '1200px',
     margin: '0 auto',
     height: '120vh',
     overflowY: 'auto',
@@ -299,16 +299,16 @@ const App: React.FC = () => {
                 />
               </Grid>
             </Grid>
-          </Box>
+         
 
 
           <FormControl fullWidth style={{ marginBottom: '40px' }}>
             <FormLabel>本文</FormLabel>
             <Editor
-            onInit={(_evt, editor) => editorRef.current = editor as any}
-            apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
-            initialValue=""
-            init={{
+              onInit={(_evt, editor) => editorRef.current = editor as any}
+              apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
+              initialValue=""
+              init={{
                   plugins: [
                     // Core editing features
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
@@ -325,9 +325,8 @@ const App: React.FC = () => {
                       { value: 'Email', title: 'Email' },
                     ] as { value: string; title: string }[],
                     }}
-          />
+            />
           </FormControl>
-    
           <Grid size={12}>
                 <TextField
                   label="見出し"
@@ -339,8 +338,7 @@ const App: React.FC = () => {
                   fullWidth
                 />
               </Grid>
-
-
+          </Box>
           <Button type="submit" variant="contained" color="primary">
             Submit
           </Button>
