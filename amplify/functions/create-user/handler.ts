@@ -17,9 +17,9 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
   const { email, name, department, groups, company } = event.arguments as { 
     email: string; 
     name: string;
+    company: string;
     department: string;
     groups: string[];
-    company: string;
   };
 
   // Validate email

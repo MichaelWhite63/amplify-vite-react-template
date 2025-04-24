@@ -76,9 +76,9 @@ const CreateUser: React.FC = () => {
 
     try {
       const response = await client.queries.createUser({
-        name: formData.name,
-        username: formData.company,
         email: formData.email,
+        name: formData.name,
+        company: formData.company,
         department: formData.department, // Add department to API call
         groups: selectedGroups
       });
