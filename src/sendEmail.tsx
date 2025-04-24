@@ -170,7 +170,7 @@ const SendEmail: React.FC = () => {
     <Authenticator>
       <NewsAppBar />
       <Box sx={mainStyle}>
-        <Box sx={{ ...formStyle, mt: '50px' }}>
+        <Box sx={{ ...formStyle, mt: '50px', width: '100%' }}>
           <form onSubmit={handlePreview}>
             <FormControl sx={{ width: '100%' }} variant="standard">
               {/* Entry fields container */}

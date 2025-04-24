@@ -85,8 +85,8 @@ const schema = a.schema({
   updateUser: a
     .query()
     .arguments({
-      username: a.string(),     // originalEmail (used as Cognito Username)
       email: a.string(),        // new email address
+      username: a.string(),     // originalEmail (used as Cognito Username)
       givenName: a.string(),    // renamed from username
       familyName: a.string(),   // renamed from lastName
       groups: a.string().array()
@@ -98,10 +98,11 @@ const schema = a.schema({
   createUser: a
     .query()
     .arguments({
-      username: a.string(),  //given_name; company name
       email: a.string(),
+      name: a.string(),        // name
+      company: a.string(),     // last_name
+      department: a.string(),  // given_name
       groups: a.string().array(),
-      lastName: a.string(),  // family_name; person name
     })
     .returns(a.string())
     .handler(a.handler.function(createUser))

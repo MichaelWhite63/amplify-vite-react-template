@@ -22,9 +22,10 @@ const client = generateClient<Schema>();
 
 const CreateUser: React.FC = () => {
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
-    lastName: '',
+    company: '',
+    name: '',
+    department: '', // Add department field
     groups: {
       Steel: false,
       Auto: false,
@@ -59,8 +60,8 @@ const CreateUser: React.FC = () => {
     setError(null);
     setSuccess(false);
 
-    if (!formData.username || !formData.email || !formData.lastName) {
-      setError('Username, email, and last name are required');
+    if (!formData.company || !formData.email || !formData.name || !formData.department) {
+      setError('Company, email, name, and department are required');
       return;
     }
 
@@ -75,9 +76,10 @@ const CreateUser: React.FC = () => {
 
     try {
       const response = await client.queries.createUser({
-        lastName: formData.lastName,  // Person Name
-        username: formData.username,  //Company
+        name: formData.name,
+        username: formData.company,
         email: formData.email,
+        department: formData.department, // Add department to API call
         groups: selectedGroups
       });
 
@@ -86,9 +88,10 @@ const CreateUser: React.FC = () => {
       }
       setSuccess(true);
       setFormData({
-        username: '',
+        company: '',
         email: '',
-        lastName: '',
+        name: '',
+        department: '', // Add department to reset
         groups: {
           Steel: false,
           Auto: false,
@@ -99,6 +102,11 @@ const CreateUser: React.FC = () => {
       setError(err instanceof Error ? err.message : 'An error occurred while creating the user');
     }
   };
+  /**
+   * name       -> name
+   * company     -> last_name
+   * department -> given_name
+   */
 
   return (
     <Authenticator>
@@ -123,18 +131,27 @@ const CreateUser: React.FC = () => {
                 />
                 
                 <TextField
-                  name="lastName"
+                  name="name"
                   label="名前"
-                  value={formData.lastName}
+                  value={formData.name}
                   onChange={handleInputChange}
                   fullWidth
                   required
                 />
                 
                 <TextField
-                  name="username"
+                  name="company"
                   label="会社名"
-                  value={formData.username}
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  fullWidth
+                  required
+                />
+
+                <TextField
+                  name="department"
+                  label="部署"
+                  value={formData.department}
                   onChange={handleInputChange}
                   fullWidth
                   required

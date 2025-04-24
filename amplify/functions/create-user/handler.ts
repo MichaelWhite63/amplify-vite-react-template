@@ -14,11 +14,12 @@ interface UserAttributes {
 }
 
 export const handler: Schema["createUser"]["functionHandler"] = async (event): Promise<string | null> => {
-  const { email, username, groups, lastName } = event.arguments as { 
+  const { email, name, department, groups, company } = event.arguments as { 
     email: string; 
-    username: string;
+    name: string;
+    department: string;
     groups: string[];
-    lastName: string;
+    company: string;
   };
 
   // Validate email
@@ -30,12 +31,13 @@ export const handler: Schema["createUser"]["functionHandler"] = async (event): P
     UserPoolId: USER_POOL_ID,
     Username: email,  // Changed from username to email
     TemporaryPassword: "kuro611",
-    MessageAction: 'SUPPRESS',
+//    MessageAction: 'SUPPRESS',
     UserAttributes: [
       { Name: 'email', Value: email },
       { Name: 'email_verified', Value: 'false' },
-      { Name: 'family_name', Value: lastName },
-      { Name: 'given_name', Value: username },  // Store username as given_name
+      { Name: 'name', Value: name },
+      { Name: 'family_name', Value: company },
+      { Name: 'given_name', Value: department }, 
     ] as UserAttributes[],
   });
 
