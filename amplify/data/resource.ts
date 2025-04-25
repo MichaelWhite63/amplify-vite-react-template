@@ -86,9 +86,9 @@ const schema = a.schema({
     .query()
     .arguments({
       email: a.string(),        // new email address
-      username: a.string(),     // originalEmail (used as Cognito Username)
-      givenName: a.string(),    // renamed from username
-      familyName: a.string(),   // renamed from lastName
+      name: a.string(),        // name
+      company: a.string(),     // family_name
+      department: a.string(),  // given_name
       groups: a.string().array()
     })
     .returns(a.string())
@@ -100,7 +100,7 @@ const schema = a.schema({
     .arguments({
       email: a.string(),
       name: a.string(),        // name
-      company: a.string(),     // last_name
+      company: a.string(),     // family_name
       department: a.string(),  // given_name
       groups: a.string().array(),
     })
