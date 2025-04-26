@@ -50,12 +50,12 @@ const Chart3Component: React.FC = () => {
   const formatNumber = (num: number) => {
     return num.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   };
-
+/*
   const handleEditClick = (item: Chart3) => {
     setCurrentEditItem(item);
     setEditDialogOpen(true);
   };
-
+*/
   const handleDialogClose = () => {
     setEditDialogOpen(false);
     setCurrentEditItem(null);

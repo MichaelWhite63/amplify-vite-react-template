@@ -139,24 +139,32 @@ const UpdateUser: React.FC = () => {
             value={searchName}  // Changed from name
             onChange={(e) => setSearchName(e.target.value)}  // Changed from setName
           />
-          <Button variant="contained" onClick={handleSearchUsers} style={{ marginLeft: '10px' }}>
-            Get User
+          <Button 
+            variant="contained" 
+            onClick={handleSearchUsers} 
+            sx={{ 
+              marginLeft: '10px',
+              padding: '10px 30px',
+              fontSize: '1.2rem'
+            }}
+          >
+            検索
           </Button>
           {!selectedDetails && (
             <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table>
+              <Table sx={{ '& .MuiTableCell-root': { fontSize: '1.5rem', padding: '16px' } }}>
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox"></TableCell>
-                    <TableCell>メール</TableCell>
-                    <TableCell>名前</TableCell>
-                    <TableCell>会社名</TableCell>
-                    <TableCell>部署</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>メール</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>名前</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>会社名</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>部署</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {users.map((user, idx) => (
-                    <TableRow key={idx}>
+                    <TableRow key={idx} hover>
                       <TableCell padding="checkbox">
                         <Radio
                           checked={selectedEmail === user.email}
