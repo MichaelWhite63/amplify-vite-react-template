@@ -168,7 +168,7 @@ const NewsSearch: React.FC = () => {
                 }}
                 value={searchString}
                 onChange={(e) => setSearchString(e.target.value)}
-                placeholder="Enter search string"
+                placeholder="検索文字列を入力してください"
                 variant="outlined"
               />
               <Button 

@@ -133,7 +133,7 @@ const Detail: React.FC = () => {
                   </Button>
                 )}
 
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h3" gutterBottom>
                   {news.title}
                 </Typography>
 
@@ -143,18 +143,16 @@ const Detail: React.FC = () => {
                   margin: '0 auto' // Center the box horizontally
                 }}>
                   <Typography 
-                    variant="body1" 
+                    variant="h4" 
                     sx={{ 
                       mb: 1, 
                       width: '100%' // Make Typography take full width of parent Box
                     }}
                   >
-                
                       <div 
                         className="custom-content"
                         dangerouslySetInnerHTML={createMarkup(news.memo)} 
-                      />
-                    
+                      /> 
                   </Typography>
                   <Typography variant="subtitle1" color="text.secondary" gutterBottom>
                   <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}

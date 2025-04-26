@@ -13,7 +13,9 @@ import {
   FormControlLabel,
   Checkbox,
   FormLabel,
-  Box
+  Box,
+  Radio,
+  Divider
 } from '@mui/material';
 import NewsAppBar from './components/NewsAppBar';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -25,7 +27,7 @@ const CreateUser: React.FC = () => {
     email: '',
     company: '',
     name: '',
-    department: '', // Add department field
+    department: '',
     groups: {
       Steel: false,
       Auto: false,
@@ -34,6 +36,7 @@ const CreateUser: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [allSelected, setAllSelected] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name.startsWith('group-')) {
@@ -45,6 +48,10 @@ const CreateUser: React.FC = () => {
           [groupName]: e.target.checked
         }
       }));
+      setAllSelected(Object.values({
+        ...formData.groups,
+        [groupName]: e.target.checked
+      }).every(Boolean));
     } else {
       setFormData(prev => ({
         ...prev,
@@ -53,6 +60,19 @@ const CreateUser: React.FC = () => {
     }
     setError(null);
     setSuccess(false);
+  };
+
+  const handleSelectAll = () => {
+    const newValue = !allSelected;
+    setAllSelected(newValue);
+    setFormData(prev => ({
+      ...prev,
+      groups: {
+        Steel: newValue,
+        Auto: newValue,
+        Aluminum: newValue
+      }
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,7 +99,7 @@ const CreateUser: React.FC = () => {
         email: formData.email,
         name: formData.name,
         company: formData.company,
-        department: formData.department, // Add department to API call
+        department: formData.department,
         groups: selectedGroups
       });
 
@@ -91,27 +111,23 @@ const CreateUser: React.FC = () => {
         company: '',
         email: '',
         name: '',
-        department: '', // Add department to reset
+        department: '',
         groups: {
           Steel: false,
           Auto: false,
           Aluminum: false
         }
       });
+      setAllSelected(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while creating the user');
     }
   };
-  /**
-   * name       -> name
-   * company     -> last_name
-   * department -> given_name
-   */
 
   return (
     <Authenticator>
       <NewsAppBar />
-      <Box sx={{ mt: '130px' }}> {/* Add margin top to account for NewsAppBar */}
+      <Box sx={{ mt: '130px' }}>
         <Card sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
           <CardContent>
             <Typography variant="h5" gutterBottom>
@@ -156,9 +172,27 @@ const CreateUser: React.FC = () => {
                   fullWidth
                   required
                 />
+
+                <Divider sx={{ my: 2 }} />
+
+                <FormControlLabel
+                  control={
+                    <Radio 
+                      checked={allSelected}
+                      onClick={(e) => {
+                        if (allSelected) {
+                          e.preventDefault();
+                          handleSelectAll();
+                        }
+                      }}
+                      onChange={handleSelectAll}
+                    />
+                  }
+                  label="すべてのカテゴリ"
+                />
                 
                 <FormGroup>
-                  <FormLabel component="legend">カテゴリー</FormLabel>
+                  <FormLabel component="legend"></FormLabel>
                   <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
                     <FormControlLabel
                       control={
