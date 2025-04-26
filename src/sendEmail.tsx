@@ -64,7 +64,7 @@ const mainStyle = {
   display: 'flex',
   flexDirection: 'column' as const,
   alignItems: 'center',
-  width: '100%',
+  width: '120%',
   minHeight: '100vh',
   backgroundColor: '#f5f5f5',
 };
@@ -192,7 +192,18 @@ const SendEmail: React.FC = () => {
                       <Stack spacing={2}>
                         <div>
                           <FormLabel>配信グループ</FormLabel>
-                          <RadioGroup row value={recipient} onChange={(e) => setRecipient(e.target.value as 'everyone' | 'single')}>
+                          <RadioGroup 
+                            row 
+                            value={recipient} 
+                            onChange={(e) => setRecipient(e.target.value as 'everyone' | 'single')}
+                            sx={{
+                              justifyContent: 'space-between',
+                              width: '100%',
+                              '& .MuiFormControlLabel-root': {
+                                margin: 0
+                              }
+                            }}
+                          >
                             <FormControlLabel value="everyone" control={<Radio />} label="全員" />
                             <FormControlLabel value="single" control={<Radio />} label="シングル" />
                           </RadioGroup>
@@ -209,7 +220,18 @@ const SendEmail: React.FC = () => {
                         </div>
                         <div>
                           <FormLabel>カテゴリー</FormLabel>
-                          <RadioGroup row value={selectedType} onChange={handleChange}>
+                          <RadioGroup 
+                            row 
+                            value={selectedType} 
+                            onChange={handleChange}
+                            sx={{
+                              justifyContent: 'space-between',
+                              width: '100%',
+                              '& .MuiFormControlLabel-root': {
+                                margin: 0
+                              }
+                            }}
+                          >
                             <FormControlLabel value="Steel" control={<Radio />} label="鉄鋼" />
                             <FormControlLabel value="Auto" control={<Radio />} label="自動車" />
                             <FormControlLabel value="Aluminum" control={<Radio />} label="アルミ" />

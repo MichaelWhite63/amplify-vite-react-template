@@ -67,8 +67,8 @@ const UpdateUser: React.FC = () => {
       setGroupMemberships(data[0]?.GroupMemberships || []);
       
       const attributes = data[0]?.Attributes || [];
-      const departmentAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'department');
-      const companyAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'company');
+      const departmentAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'given_name');
+      const companyAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'family_name');
       const nameAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'name');
       setDepartment(departmentAttr?.Value || '');
       setCompany(companyAttr?.Value || '');
