@@ -3,6 +3,11 @@ import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 
+const textStyle = {
+  fontWeight: 'bold',
+  fontSize: '1.2rem'
+};
+
 const client = generateClient<Schema>();
 
 interface Chart1 {
@@ -80,31 +85,31 @@ const Chart1Component: React.FC = () => {
   return (
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
-        <Typography variant="h4" gutterBottom>
-        米国鉄鋼景気指標
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+          米国鉄鋼景気指標
         </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={{ width: '15%' }}>Order</TableCell>
-                <TableCell style={{ width: '80%' }}>タイトル</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>今週</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>前週</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>前年同週</TableCell>
-                <TableCell style={{ width: '25%' }}>Action</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%' }}>Order</TableCell>
+                <TableCell sx={textStyle} style={{ width: '80%' }}>タイトル</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%', textAlign: 'right' }}>今週</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%', textAlign: 'right' }}>前週</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%', textAlign: 'right' }}>前年同週</TableCell>
+                <TableCell sx={textStyle} style={{ width: '25%' }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {chart1Data.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell>{item.Order}</TableCell>
-                  <TableCell>{item.Title}</TableCell>
-                  <TableCell align="right">{formatNumber(item.ThisWeek)}</TableCell>
-                  <TableCell align="right">{formatNumber(item.LastWeek)}</TableCell>
-                  <TableCell align="right">{formatNumber(item.LastYear)}</TableCell>
+                  <TableCell sx={textStyle}>{item.Order}</TableCell>
+                  <TableCell sx={textStyle}>{item.Title}</TableCell>
+                  <TableCell sx={textStyle} align="right">{formatNumber(item.ThisWeek)}</TableCell>
+                  <TableCell sx={textStyle} align="right">{formatNumber(item.LastWeek)}</TableCell>
+                  <TableCell sx={textStyle} align="right">{formatNumber(item.LastYear)}</TableCell>
                   <TableCell>
-                    <Button variant="contained" color="primary" onClick={() => handleEditClick(item)}>
+                    <Button variant="contained" color="primary" sx={{ fontWeight: 'bold' }} onClick={() => handleEditClick(item)}>
                       Edit
                     </Button>
                   </TableCell>
@@ -116,11 +121,15 @@ const Chart1Component: React.FC = () => {
       </Paper>
 
       <Dialog open={editDialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Edit Row</DialogTitle>
+        <DialogTitle sx={textStyle}>Edit Row</DialogTitle>
         <DialogContent>
           {editRowData && (
             <>
               <TextField
+                sx={{
+                  '& .MuiInputLabel-root': { fontWeight: 'bold' },
+                  '& .MuiInputBase-input': { fontWeight: 'bold' }
+                }}
                 margin="dense"
                 label="Order"
                 name="Order"
@@ -129,6 +138,10 @@ const Chart1Component: React.FC = () => {
                 fullWidth
               />
               <TextField
+                sx={{
+                  '& .MuiInputLabel-root': { fontWeight: 'bold' },
+                  '& .MuiInputBase-input': { fontWeight: 'bold' }
+                }}
                 margin="dense"
                 label="Title"
                 name="Title"
@@ -137,6 +150,10 @@ const Chart1Component: React.FC = () => {
                 fullWidth
               />
               <TextField
+                sx={{
+                  '& .MuiInputLabel-root': { fontWeight: 'bold' },
+                  '& .MuiInputBase-input': { fontWeight: 'bold' }
+                }}
                 margin="dense"
                 label="This Week"
                 name="ThisWeek"
@@ -145,6 +162,10 @@ const Chart1Component: React.FC = () => {
                 fullWidth
               />
               <TextField
+                sx={{
+                  '& .MuiInputLabel-root': { fontWeight: 'bold' },
+                  '& .MuiInputBase-input': { fontWeight: 'bold' }
+                }}
                 margin="dense"
                 label="Last Week"
                 name="LastWeek"
@@ -153,6 +174,10 @@ const Chart1Component: React.FC = () => {
                 fullWidth
               />
               <TextField
+                sx={{
+                  '& .MuiInputLabel-root': { fontWeight: 'bold' },
+                  '& .MuiInputBase-input': { fontWeight: 'bold' }
+                }}
                 margin="dense"
                 label="Last Year"
                 name="LastYear"
@@ -164,10 +189,10 @@ const Chart1Component: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose} color="secondary">
+          <Button onClick={handleDialogClose} color="secondary" sx={{ fontWeight: 'bold' }}>
             Cancel
           </Button>
-          <Button onClick={handleSave} color="primary">
+          <Button onClick={handleSave} color="primary" sx={{ fontWeight: 'bold' }}>
             Save
           </Button>
         </DialogActions>

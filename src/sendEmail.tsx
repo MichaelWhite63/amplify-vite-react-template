@@ -54,17 +54,17 @@ const StyledTableHeadRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const formStyle = {
-  width: '100%',
-  maxWidth: '1200px',
+  width: '85%',
   margin: '0 auto',
-  padding: '20px',
+  padding: '10px',
+  maxWidth: '1200px' // Add fixed maximum width
 };
 
 const mainStyle = {
   display: 'flex',
   flexDirection: 'column' as const,
   alignItems: 'center',
-  width: '120%',
+  width: '100%',
   minHeight: '100vh',
   backgroundColor: '#f5f5f5',
 };
@@ -169,8 +169,12 @@ const SendEmail: React.FC = () => {
   return (
     <Authenticator>
       <NewsAppBar />
-      <Box sx={mainStyle}>
-        <Box sx={{ ...formStyle, mt: '50px', width: '100%' }}>
+      <Box sx={{ 
+        ...mainStyle, 
+        maxWidth: '100%',
+        margin: '0 auto'
+      }}>
+        <Box sx={{ ...formStyle, mt: '50px' }}>
           <form onSubmit={handlePreview}>
             <FormControl sx={{ width: '100%' }} variant="standard">
               {/* Entry fields container */}
@@ -185,9 +189,10 @@ const SendEmail: React.FC = () => {
                   spacing={2} 
                   sx={{
                     width: '100%',
+                    margin: '0 auto',
                   }}
                 >
-                  <Grid size={6}>
+                  <Grid size={12}>
                     <Paper sx={{ p: 2 }}>
                       <Stack spacing={2}>
                         <div>
@@ -198,7 +203,7 @@ const SendEmail: React.FC = () => {
                             onChange={(e) => setRecipient(e.target.value as 'everyone' | 'single')}
                             sx={{
                               justifyContent: 'space-between',
-                              width: '100%',
+                              width: '50%',
                               '& .MuiFormControlLabel-root': {
                                 margin: 0
                               }
@@ -226,7 +231,7 @@ const SendEmail: React.FC = () => {
                             onChange={handleChange}
                             sx={{
                               justifyContent: 'space-between',
-                              width: '100%',
+                              width: '50%',
                               '& .MuiFormControlLabel-root': {
                                 margin: 0
                               }
@@ -247,6 +252,16 @@ const SendEmail: React.FC = () => {
                         />
 
                         <TextField
+                          id="header"
+                          label="ヘッダー"
+                          value={header}
+                          onChange={(e) => setHeader(e.target.value)}
+                          multiline
+                          rows={4}
+                          fullWidth
+                        />
+
+                        <TextField
                           label="発行日"
                           type="date"
                           value={queryDate}
@@ -259,19 +274,6 @@ const SendEmail: React.FC = () => {
                       </Stack>
                     </Paper>
                   </Grid>
-                  <Grid size={6}>
-                    <Paper sx={{ p: 2, height: '100%' }}>
-                      <TextField
-                        id="header"
-                        label="ヘッダー"
-                        value={header}
-                        onChange={(e) => setHeader(e.target.value)}
-                        multiline
-                        rows={10}
-                        fullWidth
-                      />
-                    </Paper>
-                  </Grid>
                 </Grid>
               </div>
 
@@ -279,9 +281,20 @@ const SendEmail: React.FC = () => {
               <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                width: '100%'
+                width: '100%',
+                margin: '0 auto'
               }}>
-                <TableContainer component={Paper} sx={{ width: '100%' }}>
+                <TableContainer 
+                  component={Paper} 
+                  sx={{ 
+                    width: '100%',
+                    margin: '0 auto',
+                    table: {
+                      tableLayout: 'fixed', // Force table to use fixed layout
+                      width: '100%'
+                    }
+                  }}
+                >
                   <Table>
                     <TableHead>
                       <StyledTableHeadRow>
@@ -292,7 +305,7 @@ const SendEmail: React.FC = () => {
                             onChange={(e) => setSelectedNewsIDs(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
                           />
                         </TableCell> 
-                        <TableCell style={{ width: '77%', color: 'white' }}>カテゴリー {selectedType}</TableCell>
+                        <TableCell style={{ width: '70%', color: 'white' }}>カテゴリー {selectedType}</TableCell>
                         <TableCell style={{ width: '20%', color: 'white' }}>ニュースの日付</TableCell>
                         <TableCell style={{ width: '5%', color: 'white' }}>移動</TableCell>
                       </StyledTableHeadRow>

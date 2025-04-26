@@ -1,8 +1,12 @@
-
 import React, { useEffect, useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+
+const textStyle = {
+  fontWeight: 'bold',
+  fontSize: '1.2rem'
+};
 
 const client = generateClient<Schema>();
 
@@ -84,31 +88,31 @@ const Chart6Component: React.FC = () => {
   return (
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
-        <Typography variant="h4" gutterBottom>
-        米国住宅着工件数
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+          米国住宅着工件数
         </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={{ width: '10%' }}>Order</TableCell>
-                <TableCell style={{ width: '30%' }}>タイトル</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>今月</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>先月</TableCell>
-                <TableCell style={{ width: '15%', textAlign: 'right' }}>前年同月</TableCell>
-                <TableCell style={{ width: '15%' }}>Actions</TableCell>
+                <TableCell sx={textStyle} style={{ width: '10%' }}>Order</TableCell>
+                <TableCell sx={textStyle} style={{ width: '30%' }}>タイトル</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%', textAlign: 'right' }}>今月</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%', textAlign: 'right' }}>先月</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%', textAlign: 'right' }}>前年同月</TableCell>
+                <TableCell sx={textStyle} style={{ width: '15%' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {chart6Data.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell>{item.Order}</TableCell>
-                  <TableCell>{item.Title}</TableCell>
-                  <TableCell align="right">{formatNumber(item.ThisMonth)}</TableCell>
-                  <TableCell align="right">{formatNumber(item.LastMonth)}</TableCell>
-                  <TableCell align="right">{formatNumber(item.LastYear)}</TableCell>
+                  <TableCell sx={textStyle}>{item.Order}</TableCell>
+                  <TableCell sx={textStyle}>{item.Title}</TableCell>
+                  <TableCell sx={textStyle} align="right">{formatNumber(item.ThisMonth)}</TableCell>
+                  <TableCell sx={textStyle} align="right">{formatNumber(item.LastMonth)}</TableCell>
+                  <TableCell sx={textStyle} align="right">{formatNumber(item.LastYear)}</TableCell>
                   <TableCell>
-                    <Button variant="contained" color="primary" onClick={() => handleEditClick(item)}>
+                    <Button variant="contained" color="primary" sx={{ fontWeight: 'bold' }} onClick={() => handleEditClick(item)}>
                       Edit
                     </Button>
                   </TableCell>
@@ -120,9 +124,13 @@ const Chart6Component: React.FC = () => {
       </Paper>
 
       <Dialog open={editDialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Edit Item</DialogTitle>
+        <DialogTitle sx={textStyle}>Edit Item</DialogTitle>
         <DialogContent>
           <TextField
+            sx={{
+              '& .MuiInputLabel-root': { fontWeight: 'bold' },
+              '& .MuiInputBase-input': { fontWeight: 'bold' }
+            }}
             margin="dense"
             label="Order"
             name="Order"
@@ -132,6 +140,10 @@ const Chart6Component: React.FC = () => {
             onChange={handleInputChange}
           />
           <TextField
+            sx={{
+              '& .MuiInputLabel-root': { fontWeight: 'bold' },
+              '& .MuiInputBase-input': { fontWeight: 'bold' }
+            }}
             margin="dense"
             label="Title"
             name="Title"
@@ -141,6 +153,10 @@ const Chart6Component: React.FC = () => {
             onChange={handleInputChange}
           />
           <TextField
+            sx={{
+              '& .MuiInputLabel-root': { fontWeight: 'bold' },
+              '& .MuiInputBase-input': { fontWeight: 'bold' }
+            }}
             margin="dense"
             label="This Month"
             name="ThisMonth"
@@ -150,6 +166,10 @@ const Chart6Component: React.FC = () => {
             onChange={handleInputChange}
           />
           <TextField
+            sx={{
+              '& .MuiInputLabel-root': { fontWeight: 'bold' },
+              '& .MuiInputBase-input': { fontWeight: 'bold' }
+            }}
             margin="dense"
             label="Last Month"
             name="LastMonth"
@@ -159,6 +179,10 @@ const Chart6Component: React.FC = () => {
             onChange={handleInputChange}
           />
           <TextField
+            sx={{
+              '& .MuiInputLabel-root': { fontWeight: 'bold' },
+              '& .MuiInputBase-input': { fontWeight: 'bold' }
+            }}
             margin="dense"
             label="Last Year"
             name="LastYear"
@@ -167,13 +191,12 @@ const Chart6Component: React.FC = () => {
             value={currentEditItem?.LastYear}
             onChange={handleInputChange}
           />
-          {/* Add any additional fields here */}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
+          <Button onClick={handleDialogClose} color="primary" sx={{ fontWeight: 'bold' }}>
             Cancel
           </Button>
-          <Button onClick={handleSave} color="primary">
+          <Button onClick={handleSave} color="primary" sx={{ fontWeight: 'bold' }}>
             Save
           </Button>
         </DialogActions>

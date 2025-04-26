@@ -118,7 +118,7 @@ const Detail: React.FC = () => {
               p: 3, 
               width: {
                 xs: '95%', // Width for extra-small screens (phones)
-                sm: '50%'  // Width for small screens and up
+                sm: '60%'  // Width for small screens and up
               },
               margin: '20px auto'
             }}>
@@ -143,7 +143,7 @@ const Detail: React.FC = () => {
                   margin: '0 auto' // Center the box horizontally
                 }}>
                   <Typography 
-                    variant="h4" 
+                    variant="h6" 
                     sx={{ 
                       mb: 1, 
                       width: '100%' // Make Typography take full width of parent Box

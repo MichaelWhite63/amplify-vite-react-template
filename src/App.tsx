@@ -204,10 +204,14 @@ const App: React.FC = () => {
     overflowY: 'auto',
     fontSize: '1.2rem', // Increased base font size
     fontWeight: 'bold', // Add bold font weight
+    backgroundColor: '#ffffff', // Add explicit white background
   };
 
   const renderFormScreen = () => (
-    <main style={mainStyle}>
+    <main style={{
+      ...mainStyle,
+      backgroundColor: '#ffffff', // Add explicit white background to main container
+    }}>
       <NewsAppBar />
       <form onSubmit={submitNewsForm} style={formStyle}>
        <Box 
