@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
-import { TextField, Button, List, ListItem, ListItemText, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box } from '@mui/material';
+import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import NewsAppBar from './components/NewsAppBar';
 import { Authenticator } from '@aws-amplify/ui-react';
+
+interface UserSearchResult {
+  email: string;
+  name: string;
+  familyName: string;
+  givenName: string;
+}
 
 const client = generateClient<Schema>();
 
 const UpdateUser: React.FC = () => {
   const [searchName, setSearchName] = useState(''); // New state for search
-  const [users, setUsers] = useState<string[]>([]);
+  const [users, setUsers] = useState<UserSearchResult[]>([]);
   const [selectedEmail, setSelectedEmail] = useState('');
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   const [groupMemberships, setGroupMemberships] = useState<string[]>([]);
@@ -34,11 +41,20 @@ const UpdateUser: React.FC = () => {
       console.log('response', response);
       console.log(response);
       const data = response.data ? JSON.parse(response.data) : [];
-      const emails = data.map((user: { Attributes: { Name: string; Value: string }[] }) => {
-        const emailAttr = user.Attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'email');
-        return emailAttr ? emailAttr.Value : 'No email found';
+      const userDetails = data.map((user: { Attributes: { Name: string; Value: string }[] }) => {
+        const emailAttr = user.Attributes.find(attr => attr.Name === 'email');
+        const nameAttr = user.Attributes.find(attr => attr.Name === 'name');
+        const familyNameAttr = user.Attributes.find(attr => attr.Name === 'family_name');
+        const givenNameAttr = user.Attributes.find(attr => attr.Name === 'given_name');
+        
+        return {
+          email: emailAttr?.Value || 'No email found',
+          name: nameAttr?.Value || '',
+          familyName: familyNameAttr?.Value || '',
+          givenName: givenNameAttr?.Value || ''
+        };
       });
-      setUsers(emails);
+      setUsers(userDetails);
       setSelectedDetails(false);
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -84,7 +100,7 @@ const UpdateUser: React.FC = () => {
     try {
       const response = await client.queries.updateUser({ 
         email: editableEmail,
-        name: name,     // Changed from originalEmail
+        name: name,
         company: company,
         department: department,
         groups: groupMemberships
@@ -93,7 +109,17 @@ const UpdateUser: React.FC = () => {
       if (response.errors && response.errors.length > 0) {
         throw new Error(response.errors[0].message);
       }
-      await handleSelectUser(editableEmail);
+
+      // Reset all state to initial values
+      setSearchName('');
+      setUsers([]);
+      setSelectedEmail('');
+      setSelectedDetails(null);
+      setGroupMemberships([]);
+      setEditableEmail('');
+      setName('');
+      setDepartment('');
+      setCompany('');
 
     } catch (error) {
       console.error('Error updating user:', error);
@@ -117,17 +143,35 @@ const UpdateUser: React.FC = () => {
             Get User
           </Button>
           {!selectedDetails && (
-            <List>
-              {users.map((email, idx) => (
-                <ListItem key={idx}>
-                  <Radio
-                    checked={selectedEmail === email}
-                    onChange={() => handleSelectUser(email)}
-                  />
-                  <ListItemText primary={email} />
-                </ListItem>
-              ))}
-            </List>
+            <TableContainer component={Paper} sx={{ mt: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox"></TableCell>
+                    <TableCell>メール</TableCell>
+                    <TableCell>名前</TableCell>
+                    <TableCell>会社名</TableCell>
+                    <TableCell>部署</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {users.map((user, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell padding="checkbox">
+                        <Radio
+                          checked={selectedEmail === user.email}
+                          onChange={() => handleSelectUser(user.email)}
+                        />
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.familyName}</TableCell>
+                      <TableCell>{user.givenName}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
           {selectedDetails && selectedDetails[0] && (
             <Card sx={{ mt: 3, maxWidth: 600 }}>

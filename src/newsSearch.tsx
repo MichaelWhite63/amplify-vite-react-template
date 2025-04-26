@@ -152,17 +152,19 @@ const NewsSearch: React.FC = () => {
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              justifyContent: 'center', // Add this to center the content
+              justifyContent: 'center',
               gap: '10px', 
               margin: '0 auto', 
               paddingTop: '20px',
-              width: '100%' // Add this to ensure full width
+              width: '100%',
+              fontSize: '2.0rem',
+              fontWeight: 'bold'
             }}>
               キーワード 検索
               <TextField
                 sx={{
-                  '& .MuiInputLabel-root': { fontSize: '1.2rem', fontWeight: 'bold' },
-                  '& .MuiInputBase-input': { fontSize: '1.2rem', fontWeight: 'bold' },
+                  '& .MuiInputLabel-root': { fontSize: '2.0rem', fontWeight: 'bold' },
+                  '& .MuiInputBase-input': { fontSize: '2.0rem', fontWeight: 'bold' },
                 }}
                 value={searchString}
                 onChange={(e) => setSearchString(e.target.value)}
@@ -197,19 +199,19 @@ const NewsSearch: React.FC = () => {
                   <Table>
                     <TableHead>
                       <TableRow>
+                        <TableCell sx={{ ...tableStyles, width: '15%' }}>編集</TableCell>
                         <TableCell sx={{ ...tableStyles, width: '60%' }}>タイトル</TableCell>
-                        <TableCell sx={{ ...tableStyles, width: '25%' }}>Date</TableCell>
-                        <TableCell sx={{ ...tableStyles, width: '15%' }}>Edit</TableCell>
+                        <TableCell sx={{ ...tableStyles, width: '25%' }}>日付</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {results.map((item, index) => (
                         <TableRow key={index}>
-                          <TableCell sx={tableStyles}>{item.title}</TableCell>
-                          <TableCell sx={tableStyles}>{new Date(item.date).toISOString().split('T')[0]}</TableCell>
                           <TableCell>
                             <Button sx={{ fontSize: '1.2rem', fontWeight: 'bold' }} onClick={() => handleEdit(item)}>Edit</Button>
                           </TableCell>
+                          <TableCell sx={tableStyles}>{item.title}</TableCell>
+                          <TableCell sx={tableStyles}>{new Date(item.date).toISOString().split('T')[0]}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
