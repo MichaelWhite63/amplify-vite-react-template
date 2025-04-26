@@ -135,7 +135,11 @@ const UpdateUser: React.FC = () => {
       }}>
         <div style={{ margin: '20px' }}>
           <TextField
-            label="Enter Name"
+            sx={{
+              '& .MuiInputLabel-root': { fontSize: '2.0rem', fontWeight: 'bold' },
+              '& .MuiInputBase-input': { fontSize: '2.0rem', fontWeight: 'bold' },
+            }}
+            label="名前を入力してください"
             value={searchName}  // Changed from name
             onChange={(e) => setSearchName(e.target.value)}  // Changed from setName
           />
