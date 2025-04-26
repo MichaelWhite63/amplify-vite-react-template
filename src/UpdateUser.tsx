@@ -8,7 +8,7 @@ import { Authenticator } from '@aws-amplify/ui-react';
 const client = generateClient<Schema>();
 
 const UpdateUser: React.FC = () => {
-  const [name, setName] = useState('');
+  const [searchName, setSearchName] = useState(''); // New state for search
   const [users, setUsers] = useState<string[]>([]);
   const [selectedEmail, setSelectedEmail] = useState('');
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
@@ -22,15 +22,15 @@ const UpdateUser: React.FC = () => {
   
   const availableGroups = ['鉄鋼', '自動車', 'アルミ'];
   const [editableEmail, setEditableEmail] = useState('');
-  const [originalEmail, setOriginalEmail] = useState('');  
-  const [familyName, setFamilyName] = useState('');
-  const [givenName, setGivenName] = useState('');
+  const [name, setName] = useState('');  // Changed from originalEmail
+  const [department, setDepartment] = useState('');
+  const [company, setCompany] = useState('');
 
   const handleSearchUsers = async () => {
-    console.log('name', name);
+    console.log('name', searchName); // Changed from name
     
     try {
-      const response = await client.queries.searchUsers({ name });
+      const response = await client.queries.searchUsers({ name: searchName }); // Changed from name
       console.log('response', response);
       console.log(response);
       const data = response.data ? JSON.parse(response.data) : [];
@@ -57,7 +57,7 @@ const UpdateUser: React.FC = () => {
   const handleSelectUser = async (email: string) => {
     setSelectedEmail(email);
     setEditableEmail(email);  
-    setOriginalEmail(email);  
+    setName(email);  // Changed from setOriginalEmail
     setUsers([]);
 
     try {
@@ -67,10 +67,12 @@ const UpdateUser: React.FC = () => {
       setGroupMemberships(data[0]?.GroupMemberships || []);
       
       const attributes = data[0]?.Attributes || [];
-      const familyNameAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'family_name');
-      const givenNameAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'given_name');
-      setFamilyName(familyNameAttr?.Value || '');
-      setGivenName(givenNameAttr?.Value || '');
+      const departmentAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'department');
+      const companyAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'company');
+      const nameAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'name');
+      setDepartment(departmentAttr?.Value || '');
+      setCompany(companyAttr?.Value || '');
+      setName(nameAttr?.Value || '');
     } catch (error) {
       console.error('Error fetching user details:', error);
     }
@@ -81,10 +83,10 @@ const UpdateUser: React.FC = () => {
     
     try {
       const response = await client.queries.updateUser({ 
-        username: originalEmail,     // Cognito Username (identifier)
-        email: editableEmail,        // new email
-        givenName: givenName,        // Company Name
-        familyName: familyName,      // renamed from lastName
+        email: editableEmail,
+        name: name,     // Changed from originalEmail
+        company: company,
+        department: department,
         groups: groupMemberships
       });
 
@@ -108,8 +110,8 @@ const UpdateUser: React.FC = () => {
         <div style={{ margin: '20px' }}>
           <TextField
             label="Enter Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={searchName}  // Changed from name
+            onChange={(e) => setSearchName(e.target.value)}  // Changed from setName
           />
           <Button variant="contained" onClick={handleSearchUsers} style={{ marginLeft: '10px' }}>
             Get User
@@ -145,14 +147,20 @@ const UpdateUser: React.FC = () => {
                   />
                   <TextField
                     label="名前"
-                    value={familyName}
-                    onChange={(e) => setFamilyName(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     fullWidth
                   />
                   <TextField
                     label="会社名"
-                    value={givenName}
-                    onChange={(e) => setGivenName(e.target.value)}
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    fullWidth
+                  />
+                  <TextField
+                    label="部署"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
                     fullWidth
                   />
                   
