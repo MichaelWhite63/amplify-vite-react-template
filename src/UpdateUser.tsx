@@ -80,6 +80,7 @@ const UpdateUser: React.FC = () => {
       const response = await client.queries.searchUsers({ name: email });
       const data = response.data ? JSON.parse(response.data) : [];
       setSelectedDetails(data);
+      console.log('data', data);
       setGroupMemberships(data[0]?.GroupMemberships || []);
       
       const attributes = data[0]?.Attributes || [];
@@ -155,15 +156,19 @@ const UpdateUser: React.FC = () => {
             検索
           </Button>
           {!selectedDetails && (
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table sx={{ '& .MuiTableCell-root': { fontSize: '1.5rem', padding: '16px' } }}>
+            <TableContainer component={Paper} sx={{ mt: 2, width: '100%' }}>
+              <Table sx={{ 
+                '& .MuiTableCell-root': { fontSize: '1.5rem', padding: '16px' },
+                width: '100%',
+                tableLayout: 'fixed'
+              }}>
                 <TableHead>
                   <TableRow>
-                    <TableCell padding="checkbox"></TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>メール</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>名前</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>会社名</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>部署</TableCell>
+                    <TableCell padding="checkbox" sx={{ width: '5%' }}></TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '25%' }}>メール</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '25%' }}>名前</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '25%' }}>会社名</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>部署</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -222,12 +227,25 @@ const UpdateUser: React.FC = () => {
                   
                   <Typography>
                     <strong>Status:</strong> {selectedDetails[0].UserStatus}
-                    {selectedDetails[0].Enabled && <Chip 
-                      size="small" 
-                      color="success" 
-                      label="Enabled" 
-                      sx={{ ml: 1 }} 
-                    />}
+                  </Typography>
+                  
+                  <Typography>
+                    <strong>Account Status:</strong> 
+                    {selectedDetails[0].Enabled ? (
+                      <Chip 
+                        size="small" 
+                        color="success" 
+                        label="Enabled" 
+                        sx={{ ml: 1 }} 
+                      />
+                    ) : (
+                      <Chip 
+                        size="small" 
+                        color="error" 
+                        label="Disabled" 
+                        sx={{ ml: 1 }} 
+                      />
+                    )}
                   </Typography>
 
                   <div>
