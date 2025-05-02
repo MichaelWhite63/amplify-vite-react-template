@@ -6,8 +6,7 @@ import { Schema } from '../amplify/data/resource';
 import { Editor } from '@tinymce/tinymce-react';
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
-import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent, List, ListItem, ListItemText, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import NewsAppBar from './components/NewsAppBar';
