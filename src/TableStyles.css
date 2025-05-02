@@ -16,7 +16,12 @@
     text-align: center;
 }
 
-/* Right align all data cells except first column */
-.custom-content td:not(:first-child) {
+/* Center align first row cells */
+.custom-content tr:first-child td {
+    text-align: center;
+}
+
+/* Right align all data cells except first column (this rule will override for rows after first row) */
+.custom-content tr:not(:first-child) td:not(:first-child) {
     text-align: right;
 }
