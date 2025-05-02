@@ -76,7 +76,7 @@ const App: React.FC = () => {
 //  const { signOut } = useAuthenticator();
   const [formWidth, setFormWidth] = useState('80%');
   const editorRef   = useRef<Editor | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState<FileWithContent[]>([]);
+//  const [uploadedFiles, setUploadedFiles] = useState<FileWithContent[]>([]);
 
   useEffect(() => {
     fetchNewsItems();
@@ -119,23 +119,6 @@ const App: React.FC = () => {
       reader.onerror = (e) => reject(e);
       reader.readAsText(file);
     });
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const files = Array.from(event.target.files);
-      const filesWithContent = await Promise.all(
-        files.map(async (file) => ({
-          file,
-          content: await readFileContent(file)
-        }))
-      );
-      setUploadedFiles(filesWithContent);
-    }
-  };
-
-  const handleFileDelete = (index: number) => {
-    setUploadedFiles(files => files.filter((_, i) => i !== index));
   };
 
   function submitNewsForm(event: React.FormEvent<HTMLFormElement>) {
