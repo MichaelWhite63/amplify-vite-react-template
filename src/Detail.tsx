@@ -7,6 +7,7 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import DOMPurify from 'dompurify';
 import './ResponsiveTable.css';
+import './TableStyles.css';
 
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
@@ -71,7 +72,24 @@ const Detail: React.FC = () => {
 
   // Assists with the display of the article content
   const createMarkup = (html: string) => {
-    const modifiedHtml = html.replace('<table', '<div class="table-wrapper"><table class="responsive-table"') + '</div>';
+    // Function to check if content is numeric
+    const isNumeric = (str: string) => /^\d+\.?\d*$/.test(str.trim());
+    
+    // Parse the HTML string
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Find all table cells
+    const cells = doc.getElementsByTagName('td');
+    Array.from(cells).forEach(cell => {
+      if (isNumeric(cell.textContent || '')) {
+        cell.classList.add('numeric');
+      }
+    });
+    
+    const modifiedHtml = doc.body.innerHTML
+      .replace('<table', '<div class="table-wrapper"><table class="responsive-table"') + '</div>';
+    
     return {
       __html: DOMPurify.sanitize(modifiedHtml)
     };
@@ -113,7 +131,6 @@ const Detail: React.FC = () => {
                 />
               </div>
             </div>
-
             <Box sx={{ 
               p: 3, 
               width: {
@@ -132,11 +149,9 @@ const Detail: React.FC = () => {
                     Back
                   </Button>
                 )}
-
                 <Typography variant="h3" gutterBottom>
                   {news.title}
                 </Typography>
-
                 <Box sx={{ 
                   mt: 3,
                   width: '100%',  // Set width to 75% of parent container

@@ -1,0 +1,22 @@
+.custom-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.custom-content table, 
+.custom-content th, 
+.custom-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+/* Center align all header cells */
+.custom-content th {
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+/* Right align all data cells except first column */
+.custom-content td:not(:first-child) {
+    text-align: right;
+}

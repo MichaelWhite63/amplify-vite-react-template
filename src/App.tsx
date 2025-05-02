@@ -6,7 +6,8 @@ import { Schema } from '../amplify/data/resource';
 import { Editor } from '@tinymce/tinymce-react';
 import { Amplify } from "aws-amplify"
 import outputs from "../amplify_outputs.json"
-import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
+import { TextField, Button, FormControl, FormLabel, Select, MenuItem, InputLabel, SelectChangeEvent, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import NewsAppBar from './components/NewsAppBar';
@@ -45,6 +46,11 @@ interface NewsForm {
   type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
 }
 
+interface FileWithContent {
+  file: File;
+  content?: string;
+}
+
 const App: React.FC = () => {
   const getTomorrowDate = () => {
     const tomorrow = new Date();
@@ -71,6 +77,7 @@ const App: React.FC = () => {
 //  const { signOut } = useAuthenticator();
   const [formWidth, setFormWidth] = useState('80%');
   const editorRef   = useRef<Editor | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<FileWithContent[]>([]);
 
   useEffect(() => {
     fetchNewsItems();
@@ -101,6 +108,36 @@ const App: React.FC = () => {
       [name]: value,
     }));
   }
+
+  const readFileContent = async (file: File): Promise<string> => {
+    if (!file.type.includes('text/') && !file.name.endsWith('.txt')) {
+      return '非テキストファイルの内容は表示できません';
+    }
+    
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onerror = (e) => reject(e);
+      reader.readAsText(file);
+    });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const files = Array.from(event.target.files);
+      const filesWithContent = await Promise.all(
+        files.map(async (file) => ({
+          file,
+          content: await readFileContent(file)
+        }))
+      );
+      setUploadedFiles(filesWithContent);
+    }
+  };
+
+  const handleFileDelete = (index: number) => {
+    setUploadedFiles(files => files.filter((_, i) => i !== index));
+  };
 
   function submitNewsForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -303,9 +340,6 @@ const App: React.FC = () => {
                 />
               </Grid>
             </Grid>
-         
-
-
           <FormControl fullWidth style={{ marginBottom: '40px' }}>
             <FormLabel>本文</FormLabel>
             <Editor
