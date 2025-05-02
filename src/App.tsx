@@ -44,12 +44,12 @@ interface NewsForm {
   published: boolean;
   type: 'Steel' | 'Auto' | 'Aluminum';// | '鉄鋼' | '自動車' | 'アルミ';
 }
-
+/*
 interface FileWithContent {
   file: File;
   content?: string;
 }
-
+*/
 const App: React.FC = () => {
   const getTomorrowDate = () => {
     const tomorrow = new Date();
@@ -107,7 +107,7 @@ const App: React.FC = () => {
       [name]: value,
     }));
   }
-
+/*
   const readFileContent = async (file: File): Promise<string> => {
     if (!file.type.includes('text/') && !file.name.endsWith('.txt')) {
       return '非テキストファイルの内容は表示できません';
@@ -120,7 +120,7 @@ const App: React.FC = () => {
       reader.readAsText(file);
     });
   };
-
+*/
   function submitNewsForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const memoContent = (editorRef.current as any)?.getContent();
