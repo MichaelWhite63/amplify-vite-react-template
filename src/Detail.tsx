@@ -72,17 +72,24 @@ const Detail: React.FC = () => {
 
   // Assists with the display of the article content
   const createMarkup = (html: string) => {
-    // Function to check if content is numeric
-    const isNumeric = (str: string) => /^\d+\.?\d*$/.test(str.trim());
-    
     // Parse the HTML string
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     
+    // Count columns from the first row
+    const firstRow = doc.querySelector('tr');
+    const columnCount = firstRow ? firstRow.children.length : 0;
+    
+    // Add data attribute to table
+    const table = doc.querySelector('table');
+    if (table) {
+      table.dataset.columns = columnCount.toString();
+    }
+    
     // Find all table cells
     const cells = doc.getElementsByTagName('td');
     Array.from(cells).forEach(cell => {
-      if (isNumeric(cell.textContent || '')) {
+      if (/^\d+\.?\d*$/.test((cell.textContent || '').trim())) {
         cell.classList.add('numeric');
       }
     });
