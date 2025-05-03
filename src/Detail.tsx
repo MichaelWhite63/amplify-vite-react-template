@@ -142,7 +142,7 @@ const Detail: React.FC = () => {
               p: 3, 
               width: {
                 xs: '95%', // Width for extra-small screens (phones)
-                sm: '60%'  // Width for small screens and up
+                sm: '100%'  // Width for small screens and up
               },
               margin: '20px auto'
             }}>

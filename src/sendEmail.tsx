@@ -28,6 +28,9 @@ import IconButton from '@mui/material/IconButton';
 import NewsAppBar from './components/NewsAppBar';
 import Box from '@mui/material/Box';
 
+import DOMPurify from 'dompurify';
+import './TableStyles.css';
+
 const client = generateClient<Schema>();
 
 interface News {
@@ -67,6 +70,36 @@ const mainStyle = {
   width: '100%',
   minHeight: '100vh',
   backgroundColor: '#f5f5f5',
+};
+
+const createMarkup = (html: string) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  
+  // Count columns from the first row
+  const firstRow = doc.querySelector('tr');
+  const columnCount = firstRow ? firstRow.children.length : 0;
+  
+  // Add data attribute to table
+  const table = doc.querySelector('table');
+  if (table) {
+    table.dataset.columns = columnCount.toString();
+  }
+  
+    // Find all table cells
+    const cells = doc.getElementsByTagName('td');
+    Array.from(cells).forEach(cell => {
+      if (/^\d+\.?\d*$/.test((cell.textContent || '').trim())) {
+        cell.classList.add('numeric');
+      }
+    });
+    
+  const modifiedHtml = doc.body.innerHTML
+    .replace('<table', '<div class="table-wrapper"><table class="responsive-table"') + '</div>';
+  
+  return {
+    __html: DOMPurify.sanitize(modifiedHtml)
+  };
 };
 
 const SendEmail: React.FC = () => {
@@ -409,7 +442,7 @@ const SendEmail: React.FC = () => {
                     {news.title}
                   </Typography>
                   <Typography 
-                    dangerouslySetInnerHTML={{ __html: news.memo }}
+                    dangerouslySetInnerHTML={createMarkup(news.memo)}
                     sx={{ mt: 1 }}
                   />
                 </Paper>

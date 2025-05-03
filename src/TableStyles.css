@@ -22,8 +22,8 @@
     background-color: #f0f0f0;  /* Changed to a slightly darker gray */
 }
 
-/* Add background color to first column */
-.custom-content td:first-child {
+/* Add background color to first column - make it more specific */
+.custom-content tr td:first-child {
     background-color: #f0f0f0;
 }
 
