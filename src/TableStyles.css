@@ -16,9 +16,15 @@
     text-align: center;
 }
 
-/* Center align first row cells */
+/* Add background color and center align first row cells */
 .custom-content tr:first-child td {
     text-align: center;
+    background-color: #f0f0f0;  /* Changed to a slightly darker gray */
+}
+
+/* Add background color to first column */
+.custom-content td:first-child {
+    background-color: #f0f0f0;
 }
 
 /* Right align all data cells except first column (this rule will override for rows after first row) */
@@ -34,7 +40,11 @@
     margin: 0 auto;
 }
 
-.custom-content table[data-columns="4"],
+.custom-content table[data-columns="4"] {
+    width: 75%;
+    margin: 0 auto;
+}
+
 .custom-content table[data-columns="5"],
 .custom-content table[data-columns="6"],
 .custom-content table[data-columns="7"],
