@@ -79,43 +79,23 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   newsItems.forEach((item) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
-    const tableHtml = `
-      <div style="margin-top: 20px;">
-        <h3><a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a></h3>
-        <div class="custom-content">
-          <table>
-            <tr><td>${item.memo}</td></tr>
-          </table>
-        </div>
-      </div>`;
-    
-    // Parse and modify table styling
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(tableHtml, 'text/html');
-    
-    // Count columns and add data attribute
-    const table = doc.querySelector('table');
-    if (table) {
-      const firstRow = table.querySelector('tr');
-      const columnCount = firstRow ? firstRow.children.length : 0;
-      table.setAttribute('data-columns', columnCount.toString());
-      table.style.width = '30%';
-      table.style.borderCollapse = 'collapse';
-      table.style.margin = '0';
-    }
-    
-    // Style cells
-    const cells = doc.getElementsByTagName('td');
-    Array.from(cells).forEach((cell, index) => {
-      cell.style.border = '1px solid #ddd';
-      cell.style.padding = '8px';
-      if (index === 0) {
-        cell.style.backgroundColor = '#f0f0f0';
-        cell.style.textAlign = 'center';
-      }
-    });
-    
-    htmlContent += doc.body.innerHTML;
+    htmlContent += `<div style="margin-top: 20px;">
+      <h3><a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a></h3>
+      <div class="custom-content">
+        <table style="border-collapse: collapse; width: 30%; margin: 0;" data-columns="1">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #ddd; padding: 8px; background-color: #f0f0f0; text-align: center;">${item.memo}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>`;
     textContent += `\n${item.memo}\n\n`;
   });
   
