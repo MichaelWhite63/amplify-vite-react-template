@@ -88,14 +88,42 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       const parts = item.memo.split(/(<table[\s\S]*?<\/table>)/);
       parts.forEach((part: string) => {
         if (part.startsWith('<table')) {
-          // Apply styling to table content
+          // Count columns from first row
+          const columnMatch = part.match(/<tr[^>]*>(.*?)<\/tr>/);
+          const firstRow = columnMatch ? columnMatch[1] : '';
+          const columnCount = (firstRow.match(/<t[hd][^>]*>/g) || []).length;
+          
+          // Set width based on column count
+          let tableWidth = '100%';
+          if (columnCount <= 3) tableWidth = '30%';
+          else if (columnCount <= 5) tableWidth = '75%';
+          
+          // Apply table styling with correct width
           const styledTable = part
-            .replace('<table', '<table style="border-collapse: collapse; width: 30%; margin: 0;" data-columns="1"')
+            .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
             .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
-            .replace(/<td/g, '<td style="border: 1px solid #ddd; padding: 8px; background-color: #f0f0f0; text-align: center;"');
+            .replace(/<td/g, (match, offset) => {
+              // Check if this is first column or first row
+              const upToTd = part.substring(0, offset);
+              const rowStart = upToTd.lastIndexOf('<tr');
+              const tdCount = (upToTd.substring(rowStart).match(/<td/g) || []).length;
+              const isFirstRow = !upToTd.includes('</tr');
+              const isFirstColumn = tdCount === 0;
+              
+              let style = 'border: 1px solid #ddd; padding: 8px;';
+              
+              // Apply background only to first row OR first column cells
+              if (isFirstRow || isFirstColumn) {
+                style += ' background-color: #f0f0f0;';
+              }
+              
+              // Center align first row and first column, right align others
+              style += isFirstRow || isFirstColumn ? ' text-align: center;' : ' text-align: right;';
+              
+              return `<td style="${style}"`;
+            });
           htmlContent += styledTable;
         } else {
-          // Keep non-table content as is
           htmlContent += part;
         }
       });
