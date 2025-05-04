@@ -86,7 +86,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     // Split memo content if it contains a table
     if (item.memo.includes('<table')) {
       const parts = item.memo.split(/(<table[\s\S]*?<\/table>)/);
-      parts.forEach(part => {
+      parts.forEach((part: string) => {
         if (part.startsWith('<table')) {
           // Apply styling to table content
           const styledTable = part
