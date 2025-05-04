@@ -158,6 +158,7 @@ const SendEmail: React.FC = () => {
   };
 
   const handleSendEmail = async () => {
+    
     console.log('Send Email');
     console.log(`email = ${email} | type = ${selectedType} | title = ${title} | header = ${header} | selectedNewsIDs = ${selectedNewsIDs}`);
     console.log({ 
@@ -176,6 +177,7 @@ const SendEmail: React.FC = () => {
       header: header,
       selectedNewsIDs: selectedNewsIDs
     }));
+    
     setPreviewOpen(false);
   };
 
@@ -441,10 +443,12 @@ const SendEmail: React.FC = () => {
                   <Typography variant="h6">
                     {news.title}
                   </Typography>
-                  <Typography 
-                    dangerouslySetInnerHTML={createMarkup(news.memo)}
-                    sx={{ mt: 1 }}
-                  />
+                  <div className="custom-content">
+                    <Typography 
+                      dangerouslySetInnerHTML={createMarkup(news.memo)}
+                      sx={{ mt: 1 }}
+                    />
+                  </div>
                 </Paper>
               ))}
             </DialogContent>

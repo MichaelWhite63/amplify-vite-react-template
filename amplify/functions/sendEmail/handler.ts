@@ -55,7 +55,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
   const baseUrl = 'https://main.de7wz8ekh1b3f.amplifyapp.com';
   
-  let htmlContent = '<div style="font-family: Arial, sans-serif;">';
+  let htmlContent = '<div class="custom-content" style="font-family: Arial, sans-serif;">';
   htmlContent += `<div style="text-align: left; margin-bottom: 20px;">
     <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
   </div>`;
@@ -63,34 +63,50 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   let textContent = 'METAL NEWS\n\n';
   
   if (header?.trim()) {
-    htmlContent += `<h2>${header}</h2>`;
+    htmlContent += `<h2 style="background-color: #f5f5f5; padding: 8px; text-align: center;">${header}</h2>`;
     textContent += `${header}\n\n`;
   }
   
-  //htmlContent += '<h3>概要:</h3><ul style="color: #2c5282; font-size: 12pt;">'
-  htmlContent   += '<ul style="color: #191970; font-size: 12pt;">';
+  // Summary table (single column, so 30% width according to TableStyles.css)
+  htmlContent += `<table style="border-collapse: collapse; width: 30%; margin: 0;">
+    <tr>
+      <th style="border: 1px solid #ddd; padding: 8px; text-align: center; background-color: #f5f5f5;">Headlines</th>
+    </tr>`;
   
-  newsItems.forEach(item => {
+  newsItems.forEach((item, index) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
-    htmlContent += `<li style="margin-bottom: 8px; font-size: 12pt;"><a href="${fullUrl}" style="font-weight: bold;  color: #191970;">${item.title}</a></li>`;
+    const isFirstRow = index === 0;
+    htmlContent += `<tr>
+      <td style="border: 1px solid #ddd; padding: 8px; ${isFirstRow ? 'text-align: center; background-color: #f0f0f0;' : ''}">
+        <a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a>
+      </td>
+    </tr>`;
     textContent += `• ${item.title} (${fullUrl})\n\n`;
   });
   
-  htmlContent += '</ul><br>';
+  htmlContent += '</table>';
   
-  newsItems.forEach(item => {
+  // Detailed content table (two columns: title and memo, so 30% width)
+  htmlContent += `<table style="border-collapse: collapse; width: 30%; margin: 0;">
+    <tr>
+      <th colspan="2" style="border: 1px solid #ddd; padding: 8px; text-align: center; background-color: #f5f5f5;">Detailed News</th>
+    </tr>`;
+  
+  newsItems.forEach((item, index) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
-    htmlContent += `<div style="margin-bottom: 20px;">
-      <div style="color: #191970; font-size: 16pt; margin-bottom: 8px;">
-        <a href="${fullUrl}" style="font-weight: bold; color: #191970; text-decoration: none;">${item.title}</a>
-      </div>
-      <div style="font-size: 14pt; font-weight: bold;">${item.memo}</div>
-    </div>`;
-    
+    const isFirstRow = index === 0;
+    htmlContent += `<tr>
+      <td style="border: 1px solid #ddd; padding: 8px; ${isFirstRow ? 'background-color: #f0f0f0;' : ''} background-color: #f0f0f0;">
+        <a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold; font-size: 16pt;">${item.title}</a>
+      </td>
+      <td style="border: 1px solid #ddd; padding: 8px; ${isFirstRow ? 'text-align: center; background-color: #f0f0f0;' : 'text-align: right;'}">
+        <div style="font-size: 14pt;">${item.memo}</div>
+      </td>
+    </tr>`;
     textContent += `\n${item.memo}\n\n`;
   });
   
-  htmlContent += '</div>';
+  htmlContent += '</table></div>';
   
   return { html: htmlContent, text: textContent };
 }
