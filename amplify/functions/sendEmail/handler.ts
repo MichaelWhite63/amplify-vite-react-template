@@ -118,22 +118,23 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           const styledTable = part
             .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
             .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
-            .replace(/<td/g, (match, offset) => {
-              // Get all content up to this td tag
-              const upToTd = part.substring(0, offset);
-              // Find start of current row
+            .replace(/<td/g, (match, offset, fullString) => {
+              // Get the row content
+              const upToTd = fullString.substring(0, offset);
               const rowStart = upToTd.lastIndexOf('<tr');
-              // Count td tags in current row to determine column position
-              const currentRowContent = upToTd.substring(rowStart);
-              const columnPosition = (currentRowContent.match(/<td/g) || []).length;
+              const rowContent = upToTd.substring(rowStart);
               
-              // First row detection remains the same
+              // Check if this is first TD in its row by looking at previous TDs in same row
+              const tdBeforeInRow = rowContent.match(/<td[^>]*>/g) || [];
+              const isFirstColumn = tdBeforeInRow.length === 0;
               const isFirstRow = !upToTd.substring(0, rowStart).includes('</tr');
-              // First column is when columnPosition is 0
-              const isFirstColumn = columnPosition === 0;
               
               let style = 'border: 1px solid #ddd; padding: 8px;';
-              if (isFirstRow || isFirstColumn) {
+              
+              // Apply styling based on position
+              if (isFirstColumn) {
+                style += ' background-color: #f0f0f0; text-align: center;';
+              } else if (isFirstRow) {
                 style += ' background-color: #f0f0f0; text-align: center;';
               } else {
                 style += ' text-align: right;';
