@@ -88,37 +88,56 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       const parts = item.memo.split(/(<table[\s\S]*?<\/table>)/);
       parts.forEach((part: string) => {
         if (part.startsWith('<table')) {
-          // Count columns from first row
-          const columnMatch = part.match(/<tr[^>]*>(.*?)<\/tr>/);
-          const firstRow = columnMatch ? columnMatch[1] : '';
-          const columnCount = (firstRow.match(/<t[hd][^>]*>/g) || []).length;
+          // Get first row content including both header and data cells
+          const firstRowMatch = part.match(/<tr[^>]*>(.*?)<\/tr>/s);
+          const firstRowContent = firstRowMatch ? firstRowMatch[1] : '';
+          
+          // Count both th and td cells in first row
+          const thCount = (firstRowContent.match(/<th[^>]*>/g) || []).length;
+          const tdCount = (firstRowContent.match(/<td[^>]*>/g) || []).length;
+          const columnCount = Math.max(thCount, tdCount);
+          
+          console.log('Table analysis:', {
+            firstRowContent,
+            thCount,
+            tdCount,
+            columnCount
+          });
           
           // Set width based on column count
           let tableWidth = '100%';
-          if (columnCount <= 3) tableWidth = '30%';
-          else if (columnCount <= 5) tableWidth = '75%';
+          if (columnCount <= 3) {
+            tableWidth = '30%';
+          } else if (columnCount <= 5) {
+            tableWidth = '75%';
+          } else if (columnCount <= 8) {
+            tableWidth = '100%';
+          }
           
           // Apply table styling with correct width
           const styledTable = part
             .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
             .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
             .replace(/<td/g, (match, offset) => {
-              // Check if this is first column or first row
+              // Get all content up to this td tag
               const upToTd = part.substring(0, offset);
+              // Find start of current row
               const rowStart = upToTd.lastIndexOf('<tr');
-              const tdCount = (upToTd.substring(rowStart).match(/<td/g) || []).length;
-              const isFirstRow = !upToTd.includes('</tr');
-              const isFirstColumn = tdCount === 0;
+              // Count td tags in current row to determine column position
+              const currentRowContent = upToTd.substring(rowStart);
+              const columnPosition = (currentRowContent.match(/<td/g) || []).length;
+              
+              // First row detection remains the same
+              const isFirstRow = !upToTd.substring(0, rowStart).includes('</tr');
+              // First column is when columnPosition is 0
+              const isFirstColumn = columnPosition === 0;
               
               let style = 'border: 1px solid #ddd; padding: 8px;';
-              
-              // Apply background only to first row OR first column cells
               if (isFirstRow || isFirstColumn) {
-                style += ' background-color: #f0f0f0;';
+                style += ' background-color: #f0f0f0; text-align: center;';
+              } else {
+                style += ' text-align: right;';
               }
-              
-              // Center align first row and first column, right align others
-              style += isFirstRow || isFirstColumn ? ' text-align: center;' : ' text-align: right;';
               
               return `<td style="${style}"`;
             });
