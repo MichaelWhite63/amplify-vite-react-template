@@ -81,21 +81,30 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     const fullUrl = `${baseUrl}/detail/${item.id}`;
     htmlContent += `<div style="margin-top: 20px;">
       <h3><a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a></h3>
-      <div class="custom-content">
-        <table style="border-collapse: collapse; width: 30%; margin: 0;" data-columns="1">
-          <thead>
-            <tr>
-              <th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;">Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="border: 1px solid #ddd; padding: 8px; background-color: #f0f0f0; text-align: center;">${item.memo}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>`;
+      <div class="custom-content">`;
+
+    // Split memo content if it contains a table
+    if (item.memo.includes('<table')) {
+      const parts = item.memo.split(/(<table[\s\S]*?<\/table>)/);
+      parts.forEach(part => {
+        if (part.startsWith('<table')) {
+          // Apply styling to table content
+          const styledTable = part
+            .replace('<table', '<table style="border-collapse: collapse; width: 30%; margin: 0;" data-columns="1"')
+            .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
+            .replace(/<td/g, '<td style="border: 1px solid #ddd; padding: 8px; background-color: #f0f0f0; text-align: center;"');
+          htmlContent += styledTable;
+        } else {
+          // Keep non-table content as is
+          htmlContent += part;
+        }
+      });
+    } else {
+      // No table in content, display as regular text
+      htmlContent += `<p>${item.memo}</p>`;
+    }
+
+    htmlContent += '</div></div>';
     textContent += `\n${item.memo}\n\n`;
   });
   
