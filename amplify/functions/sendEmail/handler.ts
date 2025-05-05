@@ -118,23 +118,22 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           const styledTable = part
             .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
             .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
-            .replace(/<td/g, (match, offset, fullString) => {
-              // Get the row content
-              const upToTd = fullString.substring(0, offset);
+            .replace(/<td/g, (match, offset) => {
+              // Get all content up to this td tag
+              const upToTd = part.substring(0, offset);
+              // Find start of current row
               const rowStart = upToTd.lastIndexOf('<tr');
-              const rowContent = upToTd.substring(rowStart);
+              // Count td tags in current row to determine column position
+              const currentRowContent = upToTd.substring(rowStart);
+              const columnPosition = (currentRowContent.match(/<td/g) || []).length;
               
-              // Check if this is first TD in its row by looking at previous TDs in same row
-              const tdBeforeInRow = rowContent.match(/<td[^>]*>/g) || [];
-              const isFirstColumn = tdBeforeInRow.length === 0;
+              // First row detection remains the same
               const isFirstRow = !upToTd.substring(0, rowStart).includes('</tr');
+              // First column is when columnPosition is 0
+              const isFirstColumn = columnPosition === 0;
               
               let style = 'border: 1px solid #ddd; padding: 8px;';
-              
-              // Apply styling based on position
-              if (isFirstColumn) {
-                style += ' background-color: #f0f0f0; text-align: center;';
-              } else if (isFirstRow) {
+              if (isFirstRow || isFirstColumn) {
                 style += ' background-color: #f0f0f0; text-align: center;';
               } else {
                 style += ' text-align: right;';
@@ -151,11 +150,9 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       // No table in content, display as regular text
       htmlContent += `<p>${item.memo}</p>`;
     }
-
     htmlContent += '</div></div>';
     textContent += `\n${item.memo}\n\n`;
   });
-  
   htmlContent += '</div>';
   
   return { html: htmlContent, text: textContent };
@@ -185,13 +182,14 @@ async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[]
             Charset: 'UTF-8'
           }
         },
-        Source: 'Kuromatsu@metalnews.com' 
+        Source: 'Kuromatsu@metalnews.com'
       };
       
       await ses.sendEmail(params).promise();
     }
   }
 }
+
 /**
  * 
  * @param event 
@@ -208,7 +206,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
   try {
     // Get users to send email to
     const users = (email) 
-      ? await selectSingleUser('us-east-1_oy1KeDlsD', email)
+      ? await selectSingleUser('us-east-1_oy1KeDlsD', email) 
       : await selectUsersByType('us-east-1_oy1KeDlsD', type);
 
     // Fetch news items
@@ -227,7 +225,6 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       users: users.map(user => user.Username),
       emailContent: emailContent
     });
-    
   } catch (error) {
     console.error('Error in sendEmail:', error);
     const errorMessage = (error as any).message;
