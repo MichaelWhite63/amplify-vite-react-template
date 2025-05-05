@@ -56,9 +56,10 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   const baseUrl = 'https://main.de7wz8ekh1b3f.amplifyapp.com';
   
   let htmlContent = '<div style="font-family: Arial, sans-serif;">';
-  htmlContent += `<div style="text-align: left; margin-bottom: 20px;">
-    <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
-  </div>`;
+  htmlContent += `<div style="width: 60%; margin: 0 auto;">
+    <div style="text-align: left; margin-bottom: 20px;">
+      <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
+    </div>`;
   
   let textContent = 'METAL NEWS\n\n';
   
@@ -153,7 +154,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     htmlContent += '</div></div>';
     textContent += `\n${item.memo}\n\n`;
   });
-  htmlContent += '</div>';
+  htmlContent += '</div></div>';
   
   return { html: htmlContent, text: textContent };
 }
