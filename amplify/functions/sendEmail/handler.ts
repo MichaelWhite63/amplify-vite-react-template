@@ -119,19 +119,17 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           const styledTable = part
             .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
             .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
-            .replace(/<td/g, (match, offset) => {
-              // Get all content up to this td tag
-              const upToTd = part.substring(0, offset);
-              // Find start of current row
-              const rowStart = upToTd.lastIndexOf('<tr');
-              // Count td tags in current row to determine column position
-              const currentRowContent = upToTd.substring(rowStart);
-              const columnPosition = (currentRowContent.match(/<td/g) || []).length;
+            .replace(/<td/g, (match, offset, fullString) => {
+              // Get current row's content
+              const upToTd = fullString.substring(0, offset);
+              const currentRowStart = upToTd.lastIndexOf('<tr');
+              const currentRowContent = upToTd.substring(currentRowStart);
               
-              // First row detection remains the same
-              const isFirstRow = !upToTd.substring(0, rowStart).includes('</tr');
-              // First column is when columnPosition is 0
-              const isFirstColumn = columnPosition === 0;
+              // Count complete <td> tags before this one in the current row
+              const tdBeforeCount = (currentRowContent.match(/<td[\s>]/g) || []).length;
+              
+              const isFirstRow = !upToTd.substring(0, currentRowStart).includes('</tr');
+              const isFirstColumn = tdBeforeCount === 0;
               
               let style = 'border: 1px solid #ddd; padding: 8px;';
               if (isFirstRow || isFirstColumn) {
