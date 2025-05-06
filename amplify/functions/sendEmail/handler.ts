@@ -141,13 +141,58 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
               return `<td style="${style}"`;
             });
           htmlContent += styledTable;
+          
+          // Format text version of table
+          const rows = part.match(/<tr[^>]*>(.*?)<\/tr>/g) || [];
+          const tableData = rows.map(row => {
+            const cells = row.match(/<t[dh][^>]*>(.*?)<\/t[dh]>/g) || [];
+            return cells.map(cell => {
+              // Strip HTML tags and trim
+              return cell.replace(/<[^>]+>/g, '').trim();
+            });
+          });
+          
+          // Create text table with alignment
+          if (tableData.length > 0) {
+            // Add spacing between text and table
+            textContent += '\n';
+            
+            // Calculate column widths
+            const columnWidths = tableData[0].map((_, colIndex) => {
+              return Math.max(...tableData.map(row => row[colIndex]?.length || 0));
+            });
+            
+            // Create text table
+            tableData.forEach((row, rowIndex) => {
+              row.forEach((cell, colIndex) => {
+                const padding = columnWidths[colIndex] - cell.length;
+                // Right align all cells except first column and header
+                const isFirstColumn = colIndex === 0;
+                const isHeader = rowIndex === 0;
+                if (isFirstColumn || isHeader) {
+                  textContent += cell.padEnd(columnWidths[colIndex] + 2);
+                } else {
+                  textContent += cell.padStart(columnWidths[colIndex] + 2);
+                }
+              });
+              textContent += '\n';
+              // Add separator after header
+              if (rowIndex === 0) {
+                textContent += columnWidths.map(w => '-'.repeat(w + 2)).join('') + '\n';
+              }
+            });
+            textContent += '\n';
+          }
         } else {
+          // Non-table content
           htmlContent += part;
+          textContent += part.replace(/<[^>]+>/g, '');
         }
       });
     } else {
-      // No table in content, display as regular text
+      // No table in content
       htmlContent += `<p>${item.memo}</p>`;
+      textContent += `${item.memo.replace(/<[^>]+>/g, '')}\n\n`;
     }
     htmlContent += '</div></div>';
     textContent += `\n${item.memo}\n\n`;
