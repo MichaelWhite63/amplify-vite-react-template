@@ -79,6 +79,130 @@ function wrapTextToWidth(text: string, maxWidth: number = 60): string {
   }).join('\n');
 }
 
+// Enhance text formatting to create rich-looking plain text
+function createEnhancedTextContent(newsItems: any[], header?: string, baseUrl: string): string {
+  const separator = '─'.repeat(60);
+  let textContent = '╔' + '═'.repeat(58) + '╗\n';
+  textContent += '║ METAL NEWS' + ' '.repeat(47) + '║\n';
+  textContent += '╚' + '═'.repeat(58) + '╝\n\n';
+  
+  if (header?.trim()) {
+    textContent += '■ ' + header.toUpperCase() + ' ■\n';
+    textContent += separator + '\n\n';
+  }
+  
+  textContent += 'HEADLINES:\n';
+  textContent += separator + '\n';
+  
+  newsItems.forEach((item) => {
+    const fullUrl = `${baseUrl}/detail/${item.id}`;
+    textContent += `• ${item.title}\n  ${fullUrl}\n\n`;
+  });
+  
+  textContent += '\nDETAILED CONTENT:\n';
+  textContent += separator + '\n\n';
+  
+  newsItems.forEach((item) => {
+    const fullUrl = `${baseUrl}/detail/${item.id}`;
+    
+    // Title with underline
+    textContent += `${item.title}\n`;
+    textContent += '~'.repeat(Math.min(item.title.length, 60)) + '\n';
+    textContent += `${fullUrl}\n\n`;
+    
+    // Process memo content for tables and text
+    if (item.memo.includes('<table')) {
+      const parts = item.memo.split(/(<table[\s\S]*?<\/table>)/);
+      parts.forEach((part: string) => {
+        if (part.startsWith('<table')) {
+          // Format table with Unicode box drawing characters
+          const rows = part.match(/<tr[^>]*>(.*?)<\/tr>/gs) || [];
+          const tableData = rows.map(row => {
+            const cells = row.match(/<t[dh][^>]*>(.*?)<\/t[dh]>/g) || [];
+            return cells.map(cell => cell.replace(/<[^>]+>/g, '').trim());
+          });
+          
+          if (tableData.length > 0) {
+            // Calculate column widths
+            const columnWidths = [];
+            for (let i = 0; i < tableData[0].length; i++) {
+              columnWidths[i] = Math.max(
+                ...tableData.map(row => (row[i] || '').length),
+                8 // Minimum width
+              );
+            }
+            
+            // Top border
+            textContent += '┌';
+            columnWidths.forEach((width, i) => {
+              textContent += '─'.repeat(width + 2);
+              textContent += (i < columnWidths.length - 1) ? '┬' : '┐\n';
+            });
+            
+            // Header row
+            if (tableData.length > 0) {
+              textContent += '│';
+              tableData[0].forEach((cell, i) => {
+                const padding = columnWidths[i] - cell.length;
+                const leftPad = Math.floor(padding / 2);
+                const rightPad = padding - leftPad;
+                textContent += ' ' + ' '.repeat(leftPad) + cell + ' '.repeat(rightPad) + ' │';
+              });
+              textContent += '\n';
+              
+              // Header separator
+              textContent += '├';
+              columnWidths.forEach((width, i) => {
+                textContent += '─'.repeat(width + 2);
+                textContent += (i < columnWidths.length - 1) ? '┼' : '┤\n';
+              });
+            }
+            
+            // Data rows
+            for (let rowIndex = 1; rowIndex < tableData.length; rowIndex++) {
+              textContent += '│';
+              tableData[rowIndex].forEach((cell, colIndex) => {
+                const padding = columnWidths[colIndex] - cell.length;
+                
+                // First column is left aligned, others are right aligned
+                if (colIndex === 0) {
+                  textContent += ' ' + cell + ' '.repeat(padding + 1) + '│';
+                } else {
+                  textContent += ' ' + ' '.repeat(padding) + cell + ' ' + '│';
+                }
+              });
+              textContent += '\n';
+            }
+            
+            // Bottom border
+            textContent += '└';
+            columnWidths.forEach((width, i) => {
+              textContent += '─'.repeat(width + 2);
+              textContent += (i < columnWidths.length - 1) ? '┴' : '┘\n';
+            });
+            
+            textContent += '\n';
+          }
+        } else {
+          // Format regular text, strip HTML tags
+          const plainText = part.replace(/<[^>]+>/g, '').trim();
+          if (plainText) {
+            textContent += wrapTextToWidth(plainText, 60) + '\n\n';
+          }
+        }
+      });
+    } else {
+      // No table in content
+      const plainText = item.memo.replace(/<[^>]+>/g, '').trim();
+      textContent += wrapTextToWidth(plainText, 60) + '\n\n';
+    }
+    
+    textContent += separator + '\n\n';
+  });
+  
+  return textContent;
+}
+
 async function formatEmailContent(newsItems: any[], header?: string): Promise<{ html: string, text: string }> {
   const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
   const baseUrl = 'https://main.de7wz8ekh1b3f.amplifyapp.com';
@@ -89,19 +213,13 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
     </div>`;
   
-  let textContent = 'METAL NEWS\n\n';
-  
-  if (header?.trim()) {
-    htmlContent += `<h2>${header}</h2>`;
-    textContent += `${header}\n\n`;
-  }
+  let textContent = createEnhancedTextContent(newsItems, header, baseUrl);
   
   htmlContent += '<ul style="color: #191970; font-size: 12pt;">';
   
   newsItems.forEach((item) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
     htmlContent += `<li><a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a></li>`;
-    textContent += `• ${item.title} (${fullUrl})\n\n`;
   });
   
   htmlContent += '</ul>';
@@ -112,28 +230,17 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       <h3><a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a></h3>
       <div class="custom-content">`;
 
-    // Split memo content if it contains a table
     if (item.memo.includes('<table')) {
       const parts = item.memo.split(/(<table[\s\S]*?<\/table>)/);
       parts.forEach((part: string) => {
         if (part.startsWith('<table')) {
-          // Get first row content including both header and data cells
           const firstRowMatch = part.match(/<tr[^>]*>(.*?)<\/tr>/s);
           const firstRowContent = firstRowMatch ? firstRowMatch[1] : '';
           
-          // Count both th and td cells in first row
           const thCount = (firstRowContent.match(/<th[^>]*>/g) || []).length;
           const tdCount = (firstRowContent.match(/<td[^>]*>/g) || []).length;
           const columnCount = Math.max(thCount, tdCount);
           
-          console.log('Table analysis:', {
-            firstRowContent,
-            thCount,
-            tdCount,
-            columnCount
-          });
-          
-          // Set width based on column count
           let tableWidth = '100%';
           if (columnCount <= 3) {
             tableWidth = '30%';
@@ -143,17 +250,14 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
             tableWidth = '100%';
           }
           
-          // Apply table styling with correct width
           const styledTable = part
             .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
             .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
             .replace(/<td/g, (match, offset, fullString) => {
-              // Get current row's content
               const upToTd = fullString.substring(0, offset);
               const currentRowStart = upToTd.lastIndexOf('<tr');
               const currentRowContent = upToTd.substring(currentRowStart);
               
-              // Count complete <td> tags before this one in the current row
               const tdBeforeCount = (currentRowContent.match(/<td[\s>]/g) || []).length;
               
               const isFirstRow = !upToTd.substring(0, currentRowStart).includes('</tr');
@@ -169,68 +273,20 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
               return `<td style="${style}"`;
             });
           htmlContent += styledTable;
-          
-          // Format text version of table
-          const rows = part.match(/<tr[^>]*>(.*?)<\/tr>/g) || [];
-          const tableData = rows.map(row => {
-            const cells = row.match(/<t[dh][^>]*>(.*?)<\/t[dh]>/g) || [];
-            return cells.map(cell => {
-              // Strip HTML tags and trim
-              return cell.replace(/<[^>]+>/g, '').trim();
-            });
-          });
-          
-          // Create text table with alignment
-          if (tableData.length > 0) {
-            // Add spacing between text and table
-            textContent += '\n';
-            
-            // Calculate column widths
-            const columnWidths = tableData[0].map((_, colIndex) => {
-              return Math.max(...tableData.map(row => row[colIndex]?.length || 0));
-            });
-            
-            // Create text table
-            tableData.forEach((row, rowIndex) => {
-              row.forEach((cell, colIndex) => {
-                const padding = columnWidths[colIndex] - cell.length;
-                // Right align all cells except first column and header
-                const isFirstColumn = colIndex === 0;
-                const isHeader = rowIndex === 0;
-                if (isFirstColumn || isHeader) {
-                  textContent += cell.padEnd(columnWidths[colIndex] + 2);
-                } else {
-                  textContent += cell.padStart(columnWidths[colIndex] + 2);
-                }
-              });
-              textContent += '\n';
-              // Add separator after header
-              if (rowIndex === 0) {
-                textContent += columnWidths.map(w => '-'.repeat(w + 2)).join('') + '\n';
-              }
-            });
-            textContent += '\n';
-          }
         } else {
-          // Non-table content
           htmlContent += part;
-          textContent += wrapTextToWidth(part.replace(/<[^>]+>/g, ''));
         }
       });
     } else {
-      // No table in content
       htmlContent += `<p>${item.memo}</p>`;
-      const plainText = item.memo.replace(/<[^>]+>/g, '');
-      textContent += `${wrapTextToWidth(plainText)}\n\n`;
     }
     htmlContent += '</div></div>';
-    textContent += `\n${item.memo}\n\n`;
   });
   htmlContent += '</div></div>';
   
   return { 
     html: htmlContent, 
-    text: wrapTextToWidth(textContent) 
+    text: textContent 
   };
 }
 
@@ -280,18 +336,14 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
     selectedNewsIDs: string[] };
 
   try {
-    // Get users to send email to
     const users = (email) 
       ? await selectSingleUser('us-east-1_oy1KeDlsD', email) 
       : await selectUsersByType('us-east-1_oy1KeDlsD', type);
 
-    // Fetch news items
     const newsItems = await fetchNewsItems(selectedNewsIDs);
     
-    // Format email content
     const emailContent = await formatEmailContent(newsItems, header);
     
-    // Send emails
     await sendEmailToUsers(users, title, emailContent);
     
     return JSON.stringify({ 
