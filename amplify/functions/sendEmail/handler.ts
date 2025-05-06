@@ -51,6 +51,34 @@ async function fetchNewsItems(newsIds: string[]): Promise<any[]> {
   return newsItems.filter(item => item !== undefined);
 }
 
+// Add this helper function before formatEmailContent
+function wrapTextToWidth(text: string, maxWidth: number = 60): string {
+  const lines = text.split('\n');
+  return lines.map(line => {
+    if (line.length <= maxWidth) return line;
+    
+    // Simple word-wrapping algorithm
+    const words = line.split(' ');
+    let result = '';
+    let currentLine = '';
+    
+    for (const word of words) {
+      if ((currentLine + word).length <= maxWidth) {
+        currentLine += (currentLine ? ' ' : '') + word;
+      } else {
+        result += (result ? '\n' : '') + currentLine;
+        currentLine = word;
+      }
+    }
+    
+    if (currentLine) {
+      result += (result ? '\n' : '') + currentLine;
+    }
+    
+    return result;
+  }).join('\n');
+}
+
 async function formatEmailContent(newsItems: any[], header?: string): Promise<{ html: string, text: string }> {
   const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
   const baseUrl = 'https://main.de7wz8ekh1b3f.amplifyapp.com';
@@ -186,20 +214,24 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
         } else {
           // Non-table content
           htmlContent += part;
-          textContent += part.replace(/<[^>]+>/g, '');
+          textContent += wrapTextToWidth(part.replace(/<[^>]+>/g, ''));
         }
       });
     } else {
       // No table in content
       htmlContent += `<p>${item.memo}</p>`;
-      textContent += `${item.memo.replace(/<[^>]+>/g, '')}\n\n`;
+      const plainText = item.memo.replace(/<[^>]+>/g, '');
+      textContent += `${wrapTextToWidth(plainText)}\n\n`;
     }
     htmlContent += '</div></div>';
     textContent += `\n${item.memo}\n\n`;
   });
   htmlContent += '</div></div>';
   
-  return { html: htmlContent, text: textContent };
+  return { 
+    html: htmlContent, 
+    text: wrapTextToWidth(textContent) 
+  };
 }
 
 async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[], subject: string, content: { html: string, text: string }) {
