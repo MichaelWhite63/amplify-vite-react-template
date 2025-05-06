@@ -243,11 +243,11 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           
           let tableWidth = '100%';
           if (columnCount <= 3) {
-            tableWidth = '30%';
+            tableWidth = '40%';
           } else if (columnCount <= 5) {
             tableWidth = '75%';
           } else if (columnCount <= 8) {
-            tableWidth = '100%';
+            tableWidth = '95%';
           }
           
           const styledTable = part
