@@ -80,7 +80,7 @@ function wrapTextToWidth(text: string, maxWidth: number = 60): string {
 }
 
 // Enhance text formatting to create rich-looking plain text
-function createEnhancedTextContent(newsItems: any[], header?: string, baseUrl: string): string {
+function createEnhancedTextContent(newsItems: any[], baseUrl: string, header?: string): string {
   const separator = '─'.repeat(60);
   let textContent = '╔' + '═'.repeat(58) + '╗\n';
   textContent += '║ METAL NEWS' + ' '.repeat(47) + '║\n';
@@ -124,7 +124,7 @@ function createEnhancedTextContent(newsItems: any[], header?: string, baseUrl: s
           
           if (tableData.length > 0) {
             // Calculate column widths
-            const columnWidths = [];
+            const columnWidths: number[] = [];
             for (let i = 0; i < tableData[0].length; i++) {
               columnWidths[i] = Math.max(
                 ...tableData.map(row => (row[i] || '').length),
