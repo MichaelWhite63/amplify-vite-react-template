@@ -213,7 +213,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
     </div>`;
   
-  let textContent = createEnhancedTextContent(newsItems, header, baseUrl);
+  const textContent = createEnhancedTextContent(newsItems, baseUrl, header);
   
   htmlContent += '<ul style="color: #191970; font-size: 12pt;">';
   
