@@ -242,13 +242,9 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           const columnCount = Math.max(thCount, tdCount);
           
           let tableWidth = '100%';
-          if (columnCount <= 3) {
-            tableWidth = '40%';
-          } else if (columnCount <= 5) {
-            tableWidth = '75%';
-          } else if (columnCount <= 8) {
-            tableWidth = '95%';
-          }
+          if (columnCount <= 3)      { tableWidth = '40%';} 
+          else if (columnCount <= 5) { tableWidth = '75%';} 
+          else if (columnCount <= 8) { tableWidth = '95%';}
           
           const styledTable = part
             .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
