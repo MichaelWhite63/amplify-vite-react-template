@@ -207,11 +207,23 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
   const baseUrl = 'https://main.de7wz8ekh1b3f.amplifyapp.com';
   
-  let htmlContent = '<div style="font-family: Arial, sans-serif;">';
-  htmlContent += `<div style="width: 65%; margin: 0 auto;">
-    <div style="text-align: left; margin-bottom: 20px;">
-      <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
-    </div>`;
+  // Add responsive meta tags and media queries for mobile devices
+  let htmlContent = `
+    <div style="font-family: Arial, sans-serif;">
+    <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      @media only screen and (min-width: 600px) {
+        .container { width: 65% !important; }
+        .table-small { width: 50% !important; }
+        .table-medium { width: 80% !important; }
+        .table-large { width: 98% !important; }
+      }
+    </style>
+    <div class="container" style="width: 100%; margin: 0 auto;">
+      <div style="text-align: left; margin-bottom: 20px;">
+        <img src="${logoUrl}" alt="Metal News Logo" style="width: 100%; max-width: 100%; height: auto;" />
+      </div>`;
   
   const textContent = createEnhancedTextContent(newsItems, baseUrl, header);
   
@@ -241,13 +253,15 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           const tdCount = (firstRowContent.match(/<td[^>]*>/g) || []).length;
           const columnCount = Math.max(thCount, tdCount);
           
-          let tableWidth = '100%';
-          if (columnCount <= 3)      { tableWidth = '50%';} 
-          else if (columnCount <= 5) { tableWidth = '80%';} 
-          else if (columnCount <= 8) { tableWidth = '98%';}
+          let tableClass = 'table-large';
+          if (columnCount <= 3) { 
+            tableClass = 'table-small';
+          } else if (columnCount <= 5) { 
+            tableClass = 'table-medium';
+          }
           
           const styledTable = part
-            .replace('<table', `<table style="border-collapse: collapse; width: ${tableWidth}; margin: 0;" data-columns="${columnCount}"`)
+            .replace('<table', `<table class="${tableClass}" style="border-collapse: collapse; width: 100%; margin: 0;" data-columns="${columnCount}"`)
             .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
             .replace(/<td/g, (match, offset, fullString) => {
               const upToTd = fullString.substring(0, offset);
@@ -278,7 +292,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     }
     htmlContent += '</div></div>';
   });
-  htmlContent += '</div></div>';
+  htmlContent += '</div></div></div>';
   
   return { 
     html: htmlContent, 
