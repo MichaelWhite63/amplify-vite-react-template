@@ -102,6 +102,7 @@ const NewsAppBar: React.FC = () => {
               onClick={handleNewsClick}
               endIcon={<KeyboardArrowDownIcon />}
               sx={{ 
+                fontSize: '16pt',
                 '&:hover': { 
                   backgroundColor: 'rgba(255, 255, 255, 0.1)' 
                 }
@@ -126,7 +127,8 @@ const NewsAppBar: React.FC = () => {
                 onClick={() => handleMenuItemClick('/admin')}
                 sx={{ 
                   minWidth: '200px',
-                  color: 'white'
+                  color: 'white',
+                  fontSize: '16pt'
                 }}
               >
                 ニュースの作成
@@ -135,7 +137,8 @@ const NewsAppBar: React.FC = () => {
                 onClick={() => handleMenuItemClick('/news-search')}
                 sx={{ 
                   minWidth: '200px',
-                  color: 'white'
+                  color: 'white',
+                  fontSize: '16pt'
                 }}
               >
                 ニュースの検索
@@ -144,7 +147,8 @@ const NewsAppBar: React.FC = () => {
                 onClick={() => handleMenuItemClick('/charts')}
                 sx={{ 
                   minWidth: '200px',
-                  color: 'white'
+                  color: 'white',
+                  fontSize: '16pt'
                 }}
               >
                 チャートの編集
@@ -159,6 +163,7 @@ const NewsAppBar: React.FC = () => {
               onClick={handleUserClick}
               endIcon={<KeyboardArrowDownIcon />}
               sx={{ 
+                fontSize: '16pt',
                 '&:hover': { 
                   backgroundColor: 'rgba(255, 255, 255, 0.1)' 
                 }
@@ -183,7 +188,8 @@ const NewsAppBar: React.FC = () => {
                 onClick={() => handleMenuItemClick('/create-user')}
                 sx={{ 
                   minWidth: '200px',
-                  color: 'white'
+                  color: 'white',
+                  fontSize: '16pt'
                 }}
               >
                 ユーザーの作成
@@ -192,7 +198,8 @@ const NewsAppBar: React.FC = () => {
                 onClick={() => handleMenuItemClick('/update-users')}
                 sx={{ 
                   minWidth: '200px',
-                  color: 'white'
+                  color: 'white',
+                  fontSize: '16pt'
                 }}
               >
                 ユーザーの検索
@@ -207,6 +214,7 @@ const NewsAppBar: React.FC = () => {
               onClick={handleDeliveryClick}
               endIcon={<KeyboardArrowDownIcon />}
               sx={{ 
+                fontSize: '16pt',
                 '&:hover': { 
                   backgroundColor: 'rgba(255, 255, 255, 0.1)' 
                 }
@@ -231,7 +239,8 @@ const NewsAppBar: React.FC = () => {
                 onClick={() => handleMenuItemClick('/send-email')}
                 sx={{ 
                   minWidth: '200px',
-                  color: 'white'
+                  color: 'white',
+                  fontSize: '16pt'
                 }}
               >
                 ニュースの配信をする

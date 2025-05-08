@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
-//import MenuComponent from './Menu';
 import Default from './Default';
 import Charts from './Charts';
 import SendEmail from './sendEmail';
@@ -12,7 +11,6 @@ import CreateUser from './CreateUser';
 import Detail from './Detail';
 import PrivacyPolicy from './PrivacyPolicy';
 import Archive from './Archive';
-//      <MenuComponent />
 
 const AppRouter: React.FC = () => {
   return (
