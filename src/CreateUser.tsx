@@ -20,6 +20,16 @@ import {
 import NewsAppBar from './components/NewsAppBar';
 import { Authenticator } from '@aws-amplify/ui-react';
 
+// Add form text style for consistent 14pt font sizing
+const formTextStyle = {
+  fontSize: '14pt',
+  '& .MuiInputLabel-root': { fontSize: '14pt' },
+  '& .MuiInputBase-input': { fontSize: '14pt' },
+  '& .MuiFormLabel-root': { fontSize: '14pt' },
+  '& .MuiTypography-root': { fontSize: '14pt' },
+  '& .MuiFormControlLabel-label': { fontSize: '14pt' }
+};
+
 const client = generateClient<Schema>();
 
 const CreateUser: React.FC = () => {
@@ -128,9 +138,9 @@ const CreateUser: React.FC = () => {
     <Authenticator>
       <NewsAppBar />
       <Box sx={{ mt: '130px' }}>
-        <Card sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+        <Card sx={{ width: '4in', mx: 'auto', mt: 4 }}>
           <CardContent>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{ fontSize: '16pt' }}>
               Create New User
             </Typography>
             
@@ -144,6 +154,7 @@ const CreateUser: React.FC = () => {
                   onChange={handleInputChange}
                   fullWidth
                   required
+                  sx={formTextStyle}
                 />
                 
                 <TextField
@@ -153,6 +164,7 @@ const CreateUser: React.FC = () => {
                   onChange={handleInputChange}
                   fullWidth
                   required
+                  sx={formTextStyle}
                 />
                 
                 <TextField
@@ -162,6 +174,7 @@ const CreateUser: React.FC = () => {
                   onChange={handleInputChange}
                   fullWidth
                   required
+                  sx={formTextStyle}
                 />
 
                 <TextField
@@ -171,6 +184,7 @@ const CreateUser: React.FC = () => {
                   onChange={handleInputChange}
                   fullWidth
                   required
+                  sx={formTextStyle}
                 />
 
                 <Divider sx={{ my: 2 }} />
@@ -189,10 +203,11 @@ const CreateUser: React.FC = () => {
                     />
                   }
                   label="すべてのカテゴリ"
+                  sx={formTextStyle}
                 />
                 
                 <FormGroup>
-                  <FormLabel component="legend"></FormLabel>
+                  <FormLabel component="legend" sx={{ fontSize: '14pt' }}></FormLabel>
                   <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
                     <FormControlLabel
                       control={
@@ -203,6 +218,7 @@ const CreateUser: React.FC = () => {
                         />
                       }
                       label="鉄鋼"
+                      sx={formTextStyle}
                     />
                     <FormControlLabel
                       control={
@@ -213,6 +229,7 @@ const CreateUser: React.FC = () => {
                         />
                       }
                       label="自動車"
+                      sx={formTextStyle}
                     />
                     <FormControlLabel
                       control={
@@ -223,18 +240,19 @@ const CreateUser: React.FC = () => {
                         />
                       }
                       label="アルミ"
+                      sx={formTextStyle}
                     />
                   </Stack>
                 </FormGroup>
 
                 {error && (
-                  <Alert severity="error">
+                  <Alert severity="error" sx={{ '& .MuiAlert-message': { fontSize: '14pt' } }}>
                     {error}
                   </Alert>
                 )}
 
                 {success && (
-                  <Alert severity="success">
+                  <Alert severity="success" sx={{ '& .MuiAlert-message': { fontSize: '14pt' } }}>
                     User created successfully!
                   </Alert>
                 )}
@@ -244,6 +262,7 @@ const CreateUser: React.FC = () => {
                   variant="contained" 
                   color="primary"
                   size="large"
+                  sx={{ fontSize: '14pt', py: 1 }}
                 >
                   Create User
                 </Button>

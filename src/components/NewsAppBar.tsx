@@ -204,6 +204,16 @@ const NewsAppBar: React.FC = () => {
               >
                 ユーザーの検索
               </MenuItem>
+              <MenuItem 
+                onClick={() => handleMenuItemClick('/change-password')}
+                sx={{ 
+                  minWidth: '200px',
+                  color: 'white',
+                  fontSize: '16pt'
+                }}
+              >
+                パスワード変更
+              </MenuItem>
             </Menu>
           </Box>
 

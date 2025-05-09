@@ -60,7 +60,17 @@ const formStyle = {
   width: '85%',
   margin: '0 auto',
   padding: '10px',
-  maxWidth: '1200px' // Add fixed maximum width
+  maxWidth: '1200px', // Add fixed maximum width
+  fontSize: '14pt' // Add default font size for the form
+};
+
+// Add a common text style for form elements
+const formTextStyle = {
+  fontSize: '14pt',
+  '& .MuiInputLabel-root': { fontSize: '14pt' },
+  '& .MuiInputBase-input': { fontSize: '14pt' },
+  '& .MuiFormLabel-root': { fontSize: '14pt' },
+  '& .MuiTypography-root': { fontSize: '14pt' }
 };
 
 const mainStyle = {
@@ -211,7 +221,7 @@ const SendEmail: React.FC = () => {
       }}>
         <Box sx={{ ...formStyle, mt: '50px' }}>
           <form onSubmit={handlePreview}>
-            <FormControl sx={{ width: '100%' }} variant="standard">
+            <FormControl sx={{ width: '100%', ...formTextStyle }} variant="standard">
               {/* Entry fields container */}
               <div style={{ 
                 display: 'flex', 
@@ -231,7 +241,7 @@ const SendEmail: React.FC = () => {
                     <Paper sx={{ p: 2 }}>
                       <Stack spacing={2}>
                         <div>
-                          <FormLabel>配信グループ</FormLabel>
+                          <FormLabel sx={{ fontSize: '14pt' }}>配信グループ</FormLabel>
                           <RadioGroup 
                             row 
                             value={recipient} 
@@ -241,6 +251,9 @@ const SendEmail: React.FC = () => {
                               width: '50%',
                               '& .MuiFormControlLabel-root': {
                                 margin: 0
+                              },
+                              '& .MuiFormControlLabel-label': {
+                                fontSize: '14pt'  // Set font size for radio labels
                               }
                             }}
                           >
@@ -255,11 +268,12 @@ const SendEmail: React.FC = () => {
                               onChange={(e) => setEmail(e.target.value)}
                               fullWidth
                               margin="normal"
+                              sx={formTextStyle}
                             />
                           )}
                         </div>
                         <div>
-                          <FormLabel>カテゴリー</FormLabel>
+                          <FormLabel sx={{ fontSize: '14pt' }}>カテゴリー</FormLabel>
                           <RadioGroup 
                             row 
                             value={selectedType} 
@@ -269,6 +283,9 @@ const SendEmail: React.FC = () => {
                               width: '50%',
                               '& .MuiFormControlLabel-root': {
                                 margin: 0
+                              },
+                              '& .MuiFormControlLabel-label': {
+                                fontSize: '14pt'  // Set font size for radio labels
                               }
                             }}
                           >
@@ -284,6 +301,7 @@ const SendEmail: React.FC = () => {
                           value={title}
                           onChange={(e) => setTitle(e.target.value)}
                           fullWidth
+                          sx={formTextStyle}
                         />
 
                         <TextField
@@ -292,8 +310,9 @@ const SendEmail: React.FC = () => {
                           value={header}
                           onChange={(e) => setHeader(e.target.value)}
                           multiline
-                          rows={4}
+                          rows={8}
                           fullWidth
+                          sx={formTextStyle}
                         />
 
                         <TextField
@@ -301,9 +320,16 @@ const SendEmail: React.FC = () => {
                           type="date"
                           value={queryDate}
                           onChange={(e) => setQueryDate(e.target.value)}
-                          fullWidth
                           InputLabelProps={{
                             shrink: true,
+                          }}
+                          sx={{ 
+                            ...formTextStyle,
+                            width: '1in', // Set width to 1 inch
+                            minWidth: '200px', // Ensure it's not too small on various screens
+                            '& .MuiInputBase-root': {
+                              width: '100%'
+                            }
                           }}
                         />
                       </Stack>
@@ -324,9 +350,17 @@ const SendEmail: React.FC = () => {
                   sx={{ 
                     width: '100%',
                     margin: '0 auto',
+                    fontSize: '14pt', // Add default font size
                     table: {
                       tableLayout: 'fixed', // Force table to use fixed layout
                       width: '100%'
+                    },
+                    // Add font size to all table elements
+                    '& .MuiTableCell-root': {
+                      fontSize: '14pt'
+                    },
+                    '& .MuiCheckbox-root': {
+                      transform: 'scale(1.2)' // Make checkboxes slightly larger to match text
                     }
                   }}
                 >
@@ -340,9 +374,9 @@ const SendEmail: React.FC = () => {
                             onChange={(e) => setSelectedNewsIDs(e.target.checked ? unpublishedNews.map((news) => news.id.toString()) : [])}
                           />
                         </TableCell> 
-                        <TableCell style={{ width: '70%', color: 'white' }}>カテゴリー {selectedType}</TableCell>
-                        <TableCell style={{ width: '20%', color: 'white' }}>ニュースの日付</TableCell>
-                        <TableCell style={{ width: '5%', color: 'white' }}>移動</TableCell>
+                        <TableCell style={{ width: '70%', color: 'white', fontSize: '14pt' }}>カテゴリー {selectedType}</TableCell>
+                        <TableCell style={{ width: '20%', color: 'white', fontSize: '14pt' }}>ニュースの日付</TableCell>
+                        <TableCell style={{ width: '5%', color: 'white', fontSize: '14pt' }}>移動</TableCell>
                       </StyledTableHeadRow>
                     </TableHead> 
                     <TableBody>
@@ -358,8 +392,8 @@ const SendEmail: React.FC = () => {
                           <TableCell padding="checkbox">
                             <Checkbox checked={isSelected(news.id)} />
                           </TableCell>
-                          <TableCell style={{ width: '65%' }}>{news.title}</TableCell>
-                          <TableCell style={{ width: '15%' }}>{news.date}</TableCell>
+                          <TableCell style={{ width: '65%', fontSize: '14pt' }}>{news.title}</TableCell>
+                          <TableCell style={{ width: '15%', fontSize: '14pt' }}>{news.date}</TableCell>
                           <TableCell style={{ width: '10%' }}>
                             <IconButton
                               size="small"
@@ -435,7 +469,6 @@ const SendEmail: React.FC = () => {
                   ))}
                 </List>
               </Paper>
-
               {/* Full content */}
               <Typography variant="h6" gutterBottom>Full Content:</Typography>
               {previewContent.map((news) => (
