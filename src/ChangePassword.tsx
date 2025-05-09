@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Box, Button, Paper, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
-//import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../amplify/data/resource';
+
+// Initialize the client
+const client = generateClient<Schema>();
 
 // Style consistent with other components
 const textStyle = {
@@ -87,37 +91,17 @@ const ChangePassword: React.FC = () => {
     setLoading(true);
     
     try {
-       
-     /*
-        const cognitoISP = new CognitoIdentityServiceProvider({
-            region: 'us-east-1', // Replace with your AWS region (e.g., 'us-east-1')
-        });
-
-        const userPoolId = 'us-east-1_oy1KeDlsD'; // Replace with your Cognito User Pool ID
-
-        const params = {
-            UserPoolId: userPoolId,
-            Username: username,
-            Password: newPassword,
-            Permanent: true, // Set to true to make the user sign in with this new password
-        };
+      // Call the Lambda function through AppSync API
+      const response = await client.queries.changeUserPassword({
+        username,
+        password: newPassword
+      });
       
-        //New 
-        try {
-            const result = await cognitoISP.adminSetUserPassword(params).promise();
-            console.log(`Password for user "${username}" has been successfully set.`);
-            console.log(result); // Optionally log the result from Cognito
-        } catch (error) {
-            console.error(`Error setting password for user "${username}":`, error);
-            throw error; // Re-throw the error to be handled by the caller
-        }
-*/
-
       // Clear form on success
       setUsername('');
       setNewPassword('');
       setConfirmPassword('');
-      setSuccess(`Password for user ${username} has been successfully changed.`);
+      setSuccess(response.data.message || `Password for user ${username} has been successfully changed.`);
     } catch (err: any) {
       console.error('Error changing password:', err);
       setError(err.message || 'Failed to change password. Please try again.');
