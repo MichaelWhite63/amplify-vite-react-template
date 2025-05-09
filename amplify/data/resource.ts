@@ -1,4 +1,4 @@
-import { a, defineData } from "@aws-amplify/backend";
+import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { sayHello }   from "../functions/say-hello/resource"
 import { sendEmail }  from "../functions/sendEmail/resource"
 import { newsSearch } from "../functions/newsSearch/resource";
@@ -222,6 +222,8 @@ const schema = a.schema({
     .authorization((allow) => [allow.publicApiKey()]),
 
 });
+
+export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
