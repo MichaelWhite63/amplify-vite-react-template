@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Paper, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+//import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 // Style consistent with other components
 const textStyle = {
