@@ -97,14 +97,20 @@ const ChangePassword: React.FC = () => {
         password: newPassword
       });
       
+      // Access correct response structure - data contains changeUserPassword property
+      const result = response.data;
+      
       // Clear form on success
       setUsername('');
       setNewPassword('');
       setConfirmPassword('');
-      setSuccess(response.data.message || `Password for user ${username} has been successfully changed.`);
-    } catch (err: any) {
+      
+      // Use response data if available, fallback to generic message
+      const message = result || `Password for user ${username} has been successfully changed.`;
+      setSuccess(message);
+    } catch (err: unknown) {
       console.error('Error changing password:', err);
-      setError(err.message || 'Failed to change password. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to change password. Please try again.');
     } finally {
       setLoading(false);
     }

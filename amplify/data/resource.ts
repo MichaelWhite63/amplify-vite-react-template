@@ -18,10 +18,7 @@ const schema = a.schema({
       username: a.string(),
       password: a.string(),
     })
-    .returns(a.model({
-      success: a.boolean(),
-      message: a.string(),
-    }))
+    .returns(a.string())
     .handler(a.handler.function(changeUserPassword))
     .authorization((allow) => [allow.publicApiKey()]),
 

@@ -43,10 +43,7 @@ export const handler: Schema["changeUserPassword"]["functionHandler"] = async (e
     
     await cognitoISP.adminSetUserPassword(params).promise();
     
-    return {
-      success: true,
-      message: `Password for user ${username} has been successfully changed.`
-    };
+    return `Password for user ${username} has been successfully changed.`;
   } catch (error) {
     console.error(`Error changing password for user ${username}:`, error);
     // Improve error typing
