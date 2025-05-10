@@ -217,7 +217,7 @@ const App: React.FC = () => {
   
   const mainStyle: CSSProperties = {
     padding: '20px',
-    maxWidth: '1200px',
+    maxWidth: '1400px',
     margin: '0 auto',
     height: '120vh',
     overflowY: 'auto',

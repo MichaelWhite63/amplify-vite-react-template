@@ -4,6 +4,7 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
+import NewsAppBar from './components/NewsAppBar';
 
 // Initialize the client
 const client = generateClient<Schema>();
@@ -91,23 +92,23 @@ const ChangePassword: React.FC = () => {
     setLoading(true);
     
     try {
-      // Call the Lambda function through AppSync API
+    
+      // The schema defines changeUserPassword as returning a string
       const response = await client.queries.changeUserPassword({
         username,
         password: newPassword
       });
       
-      // Access correct response structure - data contains changeUserPassword property
-      const result = response.data;
+      // Log the response for debugging
+      console.log('API Response:', response);
       
       // Clear form on success
       setUsername('');
       setNewPassword('');
       setConfirmPassword('');
       
-      // Use response data if available, fallback to generic message
-      const message = result || `Password for user ${username} has been successfully changed.`;
-      setSuccess(message);
+      // Response is a string - use it directly
+      setSuccess(response || `Password for user ${username} has been successfully changed.`);
     } catch (err: unknown) {
       console.error('Error changing password:', err);
       setError(err instanceof Error ? err.message : 'Failed to change password. Please try again.');
@@ -118,89 +119,84 @@ const ChangePassword: React.FC = () => {
 
   return (
     <Authenticator>
-      {({ user }) => {
-        if (!user) return <Typography>Please sign in...</Typography>;
-        
-        return (
-          <Box width="100%" mx="auto" mt={4}>
-            <Paper elevation={3} style={{ padding: '20px', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-              <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Change User Password
-              </Typography>
-              
-              {error && (
-                <Alert severity="error" sx={{ my: 2 }}>
-                  {error}
-                </Alert>
-              )}
-              
-              {success && (
-                <Alert severity="success" sx={{ my: 2 }}>
-                  {success}
-                </Alert>
-              )}
-              
-              <form onSubmit={handleSubmit}>
-                <TextField
-                  sx={{
-                    '& .MuiInputLabel-root': textStyle,
-                    '& .MuiInputBase-input': textStyle,
-                    my: 2
-                  }}
-                  fullWidth
-                  label="Username"
-                  value={username}
-                  onChange={handleUsernameChange}
-                  disabled={loading}
-                  required
-                />
-                
-                <TextField
-                  sx={{
-                    '& .MuiInputLabel-root': textStyle,
-                    '& .MuiInputBase-input': textStyle,
-                    my: 2
-                  }}
-                  fullWidth
-                  type="password"
-                  label="New Password"
-                  value={newPassword}
-                  onChange={handleNewPasswordChange}
-                  disabled={loading}
-                  required
-                  helperText="Must contain at least 8 characters, including uppercase, lowercase, number, and special character"
-                />
-                
-                <TextField
-                  sx={{
-                    '& .MuiInputLabel-root': textStyle,
-                    '& .MuiInputBase-input': textStyle,
-                    my: 2
-                  }}
-                  fullWidth
-                  type="password"
-                  label="Confirm New Password"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  disabled={loading}
-                  required
-                />
-                
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading}
-                  sx={{ mt: 2, fontWeight: 'bold', fontSize: '1.2rem' }}
-                  fullWidth
-                >
-                  {loading ? <CircularProgress size={24} /> : 'Change Password'}
-                </Button>
-              </form>
-            </Paper>
-          </Box>
-        );
-      }}
+      <NewsAppBar />
+      <Box sx={{ mt: '130px' }}>
+        <Paper elevation={3} style={{ padding: '20px', width: '4in', margin: '0 auto' }}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+            ユーザーパスワードの変更
+          </Typography>
+          
+          {error && (
+            <Alert severity="error" sx={{ my: 2 }}>
+              {error}
+            </Alert>
+          )}
+          
+          {success && (
+            <Alert severity="success" sx={{ my: 2 }}>
+              {success}
+            </Alert>
+          )}
+          
+          <form onSubmit={handleSubmit}>
+            <TextField
+              sx={{
+                '& .MuiInputLabel-root': textStyle,
+                '& .MuiInputBase-input': textStyle,
+                my: 2
+              }}
+              fullWidth
+              label="ユーザー名"
+              value={username}
+              onChange={handleUsernameChange}
+              disabled={loading}
+              required
+            />
+            
+            <TextField
+              sx={{
+                '& .MuiInputLabel-root': textStyle,
+                '& .MuiInputBase-input': textStyle,
+                my: 2
+              }}
+              fullWidth
+              type="password"
+              label="新しいパスワード"
+              value={newPassword}
+              onChange={handleNewPasswordChange}
+              disabled={loading}
+              required
+              helperText=""
+            />
+            
+            <TextField
+              sx={{
+                '& .MuiInputLabel-root': textStyle,
+                '& .MuiInputBase-input': textStyle,
+                my: 2
+              }}
+              fullWidth
+              type="password"
+              label="新しいパスワードの確認"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              disabled={loading}
+              required
+            />
+            
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              sx={{ mt: 2, fontWeight: 'bold', fontSize: '1.2rem' }}
+              fullWidth
+            >
+              {loading ? <CircularProgress size={24} /> : 'Change Password'}
+            </Button>
+          </form>
+        </Paper>
+      </Box>
     </Authenticator>
   );
 };
