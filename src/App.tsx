@@ -329,6 +329,7 @@ const App: React.FC = () => {
               apiKey='thy152883h9u8suplywk8owqmkt3xxday4soiygj58l8actt'
               initialValue=""
               init={{
+                  height: 750,
                   plugins: [
                     // Core editing features
                     'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',

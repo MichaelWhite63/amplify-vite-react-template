@@ -138,7 +138,7 @@ const CreateUser: React.FC = () => {
     <Authenticator>
       <NewsAppBar />
       <Box sx={{ mt: '130px' }}>
-        <Card sx={{ width: '4in', mx: 'auto', mt: 4 }}>
+        <Card sx={{ width: '6in', mx: 'auto', mt: 4 }}>
           <CardContent>
             <Typography variant="h5" gutterBottom sx={{ fontSize: '16pt' }}>
               Create New User

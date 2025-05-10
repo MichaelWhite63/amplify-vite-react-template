@@ -107,8 +107,8 @@ const ChangePassword: React.FC = () => {
       setNewPassword('');
       setConfirmPassword('');
       
-      // Response is a string - use it directly
-      setSuccess(response || `Password for user ${username} has been successfully changed.`);
+      // Response contains a data property that holds the string result
+      setSuccess(response.data || `Password for user ${username} has been successfully changed.`);
     } catch (err: unknown) {
       console.error('Error changing password:', err);
       setError(err instanceof Error ? err.message : 'Failed to change password. Please try again.');
@@ -121,7 +121,7 @@ const ChangePassword: React.FC = () => {
     <Authenticator>
       <NewsAppBar />
       <Box sx={{ mt: '130px' }}>
-        <Paper elevation={3} style={{ padding: '20px', width: '4in', margin: '0 auto' }}>
+        <Paper elevation={3} style={{ padding: '20px', width: '6in', margin: '0 auto' }}>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
             ユーザーパスワードの変更
           </Typography>
@@ -166,7 +166,7 @@ const ChangePassword: React.FC = () => {
               onChange={handleNewPasswordChange}
               disabled={loading}
               required
-              helperText=""
+              helperText="大文字、小文字、数字、特殊文字を含む 8 文字以上である必要があります"
             />
             
             <TextField
