@@ -126,7 +126,7 @@ const Detail: React.FC = () => {
               justifyContent: 'center',
               alignItems: 'center'
             }}>
-              <div style={{ width: '950px', margin: '0 auto' }}>
+              <div style={{ width: '850px', margin: '0 auto' }}>
                 <img 
                   src={logoUrl} 
                   alt="Metal News Logo" 
@@ -142,7 +142,7 @@ const Detail: React.FC = () => {
               p: 3, 
               width: {
                 xs: '95%', // Width for extra-small screens (phones)
-                sm: '55%'  // Width for small screens and up
+                sm: '45%'  // Width for small screens and up
               },
               margin: '20px auto'
             }}>

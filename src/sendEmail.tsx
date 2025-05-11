@@ -152,8 +152,8 @@ const SendEmail: React.FC = () => {
 
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedType(event.target.value as 'Steel' | 'Auto' | 'Aluminum');
-    console.log(`Need to set selected News to []  
-      when the type is changed to ${event.target.value}`);
+//    console.log(`Need to set selected News to []  
+  //    when the type is changed to ${event.target.value}`);
     setSelectedNewsIDs([]); // Clear selectedNewsIDs when type is changed 
   }
 
@@ -169,8 +169,6 @@ const SendEmail: React.FC = () => {
 
   const handleSendEmail = async () => {
     
-    console.log('Send Email');
-    console.log(`email = ${email} | type = ${selectedType} | title = ${title} | header = ${header} | selectedNewsIDs = ${selectedNewsIDs}`);
     console.log({ 
       name: 'MetalNews Email',
       email: recipient === 'single' ? email : null, 
@@ -179,14 +177,14 @@ const SendEmail: React.FC = () => {
       header: header,
       selectedNewsIDs: selectedNewsIDs
     });
-    console.log(await client.queries.sendEmail({ 
+    await client.queries.sendEmail({ 
       name: 'MetalNews Email',
       email: recipient === 'single' ? email : null, 
       type: selectedType,
       title: title,
       header: header,
       selectedNewsIDs: selectedNewsIDs
-    }));
+    });
     
     setPreviewOpen(false);
   };
@@ -196,7 +194,6 @@ const SendEmail: React.FC = () => {
     setSelectedNewsIDs((prevSelected) =>
       prevSelected.includes(idString) ? prevSelected.filter((newsId) => newsId !== idString) : [...prevSelected, idString]
     );
-    console.log(`Selected News IDs: ${selectedNewsIDs} | New ID: ${id}` ); // Log selectedNewsIDs
   };
 
   const isSelected = (id: number) => selectedNewsIDs.includes(id.toString());

@@ -227,6 +227,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   const textContent = createEnhancedTextContent(newsItems, baseUrl, header);
   
+  htmlContent += header;
+
   htmlContent += '<ul style="color: #191970; font-size: 12pt;">';
   
   newsItems.forEach((item) => {
