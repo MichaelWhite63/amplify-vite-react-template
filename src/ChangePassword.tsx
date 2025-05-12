@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Paper, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -23,21 +23,26 @@ const ChangePassword: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Function to generate password
+  const generatePassword = () => {
+    // Generate three random numbers
+    const randomNumbers = Math.floor(Math.random() * 900 + 100); // 100-999
+    const generatedPassword = `Metal${randomNumbers}`;
+    return generatedPassword;
+  };
+
+  // Auto-generate password when username is entered
+  useEffect(() => {
+    if (username.trim()) {
+      const password = generatePassword();
+      setNewPassword(password);
+      setConfirmPassword(password); // Also set confirm password field
+    }
+  }, [username]);
+
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
     // Reset messages when input changes
-    setError(null);
-    setSuccess(null);
-  };
-
-  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPassword(e.target.value);
-    setError(null);
-    setSuccess(null);
-  };
-
-  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value);
     setError(null);
     setSuccess(null);
   };
@@ -58,19 +63,9 @@ const ChangePassword: React.FC = () => {
       return false;
     }
     
-    // AWS Cognito password requirements
-    if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long');
-      return false;
-    }
-    
-    const hasUpperCase = /[A-Z]/.test(newPassword);
-    const hasLowerCase = /[a-z]/.test(newPassword);
-    const hasNumber = /\d/.test(newPassword);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(newPassword);
-    
-    if (!(hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar)) {
-      setError('Password must contain uppercase, lowercase, number, and special character');
+    // Simplified validation for our specific password format
+    if (!newPassword.startsWith('Metal') || !/Metal\d{3}$/.test(newPassword)) {
+      setError('Password must start with "Metal" and end with three numbers');
       return false;
     }
     
@@ -92,7 +87,6 @@ const ChangePassword: React.FC = () => {
     setLoading(true);
     
     try {
-    
       // The schema defines changeUserPassword as returning a string
       const response = await client.queries.changeUserPassword({
         username,
@@ -114,6 +108,15 @@ const ChangePassword: React.FC = () => {
       setError(err instanceof Error ? err.message : 'Failed to change password. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to regenerate password
+  const handleRegeneratePassword = () => {
+    if (username.trim()) {
+      const password = generatePassword();
+      setNewPassword(password);
+      setConfirmPassword(password);
     }
   };
 
@@ -153,21 +156,35 @@ const ChangePassword: React.FC = () => {
               required
             />
             
-            <TextField
-              sx={{
-                '& .MuiInputLabel-root': textStyle,
-                '& .MuiInputBase-input': textStyle,
-                my: 2
-              }}
-              fullWidth
-              type="password"
-              label="新しいパスワード"
-              value={newPassword}
-              onChange={handleNewPasswordChange}
-              disabled={loading}
-              required
-              helperText="大文字、小文字、数字、特殊文字を含む 8 文字以上である必要があります"
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <TextField
+                sx={{
+                  '& .MuiInputLabel-root': textStyle,
+                  '& .MuiInputBase-input': textStyle,
+                  my: 2,
+                  flex: 1
+                }}
+                fullWidth
+                type="text" // Changed to text so user can see the generated password
+                label="新しいパスワード"
+                value={newPassword}
+                InputProps={{
+                  readOnly: true,
+                }}
+                disabled={loading}
+                required
+                helperText="Metal から始まり 3 桁の数字で終わるパスワード"
+              />
+              
+              <Button 
+                variant="outlined" 
+                onClick={handleRegeneratePassword}
+                disabled={!username.trim() || loading}
+                sx={{ height: 56 }}
+              >
+                再生成
+              </Button>
+            </Box>
             
             <TextField
               sx={{
@@ -176,10 +193,12 @@ const ChangePassword: React.FC = () => {
                 my: 2
               }}
               fullWidth
-              type="password"
+              type="text" // Changed to text for visibility
               label="新しいパスワードの確認"
               value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
+              InputProps={{
+                readOnly: true,
+              }}
               disabled={loading}
               required
             />
@@ -188,7 +207,7 @@ const ChangePassword: React.FC = () => {
               type="submit"
               variant="contained"
               color="primary"
-              disabled={loading}
+              disabled={loading || !username.trim()}
               sx={{ mt: 2, fontWeight: 'bold', fontSize: '1.2rem' }}
               fullWidth
             >
