@@ -251,8 +251,6 @@ const Default: React.FC = () => {
           const dateB = new Date(b.date || '');
           return dateB.getTime() - dateA.getTime(); // descending order
         });
-
-        console.log('Search results:', sortedResults);
         setArchiveResults(sortedResults);
       } 
     } catch (error) {
@@ -268,36 +266,54 @@ const Default: React.FC = () => {
   const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
     const navigate = useNavigate();
 
-    //      <Grid size={4}> // Changed to Grid size={{ xs: 12, md: 4 }}    
     return (
       <Grid size={{ xs: 12, md: 4 }}>
         <Paper sx={{ p: 2, height: '100%' }}>
-          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-            {title}<hr></hr>
+          <Typography 
+            variant="h6" 
+            gutterBottom 
+            sx={{ 
+              textAlign: 'center',
+              backgroundColor: '#191970', // Dark blue to match header
+              color: 'white',
+              padding: '8px',
+              borderRadius: '4px',
+              marginBottom: '16px'
+            }}
+          >
+            {title}
           </Typography>
-          {news.map((item) => (
-            <Box key={item.id} sx={{ mb: 2 }}>
+          {news.map((item, index) => (
+            <Box 
+              key={item.id} 
+              sx={{ 
+                mb: 2,
+                p: 1,
+                backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+                borderRadius: '4px',
+              }}
+            >
               <Typography 
                 variant="subtitle1" 
                 sx={{ 
                   cursor: 'pointer',
-                  color: '#0000EE', // Standard hyperlink blue color
+                  color: '#0000EE',
                   textDecoration: 'underline',
                   '&:hover': {
-                    color: '#551A8B' // Visited link color on hover
+                    color: '#551A8B'
                   },
                   '&:active': {
-                    color: '#FF0000' // Active link color
+                    color: '#FF0000'
                   }
                 }}
                 onClick={() => navigate(`/detail/${item.id}`)}
               >
                 {item.title}
               </Typography>
+              <br></br>
               <Typography variant="body2" color="text.secondary">
-                {new Date(item.date).toLocaleDateString()}
+                発行済み: {new Date(item.date).toLocaleDateString()}
               </Typography>
-              <br></br><hr></hr>
             </Box>
           ))}
         </Paper>

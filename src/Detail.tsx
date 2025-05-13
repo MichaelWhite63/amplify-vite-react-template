@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Box, Paper, Button, createTheme } from '@mui/material';
+import { Typography, Box, Paper, Button, createTheme, Grid } from '@mui/material';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -23,6 +23,38 @@ interface NewsDetail {
   memo: string;
   header: string;
 }
+
+interface NewsItem {
+  id: string;
+  title: string;
+  date: string;
+}
+
+// Helper component for news display
+const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
+  const navigate = useNavigate();
+
+  return (
+    <Grid size={{ xs: 12, md: 4 }}>
+      <Paper sx={{ p: 2, height: '100%' }}>
+        <Typography 
+          variant="h6" 
+          gutterBottom 
+          sx={{ 
+            textAlign: 'center',
+            backgroundColor: '#191970', // Dark blue to match header
+            color: 'white',
+            padding: '8px',
+            borderRadius: '4px',
+            marginBottom: '16px'
+          }}
+        >
+          {title}
+        </Typography>
+      </Paper>
+    </Grid>
+  );
+};
 
 const Detail: React.FC = () => {
   const { id } = useParams();

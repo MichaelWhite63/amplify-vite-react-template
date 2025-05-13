@@ -211,7 +211,7 @@ const ChangePassword: React.FC = () => {
               sx={{ mt: 2, fontWeight: 'bold', fontSize: '1.2rem' }}
               fullWidth
             >
-              {loading ? <CircularProgress size={24} /> : 'Change Password'}
+              {loading ? <CircularProgress size={24} /> : 'パスワードを変更する'}
             </Button>
           </form>
         </Paper>
