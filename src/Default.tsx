@@ -541,7 +541,16 @@ const Default: React.FC = () => {
                           >
                             米国鉄鋼景気指標
                           </Typography><hr></hr>
-                          <TableContainer component={Paper} sx={{ mt: 2, mb: 4 }}>
+                          <TableContainer 
+                            component={Paper} 
+                            sx={{ 
+                              mt: 2, 
+                              mb: 4,
+                              border: '2px solid #191970', // Add dark blue border matching the header color
+                              borderRadius: '4px', // Match the border radius used elsewhere
+                              overflow: 'hidden' // Ensures the border radius applies properly
+                            }}
+                          >
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
@@ -565,7 +574,15 @@ const Default: React.FC = () => {
                           </TableContainer>
 
                           {/* Chart2 Table */}
-                          <TableContainer component={Paper} sx={{ mt: 2 }}>
+                          <TableContainer 
+                            component={Paper} 
+                            sx={{ 
+                              mt: 2,
+                              border: '2px solid #191970', // Add dark blue border matching the header color
+                              borderRadius: '4px', // Match the border radius used elsewhere
+                              overflow: 'hidden' // Ensures the border radius applies properly
+                            }}
+                          >
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
@@ -589,7 +606,15 @@ const Default: React.FC = () => {
                           </TableContainer>
 
                           {/* Chart3 Table */}
-                          <TableContainer component={Paper} sx={{ mt: 2 }}>
+                          <TableContainer 
+                            component={Paper} 
+                            sx={{ 
+                              mt: 2,
+                              border: '2px solid #191970', // Add dark blue border matching the header color
+                              borderRadius: '4px', // Match the border radius used elsewhere
+                              overflow: 'hidden' // Ensures the border radius applies properly
+                            }}
+                          >
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
@@ -611,7 +636,15 @@ const Default: React.FC = () => {
                           </TableContainer>
 
                           {/* Chart4 Table */}
-                          <TableContainer component={Paper} sx={{ mt: 2 }}>
+                          <TableContainer 
+                            component={Paper} 
+                            sx={{ 
+                              mt: 2,
+                              border: '2px solid #191970', // Add dark blue border matching the header color
+                              borderRadius: '4px', // Match the border radius used elsewhere
+                              overflow: 'hidden' // Ensures the border radius applies properly
+                            }}
+                          >
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
@@ -635,7 +668,15 @@ const Default: React.FC = () => {
                           </TableContainer>
 
                           {/* Chart5 Table */}
-                          <TableContainer component={Paper} sx={{ mt: 2 }}>
+                          <TableContainer 
+                            component={Paper} 
+                            sx={{ 
+                              mt: 2,
+                              border: '2px solid #191970', // Add dark blue border matching the header color
+                              borderRadius: '4px', // Match the border radius used elsewhere
+                              overflow: 'hidden' // Ensures the border radius applies properly
+                            }}
+                          >
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
@@ -659,7 +700,15 @@ const Default: React.FC = () => {
                           </TableContainer>
 
                           {/* Chart6 Table */}
-                          <TableContainer component={Paper} sx={{ mt: 2 }}>
+                          <TableContainer 
+                            component={Paper} 
+                            sx={{ 
+                              mt: 2,
+                              border: '2px solid #191970', // Add dark blue border matching the header color
+                              borderRadius: '4px', // Match the border radius used elsewhere
+                              overflow: 'hidden' // Ensures the border radius applies properly
+                            }}
+                          >
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
