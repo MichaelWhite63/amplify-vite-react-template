@@ -29,7 +29,7 @@ interface NewsItem {
   title: string;
   date: string;
 }
-
+/*
 // Helper component for news display
 const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
   const navigate = useNavigate();
@@ -55,12 +55,13 @@ const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
     </Grid>
   );
 };
-
+*/
 const Detail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsDetail | null>(null);
   const [hasHistory, setHasHistory] = useState(false);
+  const [sameDataArticles, setSameDataArticles] = useState<NewsItem[]>([]);
 
   const theme = createTheme();
   theme.typography.h3 = {
@@ -82,7 +83,7 @@ const Detail: React.FC = () => {
       try {
         const response = await client.models.News.get({ id });
         if (response.data) {
-          setNews({
+          const newsItem = {
             id: response.data.id,
             title: response.data.title ?? '',
             date: response.data.date ?? '',
@@ -92,7 +93,38 @@ const Detail: React.FC = () => {
             source: response.data.source ?? '',
             memo: response.data.memo ?? '',
             header: response.data.header ?? ''
-          });
+          };
+          
+          setNews(newsItem);
+          console.log('Fetched news detail:', newsItem);
+          // After fetching the article, fetch all articles from the same date
+          if (newsItem.date) {
+            try {
+              // Query for articles with the same date
+              const sameDate = await client.models.News.list({
+                filter: {
+                  date: {
+                    eq: newsItem.date
+                  }
+                }
+              });
+              console.log('Articles from the same date:', sameDate);
+              if (sameDate.data) {
+                // Filter out the current article
+                const otherArticles = sameDate.data
+                  .filter(article => article.id !== newsItem.id)
+                  .map(article => ({
+                    id: article.id,
+                    title: article.title || '',
+                    date: article.date || ''
+                  }));
+                
+                setSameDataArticles(otherArticles);
+              }
+            } catch (error) {
+              console.error('Error fetching articles from same date:', error);
+            }
+          }
         }
       } catch (error) {
         console.error('Error fetching news detail:', error);
@@ -218,6 +250,50 @@ const Detail: React.FC = () => {
                     <strong>著者:</strong> {news.writtenBy}
                   </Typography>
                 </Box>
+                {/* Display other articles from the same date */}
+                {sameDataArticles.length > 0 && (
+                  <Box sx={{ mt: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        textAlign: 'center',
+                        backgroundColor: '#191970',
+                        color: 'white',
+                        padding: '8px',
+                        borderRadius: '4px',
+                        marginBottom: '16px'
+                      }}
+                    >
+                      同日の記事
+                    </Typography>
+                    
+                    {sameDataArticles.map((article, index) => (
+                      <Box 
+                        key={article.id}
+                        sx={{ 
+                          p: 1,
+                          mb: 1,
+                          backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => navigate(`/detail/${article.id}`)}
+                      >
+                        <Typography 
+                          sx={{ 
+                            color: '#0000EE',
+                            textDecoration: 'underline',
+                            '&:hover': {
+                              color: '#551A8B'
+                            }
+                          }}
+                        >
+                          {article.title}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
               </Paper>
             </Box>
           </>
