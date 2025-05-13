@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Box, Paper, Button, createTheme, Grid } from '@mui/material';
+import { Typography, Box, Paper, Button, createTheme } from '@mui/material';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -29,39 +29,14 @@ interface NewsItem {
   title: string;
   date: string;
 }
-/*
-// Helper component for news display
-const NewsColumn = ({ title, news }: { title: string, news: NewsItem[] }) => {
-  const navigate = useNavigate();
 
-  return (
-    <Grid size={{ xs: 12, md: 4 }}>
-      <Paper sx={{ p: 2, height: '100%' }}>
-        <Typography 
-          variant="h6" 
-          gutterBottom 
-          sx={{ 
-            textAlign: 'center',
-            backgroundColor: '#191970', // Dark blue to match header
-            color: 'white',
-            padding: '8px',
-            borderRadius: '4px',
-            marginBottom: '16px'
-          }}
-        >
-          {title}
-        </Typography>
-      </Paper>
-    </Grid>
-  );
-};
-*/
 const Detail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [news, setNews] = useState<NewsDetail | null>(null);
   const [hasHistory, setHasHistory] = useState(false);
   const [sameDataArticles, setSameDataArticles] = useState<NewsItem[]>([]);
+  const [sameSourceArticles, setSameSourceArticles] = useState<NewsItem[]>([]);
 
   const theme = createTheme();
   theme.typography.h3 = {
@@ -96,7 +71,6 @@ const Detail: React.FC = () => {
           };
           
           setNews(newsItem);
-          console.log('Fetched news detail:', newsItem);
           // After fetching the article, fetch all articles from the same date
           if (newsItem.date) {
             try {
@@ -108,7 +82,7 @@ const Detail: React.FC = () => {
                   }
                 }
               });
-              console.log('Articles from the same date:', sameDate);
+
               if (sameDate.data) {
                 // Filter out the current article
                 const otherArticles = sameDate.data
@@ -123,6 +97,35 @@ const Detail: React.FC = () => {
               }
             } catch (error) {
               console.error('Error fetching articles from same date:', error);
+            }
+          }
+          
+          // Add query for articles with the same source
+          if (newsItem.source && newsItem.source.trim() !== '') {
+            try {
+              const sameSource = await client.models.News.list({
+                filter: {
+                  source: {
+                    eq: newsItem.source
+                  }
+                },
+                limit: 10 // Limit to 10 articles to avoid performance issues
+              });
+
+              if (sameSource.data) {
+                // Filter out the current article
+                const sourceArticles = sameSource.data
+                  .filter(article => article.id !== newsItem.id)
+                  .map(article => ({
+                    id: article.id,
+                    title: article.title || '',
+                    date: article.date || ''
+                  }));
+                
+                setSameSourceArticles(sourceArticles);
+              }
+            } catch (error) {
+              console.error('Error fetching articles from same source:', error);
             }
           }
         }
@@ -204,70 +207,121 @@ const Detail: React.FC = () => {
             </div>
             <Box sx={{ 
               p: 3, 
-              width: {
-                xs: '95%', // Width for extra-small screens (phones)
-                sm: '45%'  // Width for small screens and up
-              },
-              margin: '20px auto'
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              gap: 2,
+              width: '95%',
+              maxWidth: '1200px',
+              margin: '80px auto 20px'
             }}>
-              <Paper elevation={3} sx={{ p: 4 }}>
-                {hasHistory && (
-                  <Button 
-                    variant="outlined" 
-                    onClick={() => navigate(-1)} 
-                    sx={{ mb: 2 }}
-                  >
-                    Back
-                  </Button>
-                )}
-                <Typography variant="h3" gutterBottom>
-                  {news.title}
-                </Typography>
-                <Box sx={{ 
-                  mt: 3,
-                  width: '100%',  // Set width to 75% of parent container
-                  margin: '0 auto' // Center the box horizontally
-                }}>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      mb: 1, 
-                      width: '100%' // Make Typography take full width of parent Box
-                    }}
-                  >
-                      <div 
-                        className="custom-content"
-                        dangerouslySetInnerHTML={createMarkup(news.memo)} 
-                      /> 
+              <Box sx={{ flex: '1 1 65%' }}>
+                <Paper elevation={3} sx={{ p: 4 }}>
+                  {hasHistory && (
+                    <Button 
+                      variant="outlined" 
+                      onClick={() => navigate(-1)} 
+                      sx={{ mb: 2 }}
+                    >
+                      Back
+                    </Button>
+                  )}
+                  <Typography variant="h3" gutterBottom>
+                    {news.title}
                   </Typography>
-                  <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                  <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>カテゴリー:</strong> {news.type}
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>著者:</strong> {news.writtenBy}
-                  </Typography>
-                </Box>
-                {/* Display other articles from the same date */}
-                {sameDataArticles.length > 0 && (
-                  <Box sx={{ mt: 4 }}>
+                  <Box sx={{ 
+                    mt: 3,
+                    width: '100%',  // Set width to 75% of parent container
+                    margin: '0 auto' // Center the box horizontally
+                  }}>
                     <Typography 
                       variant="h6" 
                       sx={{ 
-                        textAlign: 'center',
-                        backgroundColor: '#191970',
-                        color: 'white',
-                        padding: '8px',
-                        borderRadius: '4px',
-                        marginBottom: '16px'
+                        mb: 1, 
+                        width: '100%' // Make Typography take full width of parent Box
                       }}
                     >
-                      同日の記事
+                        <div 
+                          className="custom-content"
+                          dangerouslySetInnerHTML={createMarkup(news.memo)} 
+                        /> 
+                    </Typography>
+                    <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+                    <strong>日付: </strong>{new Date(news.date).toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      <strong>カテゴリー:</strong> {news.type}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      <strong>著者:</strong> {news.writtenBy}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                      <strong>ソース:</strong> {news.source}
+                    </Typography>
+                  </Box>
+                  {/* Display other articles from the same date */}
+                  {sameDataArticles.length > 0 && (
+                    <Box sx={{ mt: 4 }}>
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          textAlign: 'center',
+                          backgroundColor: '#191970',
+                          color: 'white',
+                          padding: '8px',
+                          borderRadius: '4px',
+                          marginBottom: '16px'
+                        }}
+                      >
+                        同日の記事
+                      </Typography>
+                      
+                      {sameDataArticles.map((article, index) => (
+                        <Box 
+                          key={article.id}
+                          sx={{ 
+                            p: 1,
+                            mb: 1,
+                            backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => navigate(`/detail/${article.id}`)}
+                        >
+                          <Typography 
+                            sx={{ 
+                              color: '#0000EE',
+                              textDecoration: 'underline',
+                              '&:hover': {
+                                color: '#551A8B'
+                              }
+                            }}
+                          >
+                            {article.title}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              </Box>
+              {sameSourceArticles.length > 0 && (
+                <Box sx={{ 
+                  flex: '1 1 35%', 
+                  display: { xs: 'block', md: 'block' }
+                }}>
+                  <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
+                    <Typography variant="h6" sx={{ 
+                      textAlign: 'center',
+                      backgroundColor: '#191970',
+                      color: 'white',
+                      padding: '8px',
+                      borderRadius: '4px',
+                      marginBottom: '16px'
+                    }}>  
+                    関連ニュース
                     </Typography>
                     
-                    {sameDataArticles.map((article, index) => (
+                    {sameSourceArticles.map((article, index) => (
                       <Box 
                         key={article.id}
                         sx={{ 
@@ -279,22 +333,23 @@ const Detail: React.FC = () => {
                         }}
                         onClick={() => navigate(`/detail/${article.id}`)}
                       >
-                        <Typography 
-                          sx={{ 
-                            color: '#0000EE',
-                            textDecoration: 'underline',
-                            '&:hover': {
-                              color: '#551A8B'
-                            }
-                          }}
-                        >
+                        <Typography sx={{ 
+                          color: '#0000EE',
+                          textDecoration: 'underline',
+                          '&:hover': {
+                            color: '#551A8B'
+                          }
+                        }}>
                           {article.title}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(article.date).toLocaleDateString()}
                         </Typography>
                       </Box>
                     ))}
-                  </Box>
-                )}
-              </Paper>
+                  </Paper>
+                </Box>
+              )}
             </Box>
           </>
         );

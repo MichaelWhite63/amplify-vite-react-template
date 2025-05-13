@@ -95,6 +95,17 @@ const Default: React.FC = () => {
   const [keyword, setKeyword] = useState('');
   const [archiveResults, setArchiveResults] = useState<NewsSearchResponse[]>([]);
 
+  const tableTextStyle = {
+    fontSize: '1.2rem',  // Increase font size
+    fontWeight: 'medium' // Optional: add medium weight for better readability
+  };
+
+  const tableHeaderStyle = {
+    ...tableTextStyle,
+    backgroundColor: '#d4e6f1', // Light blue background for headers
+    fontWeight: 'bold'  // Make headers bold
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -226,12 +237,7 @@ const Default: React.FC = () => {
 
     fetchData();
   }, []);
-/*
-  const handleArchiveClick = () => {
-    // You can implement archive functionality here
-    navigate('/archive');
-  };
-*/
+
   const handleArchiveSearch = async () => {
     try {
       if (keyword.trim()) {
@@ -525,7 +531,12 @@ const Default: React.FC = () => {
                             variant="h3" 
                             sx={{ 
                               textAlign: 'center',
-                              mb: 2
+                              mb: 2,
+                              backgroundColor: '#191970', // Dark blue to match header
+                              color: 'white',
+                              padding: '8px',
+                              borderRadius: '4px',
+                              marginBottom: '16px'
                             }}
                           >
                             米国鉄鋼景気指標
@@ -534,19 +545,19 @@ const Default: React.FC = () => {
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Title</TableCell>
-                                  <TableCell align="right">This Week</TableCell>
-                                  <TableCell align="right">Last Week</TableCell>
-                                  <TableCell align="right">Last Year</TableCell>
+                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>This Week</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Week</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {chart1Data.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell>{row.Title}</TableCell>
-                                    <TableCell align="right">{row.ThisWeek.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastWeek.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastYear.toFixed(1)}</TableCell>
+                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisWeek.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastWeek.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -558,19 +569,19 @@ const Default: React.FC = () => {
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Title</TableCell>
-                                  <TableCell align="right">This Week</TableCell>
-                                  <TableCell align="right">Last Week</TableCell>
-                                  <TableCell align="right">Last Year</TableCell>
+                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>This Week</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Week</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {chart2Data.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell>{row.Title}</TableCell>
-                                    <TableCell align="right">{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastYear.toFixed(1)}</TableCell>
+                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -582,17 +593,17 @@ const Default: React.FC = () => {
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Title</TableCell>
-                                  <TableCell align="right">Import</TableCell>
-                                  <TableCell align="right">Mill Price</TableCell>
+                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Import</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Mill Price</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {chart3Data.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell>{row.Title}</TableCell>
-                                    <TableCell align="right">{row.Import.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.MillPrice.toFixed(1)}</TableCell>
+                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.Import.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.MillPrice.toFixed(1)}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -604,19 +615,19 @@ const Default: React.FC = () => {
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Title</TableCell>
-                                  <TableCell align="right">This Month</TableCell>
-                                  <TableCell align="right">Last Month</TableCell>
-                                  <TableCell align="right">Last Year</TableCell>
+                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>This Month</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Month</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {chart4Data.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell>{row.Title}</TableCell>
-                                    <TableCell align="right">{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastYear.toFixed(1)}</TableCell>
+                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -628,19 +639,19 @@ const Default: React.FC = () => {
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Title</TableCell>
-                                  <TableCell align="right">This Month</TableCell>
-                                  <TableCell align="right">Last Month</TableCell>
-                                  <TableCell align="right">Last Year</TableCell>
+                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>This Month</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Month</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {chart5Data.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell>{row.Title}</TableCell>
-                                    <TableCell align="right">{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastYear.toFixed(1)}</TableCell>
+                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -652,19 +663,19 @@ const Default: React.FC = () => {
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Title</TableCell>
-                                  <TableCell align="right">This Month</TableCell>
-                                  <TableCell align="right">Last Month</TableCell>
-                                  <TableCell align="right">Last Year</TableCell>
+                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>This Month</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Month</TableCell>
+                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {chart6Data.map((row, index) => (
                                   <TableRow key={index}>
-                                    <TableCell>{row.Title}</TableCell>
-                                    <TableCell align="right">{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right">{row.LastYear.toFixed(1)}</TableCell>
+                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
+                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>

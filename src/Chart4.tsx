@@ -88,8 +88,20 @@ const Chart4Component: React.FC = () => {
   return (
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
-          米国鋼材輸入
+        <Typography 
+          variant="h4" 
+          gutterBottom 
+          sx={{ 
+            fontWeight: 'bold',
+            backgroundColor: '#191970', // Dark blue to match header in Default.tsx
+            color: 'white',
+            padding: '8px',
+            borderRadius: '4px',
+            marginBottom: '16px',
+            textAlign: 'center'
+          }}
+        >
+          自動車生産台数
         </Typography>
         <TableContainer component={Paper}>
           <Table>

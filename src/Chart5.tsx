@@ -51,12 +51,7 @@ const Chart5Component: React.FC = () => {
   const formatNumber = (num: number) => {
     return num.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   };
-/*
-  const handleEditClick = (item: Chart5) => {
-    setCurrentEditItem(item);
-    setEditDialogOpen(true);
-  };
-*/
+
   const handleDialogClose = () => {
     setEditDialogOpen(false);
     setCurrentEditItem(null);
@@ -88,8 +83,20 @@ const Chart5Component: React.FC = () => {
   return (
     <Box width="100%" mx="auto" mt={4}>
       <Paper elevation={3} style={{ padding: '20px', width: '100%' }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
-          IISI世界粗鋼生産
+        <Typography 
+          variant="h4" 
+          gutterBottom 
+          sx={{ 
+            fontWeight: 'bold',
+            backgroundColor: '#191970', // Dark blue to match header in Default.tsx
+            color: 'white',
+            padding: '8px',
+            borderRadius: '4px',
+            marginBottom: '16px',
+            textAlign: 'center'
+          }}
+        >
+          鉄鋼在庫
         </Typography>
         <TableContainer component={Paper}>
           <Table>
