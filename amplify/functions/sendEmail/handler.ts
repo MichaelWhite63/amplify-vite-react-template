@@ -233,7 +233,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   newsItems.forEach((item) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
-    htmlContent += `<li><a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a></li>`;
+    htmlContent += `<li><a href="${fullUrl}" style="color: #191970; text-decoration: underline; font-weight: bold;">${item.title}</a></li>`;
   });
   
   htmlContent += '</ul>';
@@ -241,7 +241,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   newsItems.forEach((item) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
     htmlContent += `<div style="margin-top: 20px;">
-      <h3><a href="${fullUrl}" style="color: #191970; text-decoration: none; font-weight: bold;">${item.title}</a></h3>
+      <h3><a href="${fullUrl}" style="color: #191970; text-decoration: underline; font-weight: bold;">${item.title}</a></h3>
       <div class="custom-content">`;
 
     if (item.memo.includes('<table')) {
