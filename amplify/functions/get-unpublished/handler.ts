@@ -16,8 +16,19 @@ const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum', date: str
       '#date': 'date'
     }
   };
+  
   const result = await dynamoDb.scan(params).promise();
-  return result.Items;
+  
+  // Sort the items in chronological order (oldest first)
+  // Assuming each item has a 'createdAt' or timestamp field
+  // If using a different field for ordering, replace 'createdAt' with that field name
+  const sortedItems = result.Items?.sort((a, b) => {
+    const dateA = new Date(a.createdAt || a.date).getTime();
+    const dateB = new Date(b.createdAt || b.date).getTime();
+    return dateA - dateB; // For chronological order (oldest to newest)
+  });
+  
+  return sortedItems;
 };
 
 export const handler: Schema["getUnpublished"]["functionHandler"] = async (event) => {

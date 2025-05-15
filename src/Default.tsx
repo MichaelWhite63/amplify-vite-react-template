@@ -276,7 +276,7 @@ const Default: React.FC = () => {
       <Grid size={{ xs: 12, md: 4 }}>
         <Paper sx={{ p: 2, height: '100%' }}>
           <Typography 
-            variant="h6" 
+            variant="h5" 
             gutterBottom 
             sx={{ 
               textAlign: 'center',
@@ -300,11 +300,12 @@ const Default: React.FC = () => {
               }}
             >
               <Typography 
-                variant="subtitle1" 
+                variant="h6" // Changed from subtitle1 to h6 for larger size
                 sx={{ 
                   cursor: 'pointer',
                   color: '#0000EE',
                   textDecoration: 'underline',
+                  fontSize: '1.25rem', // Explicitly setting font size for more control
                   '&:hover': {
                     color: '#551A8B'
                   },
@@ -389,7 +390,7 @@ const Default: React.FC = () => {
                 }}
               />
               <Typography 
-                variant="h6"
+                variant="h5"
                 onClick={() => navigate(`/detail/${firstSteelItem.id}`)}
                 sx={{ 
                   cursor: 'pointer',
@@ -405,8 +406,12 @@ const Default: React.FC = () => {
                  {firstSteelItem.title}
               </Typography>
               <Typography 
-                variant="body2" 
-                sx={{ mt: 1, mb: 2 }}
+                variant="body1"  // Changed from body2 to body1 for larger font size
+                sx={{ 
+                  mt: 1, 
+                  mb: 2,
+                  fontSize: '1.1rem'  // Explicitly setting the font size for more control
+                }}
                 dangerouslySetInnerHTML={{ __html: truncateHtml(firstSteelItem.memo, 200) }}
               />
               <Box sx={{ 
@@ -451,7 +456,7 @@ const Default: React.FC = () => {
                   }}
                 />
                 <Typography 
-                  variant="h6"
+                  variant="h5"
                   onClick={() => navigate(`/detail/${firstAutoItem.id}`)}
                   sx={{ 
                     cursor: 'pointer',
@@ -468,8 +473,12 @@ const Default: React.FC = () => {
                 </Typography>
               </Box>
               <Typography 
-                variant="body2" 
-                sx={{ mt: 1, mb: 2 }}
+                variant="body1"  // Changed from body2 to body1 for larger font size
+                sx={{ 
+                  mt: 1, 
+                  mb: 2,
+                  fontSize: '1.1rem'  // Explicitly setting the font size for more control
+                }}
                 dangerouslySetInnerHTML={{ __html: truncateHtml(firstAutoItem.memo, 200) }}
               />
               <Box sx={{ 

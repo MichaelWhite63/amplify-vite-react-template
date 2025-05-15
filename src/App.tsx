@@ -51,9 +51,10 @@ interface FileWithContent {
 }
 */
 const App: React.FC = () => {
+  // Function did set the date to tomorrow but was asked to set it to today
   const getTomorrowDate = () => {
     const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setDate(tomorrow.getDate());
     return tomorrow.toISOString().split('T')[0];
   };
 
@@ -170,7 +171,7 @@ const App: React.FC = () => {
           rank: 0,
           header: '',
           published: false,
-          type: 'Auto',
+          type: 'Steel',
         });
         
         // Clear the editor content

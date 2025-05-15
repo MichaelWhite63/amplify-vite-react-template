@@ -152,8 +152,6 @@ const SendEmail: React.FC = () => {
 
   async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedType(event.target.value as 'Steel' | 'Auto' | 'Aluminum');
-//    console.log(`Need to set selected News to []  
-  //    when the type is changed to ${event.target.value}`);
     setSelectedNewsIDs([]); // Clear selectedNewsIDs when type is changed 
   }
 
