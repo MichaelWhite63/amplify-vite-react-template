@@ -292,7 +292,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
     } else {
       htmlContent += `<p>${item.memo}</p>`;
     }
-    htmlContent += '</div></div>';
+    htmlContent += '</div></div><br><hr style="border-top: 1px solid #ddd; margin: 30px 0;">'; 
   });
   htmlContent += '</div></div></div>';
   
