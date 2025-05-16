@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
-import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import NewsAppBar from './components/NewsAppBar';
 import { Authenticator } from '@aws-amplify/ui-react';
 
@@ -20,6 +20,7 @@ const UpdateUser: React.FC = () => {
   const [selectedEmail, setSelectedEmail] = useState('');
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   const [groupMemberships, setGroupMemberships] = useState<string[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation dialog
   
   const GROUP_MAPPING = {
     '鉄鋼': 'Steel',
@@ -127,6 +128,65 @@ const UpdateUser: React.FC = () => {
     }
   };
 
+  const handleDeleteUser = async () => {
+    if (!selectedDetails?.[0]) return;
+    
+    try {
+      const response = await client.queries.deleteUser({ 
+        email: editableEmail
+      });
+
+      if (response.errors && response.errors.length > 0) {
+        throw new Error(response.errors[0].message);
+      }
+
+      // Reset all state to initial values
+      setSearchName('');
+      setUsers([]);
+      setSelectedEmail('');
+      setSelectedDetails(null);
+      setGroupMemberships([]);
+      setEditableEmail('');
+      setName('');
+      setDepartment('');
+      setCompany('');
+      setDeleteDialogOpen(false);
+
+      // Show success notification
+      alert("ユーザーが正常に削除されました");
+
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert(`エラー：${error instanceof Error ? error.message : '不明なエラーが発生しました'}`);
+    }
+  };
+
+  const DeleteConfirmationDialog = () => (
+    <Dialog
+      open={deleteDialogOpen}
+      onClose={() => setDeleteDialogOpen(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {"ユーザー削除の確認"}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          {`${editableEmail} を削除してもよろしいですか？ この操作は元に戻せません。`}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+          キャンセル
+        </Button>
+        <Button onClick={handleDeleteUser} color="error" autoFocus>
+          削除する
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <Authenticator>
       <NewsAppBar />
@@ -219,7 +279,7 @@ const UpdateUser: React.FC = () => {
                     fullWidth
                   />
                   <TextField
-                    label="部署"
+                    label="注意事項"
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
                     fullWidth
@@ -274,7 +334,16 @@ const UpdateUser: React.FC = () => {
                     onClick={handleUpdate}
                     sx={{ mt: 2 }}
                   >
-                    Update User
+                    ユーザーの更新
+                  </Button>
+
+                  <Button 
+                    variant="contained" 
+                    color="error" 
+                    onClick={() => setDeleteDialogOpen(true)}
+                    sx={{ mt: 2, ml: 2 }}
+                  >
+                    ユーザーの削除
                   </Button>
 
                   <Typography variant="caption" color="text.secondary">
@@ -288,6 +357,7 @@ const UpdateUser: React.FC = () => {
           )}
         </div>
       </Box>
+      <DeleteConfirmationDialog />
     </Authenticator>
   );
 };

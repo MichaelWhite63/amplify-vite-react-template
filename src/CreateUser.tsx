@@ -91,7 +91,7 @@ const CreateUser: React.FC = () => {
     setSuccess(false);
 
     if (!formData.company || !formData.email || !formData.name || !formData.department) {
-      setError('Company, email, name, and department are required');
+      setError('Company, email, name, and notes are required');
       return;
     }
 
@@ -179,7 +179,7 @@ const CreateUser: React.FC = () => {
 
                 <TextField
                   name="department"
-                  label="部署"
+                  label="注意事項"
                   value={formData.department}
                   onChange={handleInputChange}
                   fullWidth

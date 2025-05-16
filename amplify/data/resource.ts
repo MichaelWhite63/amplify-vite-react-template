@@ -9,8 +9,18 @@ import { getUser } from "../functions/get-user/resource";
 import { updateUser } from "../functions/update-user/resource";
 import { createUser } from "../functions/create-user/resource";
 import { changeUserPassword } from "../functions/changeUserPassword/resource";
+import { deleteUser } from "../functions/deleteUser/resource";
 
 const schema = a.schema({
+
+  deleteUser: a
+    .query()
+    .arguments({
+      email: a.string(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(deleteUser))
+    .authorization((allow) => [allow.publicApiKey()]),
 
   changeUserPassword: a
     .query()
