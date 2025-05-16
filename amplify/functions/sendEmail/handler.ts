@@ -209,7 +209,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   // Add responsive meta tags and media queries for mobile devices
   let htmlContent = `
-    <div style="font-family: Arial, sans-serif;">
+    <div style="font-family: Arial, sans-serif; font-size: 14pt;">
     <div style="width: 100%; max-width: 600px; margin: 0 auto;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -219,6 +219,12 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
         .table-medium { width: 80% !important; }
         .table-large { width: 98% !important; }
       }
+      /* Add styles for regular text but not tables */
+      p { font-size: 14pt; line-height: 1.5; }
+      li { font-size: 14pt; line-height: 1.5; }
+      .custom-content > div { font-size: 14pt; line-height: 1.5; }
+      /* Table text remains at default size */
+      table { font-size: 11pt; }
     </style>
     <div class="container" style="width: 100%; margin: 0 auto;">
       <div style="text-align: left; margin-bottom: 20px;">
@@ -229,7 +235,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   htmlContent += header;
 
-  htmlContent += '<ul style="color: #191970; font-size: 12pt;">';
+  // Increase font size for the headlines list
+  htmlContent += '<ul style="color: #191970; font-size: 14pt;">'; // Increased from 12pt
   
   newsItems.forEach((item) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
@@ -240,14 +247,16 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   newsItems.forEach((item) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
+    // Increase font size for article titles
     htmlContent += `<div style="margin-top: 20px;">
-      <h3><a href="${fullUrl}" style="color: #191970; text-decoration: underline; font-weight: bold;">${item.title}</a></h3>
+      <h3><a href="${fullUrl}" style="color: #191970; text-decoration: underline; font-weight: bold; font-size: 16pt;">${item.title}</a></h3>
       <div class="custom-content">`;
 
     if (item.memo.includes('<table')) {
       const parts = item.memo.split(/(<table[\s\S]*?<\/table>)/);
       parts.forEach((part: string) => {
         if (part.startsWith('<table')) {
+          // Table formatting stays the same
           const firstRowMatch = part.match(/<tr[^>]*>(.*?)<\/tr>/s);
           const firstRowContent = firstRowMatch ? firstRowMatch[1] : '';
           
@@ -286,13 +295,23 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
             });
           htmlContent += styledTable;
         } else {
-          htmlContent += part;
+          // Increase font size for non-table content by wrapping in a paragraph
+          if (part.trim()) {
+            // Only wrap non-empty content in paragraphs with increased font size
+            const processedPart = part.includes('<p') 
+              ? part.replace(/<p/g, '<p style="font-size: 14pt; line-height: 1.5;"')
+              : `<p style="font-size: 14pt; line-height: 1.5;">${part}</p>`;
+            htmlContent += processedPart;
+          } else {
+            htmlContent += part;
+          }
         }
       });
     } else {
-      htmlContent += `<p>${item.memo}</p>`;
+      // Regular paragraph with increased font size
+      htmlContent += `<p style="font-size: 14pt; line-height: 1.5;">${item.memo}</p>`;
     }
-    htmlContent += '</div></div><br><hr style="border-top: 1px solid #ddd; margin: 30px 0;">'; 
+    htmlContent += '</div></div><br><br><hr style="border-top: 1px solid #ddd; margin: 30px 0;">'; // Added extra <br> for spacing
   });
   htmlContent += '</div></div></div>';
   
