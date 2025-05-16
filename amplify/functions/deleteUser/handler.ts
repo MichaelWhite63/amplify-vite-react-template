@@ -45,6 +45,10 @@ export const handler: Schema["deleteUser"]["functionHandler"] = async (event) =>
     
     const username = listUsersResponse.Users[0].Username;
     
+    if (!username) {
+      throw new Error('Username is undefined');
+    }
+    
     // Delete the user
     await cognitoISP.adminDeleteUser({
       UserPoolId: userPoolId,
