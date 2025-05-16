@@ -272,9 +272,10 @@ const App: React.FC = () => {
                   <Select
                     id="type"
                     name="type"
-                    value={newsForm.type}
+                    value={newsForm.type || "Steel"} // Ensure Steel is always default
                     onChange={handleSelectChange}
                     label="Category"
+                    defaultValue="Steel" // Add explicit default value
                   >
                     <MenuItem value="Steel" style={{ color: 'white' }}>鉄鋼</MenuItem>
                     <MenuItem value="Auto" style={{ color: 'white' }}>自動車</MenuItem>
