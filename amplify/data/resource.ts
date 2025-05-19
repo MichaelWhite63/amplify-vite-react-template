@@ -10,8 +10,18 @@ import { updateUser } from "../functions/update-user/resource";
 import { createUser } from "../functions/create-user/resource";
 import { changeUserPassword } from "../functions/changeUserPassword/resource";
 import { deleteUser } from "../functions/deleteUser/resource";
+import { resetAllUserPasswords } from "../functions/resetAllUserPasswords/resource";
 
 const schema = a.schema({
+  
+  resetAllUserPasswords: a
+    .query()
+    .arguments({
+      dryRun: a.boolean(),
+    })
+    .returns(a.string()) // Changed from object to string
+    .handler(a.handler.function(resetAllUserPasswords))
+    .authorization((allow) => [allow.publicApiKey()]),
 
   deleteUser: a
     .query()
