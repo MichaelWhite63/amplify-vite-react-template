@@ -1,6 +1,6 @@
 import { CognitoIdentityServiceProvider, SES } from 'aws-sdk';
 import type { Schema } from "../../data/resource";
-import * as crypto from 'crypto';
+//import * as crypto from 'crypto';
 
 /**
  * IAM Requirements for Mass Password Reset:
@@ -156,31 +156,15 @@ async function getAllUsers(cognitoISP: CognitoIdentityServiceProvider, userPoolI
   return users;
 }
 
-// Helper function to generate a secure random password
-function generateSecurePassword(length: number): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-  const randomBytes = crypto.randomBytes(length);
-  let password = '';
+// Refactor the password generation function to be simpler
+function generateSimplePassword(): string {
+  // Generate three random digits (0-9)
+  const firstDigit = Math.floor(Math.random() * 10);
+  const secondDigit = Math.floor(Math.random() * 10);
+  const thirdDigit = Math.floor(Math.random() * 10);
   
-  // Ensure password has at least one of each: uppercase, lowercase, number, special char
-  const requiredChars = [
-    chars.substring(0, 26)[Math.floor(Math.random() * 26)], // uppercase
-    chars.substring(26, 52)[Math.floor(Math.random() * 26)], // lowercase
-    chars.substring(52, 62)[Math.floor(Math.random() * 10)], // number
-    chars.substring(62)[Math.floor(Math.random() * (chars.length - 62))] // special
-  ];
-  
-  // Add required characters
-  password = requiredChars.join('');
-  
-  // Fill the rest with random characters
-  for (let i = 4; i < length; i++) {
-    const randomIndex = randomBytes[i % randomBytes.length] % chars.length;
-    password += chars[randomIndex];
-  }
-  
-  // Shuffle the password characters
-  return password.split('').sort(() => 0.5 - Math.random()).join('');
+  // Combine with the word "Metal"
+  return `Metal${firstDigit}${secondDigit}${thirdDigit}`;
 }
 
 // Process a single user
@@ -202,8 +186,8 @@ async function processUser(
   }
   
   try {
-    // Generate a new secure password
-    const newPassword = generateSecurePassword(config.passwordLength);
+    // Generate a new simple password
+    const newPassword = generateSimplePassword();
     
     // Get user details to retrieve email
     const userDetails = await cognitoISP.adminGetUser({

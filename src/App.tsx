@@ -165,7 +165,7 @@ const App: React.FC = () => {
           writtenBy: '',
           date: getTomorrowDate(),
           lDate: new Date().toISOString().split('T')[0],
-          source: 'User Input',
+          source: '',
           memo: '',
           ord: 0,
           rank: 0,

@@ -141,7 +141,7 @@ const CreateUser: React.FC = () => {
         <Card sx={{ width: '6in', mx: 'auto', mt: 4 }}>
           <CardContent>
             <Typography variant="h5" gutterBottom sx={{ fontSize: '16pt' }}>
-              Create New User
+              新しいユーザーの作成
             </Typography>
             
             <form onSubmit={handleSubmit}>
@@ -264,7 +264,7 @@ const CreateUser: React.FC = () => {
                   size="large"
                   sx={{ fontSize: '14pt', py: 1 }}
                 >
-                  Create User
+                  ユーザーの作成
                 </Button>
               </Stack>
             </form>
