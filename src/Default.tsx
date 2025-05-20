@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Paper, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, TextField, Button } 
+import { Typography, Box, Paper, /*Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, */ TextField, Button } 
   from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -86,15 +86,17 @@ const Default: React.FC = () => {
   const [steelNews, setSteelNews] = useState<NewsItem[]>([]);
   const [autoNews, setAutoNews] = useState<NewsItem[]>([]);
   const [aluminumNews, setAluminumNews] = useState<NewsItem[]>([]);
+  /*
   const [chart1Data, setChart1Data] = useState<any[]>([]);
   const [chart2Data, setChart2Data] = useState<any[]>([]);
   const [chart3Data, setChart3Data] = useState<any[]>([]);
   const [chart4Data, setChart4Data] = useState<any[]>([]);
   const [chart5Data, setChart5Data] = useState<any[]>([]);
   const [chart6Data, setChart6Data] = useState<any[]>([]);
+  */
   const [keyword, setKeyword] = useState('');
   const [archiveResults, setArchiveResults] = useState<NewsSearchResponse[]>([]);
-
+/*
   const tableTextStyle = {
     fontSize: '1.2rem',  // Increase font size
     fontWeight: 'medium' // Optional: add medium weight for better readability
@@ -105,7 +107,7 @@ const Default: React.FC = () => {
     backgroundColor: '#d4e6f1', // Light blue background for headers
     fontWeight: 'bold'  // Make headers bold
   };
-
+*/
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -139,7 +141,7 @@ const Default: React.FC = () => {
         setSteelNews(mapNewsResponse(JSON.parse(steelTopTen.data as string)));
         setAutoNews(mapNewsResponse(JSON.parse(autoTopTen.data as string)));
         setAluminumNews(mapNewsResponse(JSON.parse(aluminumTopTen.data as string)));
-
+/*
         // Fetch Chart1 data
         const chart1Response = await client.models.Chart1.list();
         const sortedChart1Data = chart1Response.data
@@ -153,7 +155,8 @@ const Default: React.FC = () => {
           .sort((a, b) => a.Order - b.Order);
 
         setChart1Data(sortedChart1Data);
-
+        */
+/*
         // Fetch Chart2 data
         const chart2Response = await client.models.Chart2.list();
         const sortedChart2Data = chart2Response.data
@@ -167,7 +170,8 @@ const Default: React.FC = () => {
           .sort((a, b) => a.Order - b.Order);
 
         setChart2Data(sortedChart2Data);
-
+*/
+        /*
         // Fetch Chart3 data
         const chart3Response = await client.models.Chart3.list();
         const sortedChart3Data = chart3Response.data
@@ -180,7 +184,8 @@ const Default: React.FC = () => {
           .sort((a, b) => a.Order - b.Order);
 
         setChart3Data(sortedChart3Data);
-
+        */
+/*
         // Fetch Chart4 data
         const chart4Response = await client.models.Chart4.list();
         const sortedChart4Data = chart4Response.data
@@ -194,7 +199,8 @@ const Default: React.FC = () => {
           .sort((a, b) => a.Order - b.Order);
 
         setChart4Data(sortedChart4Data);
-
+        */
+/*
         // Fetch Chart5 data
         const chart5Response = await client.models.Chart5.list();
         const sortedChart5Data = chart5Response.data
@@ -208,7 +214,8 @@ const Default: React.FC = () => {
           .sort((a, b) => a.Order - b.Order);
 
         setChart5Data(sortedChart5Data);
-
+        */
+/*
         // Fetch Chart6 data
         const chart6Response = await client.models.Chart6.list();
         const sortedChart6Data = chart6Response.data
@@ -220,14 +227,14 @@ const Default: React.FC = () => {
             LastYear: item.LastYear ?? 0,
           }))
           .sort((a, b) => a.Order - b.Order);
-
-        setChart6Data(sortedChart6Data);
+*/
+        //setChart6Data(sortedChart6Data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
-    const mapNewsResponse = (data: any[]) => data.map(item => ({
+    const mapNewsResponse = (data: NewsSearchResponse[]) => data.map(item => ({
       id: item.id ?? '',
       title: item.title ?? '',
       date: item.date ?? '',
@@ -536,209 +543,47 @@ const Default: React.FC = () => {
                     </div>
                   )}
                 </Authenticator><br></br><br></br>
-                          <Typography 
-                            variant="h3" 
-                            sx={{ 
-                              textAlign: 'center',
-                              mb: 2,
-                              backgroundColor: '#191970', // Dark blue to match header
-                              color: 'white',
-                              padding: '8px',
-                              borderRadius: '4px',
-                              marginBottom: '16px'
-                            }}
-                          >
-                            米国鉄鋼景気指標
-                          </Typography><hr></hr>
-                          <TableContainer 
-                            component={Paper} 
-                            sx={{ 
-                              mt: 2, 
-                              mb: 4,
-                              border: '2px solid #191970', // Add dark blue border matching the header color
-                              borderRadius: '4px', // Match the border radius used elsewhere
-                              overflow: 'hidden' // Ensures the border radius applies properly
-                            }}
-                          >
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>This Week</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Week</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {chart1Data.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisWeek.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastWeek.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
-
-                          {/* Chart2 Table */}
-                          <TableContainer 
-                            component={Paper} 
-                            sx={{ 
-                              mt: 2,
-                              border: '2px solid #191970', // Add dark blue border matching the header color
-                              borderRadius: '4px', // Match the border radius used elsewhere
-                              overflow: 'hidden' // Ensures the border radius applies properly
-                            }}
-                          >
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>This Week</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Week</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {chart2Data.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
-
-                          {/* Chart3 Table */}
-                          <TableContainer 
-                            component={Paper} 
-                            sx={{ 
-                              mt: 2,
-                              border: '2px solid #191970', // Add dark blue border matching the header color
-                              borderRadius: '4px', // Match the border radius used elsewhere
-                              overflow: 'hidden' // Ensures the border radius applies properly
-                            }}
-                          >
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Import</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Mill Price</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {chart3Data.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.Import.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.MillPrice.toFixed(1)}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
-
-                          {/* Chart4 Table */}
-                          <TableContainer 
-                            component={Paper} 
-                            sx={{ 
-                              mt: 2,
-                              border: '2px solid #191970', // Add dark blue border matching the header color
-                              borderRadius: '4px', // Match the border radius used elsewhere
-                              overflow: 'hidden' // Ensures the border radius applies properly
-                            }}
-                          >
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>This Month</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Month</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {chart4Data.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
-
-                          {/* Chart5 Table */}
-                          <TableContainer 
-                            component={Paper} 
-                            sx={{ 
-                              mt: 2,
-                              border: '2px solid #191970', // Add dark blue border matching the header color
-                              borderRadius: '4px', // Match the border radius used elsewhere
-                              overflow: 'hidden' // Ensures the border radius applies properly
-                            }}
-                          >
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>This Month</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Month</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {chart5Data.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
-
-                          {/* Chart6 Table */}
-                          <TableContainer 
-                            component={Paper} 
-                            sx={{ 
-                              mt: 2,
-                              border: '2px solid #191970', // Add dark blue border matching the header color
-                              borderRadius: '4px', // Match the border radius used elsewhere
-                              overflow: 'hidden' // Ensures the border radius applies properly
-                            }}
-                          >
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell sx={tableHeaderStyle}>Title</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>This Month</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Month</TableCell>
-                                  <TableCell align="right" sx={tableHeaderStyle}>Last Year</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {chart6Data.map((row, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell sx={tableTextStyle}>{row.Title}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.ThisMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastMonth.toFixed(1)}</TableCell>
-                                    <TableCell align="right" sx={tableTextStyle}>{row.LastYear.toFixed(1)}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
+                <TextField
+                  sx={{
+                    width: '60%', // Set to half width
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: '#191970',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#1e1e90',
+                      },
+                      // Double the font size of the input
+                      '& input': {
+                        fontSize: '2rem', // Doubled from default (which is ~1rem)
+                      }
+                    },
+                    // Double the font size of the placeholder text
+                    '& .MuiInputBase-input::placeholder': {
+                      fontSize: '2rem',
+                      opacity: 0.7,
+                    },
+                    marginRight: '16px', // Add space between TextField and Button
+                  }}
+                  placeholder="キーワードを入力"
+                  value={keyword}
+                  onChange={handleKeywordChange}
+                />
+                <Button 
+                  variant="contained"
+                  onClick={handleArchiveSearch}
+                  sx={{
+                    backgroundColor: '#191970',
+                    '&:hover': {
+                      backgroundColor: '#1e1e90'
+                    },
+                    // Double the font size of the button text
+                    fontSize: '2rem', // Doubled from default (which is ~1rem)
+                    padding: '8px 16px', // Optional: adjust padding to accommodate larger text
+                  }}
+                >
+                  ニュースの検索
+                </Button>    
               </div>
             </Paper>
           </Grid>
@@ -753,42 +598,9 @@ const Default: React.FC = () => {
               gap: 2
               }}>
                 <Typography variant="h6" gutterBottom>
-                  ニュースの検索
+                  ニュース検索出力
                 </Typography>
-                <Box sx={{ 
-                  display: 'flex', 
-                  gap: 1,
-                  justifyContent: 'left' // Add this to center the TextField
-                }}>
-                  <TextField
-                    sx={{
-                      width: '50%', // Set to half width
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          borderColor: '#191970',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#1e1e90',
-                        },
-                      },
-                    }}
-                    placeholder="キーワードを入力"
-                    value={keyword}
-                    onChange={handleKeywordChange}
-                  />
-                  <Button 
-                    variant="contained"
-                    onClick={handleArchiveSearch}
-                    sx={{
-                      backgroundColor: '#191970',
-                      '&:hover': {
-                      backgroundColor: '#1e1e90'
-                    }
-                    }}
-                    >
-                  ニュースの検索
-                </Button>
-              </Box>
+                
               {archiveResults.length > 0 ? (
                 <Box sx={{ mt: 2 }}>
                   {archiveResults.map((result) => (
