@@ -209,7 +209,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   // Add responsive meta tags and media queries for mobile devices
   let htmlContent = `
-    <div style="font-family: Arial, sans-serif; font-size: 14pt;">
+    <div style="font-family: Arial, sans-serif; font-size: 13pt;">
     <div style="width: 100%; max-width: 600px; margin: 0 auto;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -219,10 +219,10 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
         .table-medium { width: 80% !important; }
         .table-large { width: 98% !important; }
       }
-      /* Add styles for regular text but not tables */
-      p { font-size: 14pt; line-height: 1.5; }
-      li { font-size: 14pt; line-height: 1.5; }
-      .custom-content > div { font-size: 14pt; line-height: 1.5; }
+      /* Reduced font size for body text */
+      p { font-size: 13pt; line-height: 1.5; }
+      li { font-size: 13pt; line-height: 1.5; }
+      .custom-content > div { font-size: 13pt; line-height: 1.5; }
       /* Table text remains at default size */
       table { font-size: 11pt; }
     </style>
@@ -235,8 +235,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   
   htmlContent += header;
 
-  // Increase font size for the headlines list
-  htmlContent += '<ul style="color: #191970; font-size: 14pt;">'; // Increased from 12pt
+  // Reduce font size for the headlines list
+  htmlContent += '<ul style="color: #191970; font-size: 13pt;">';
   
   newsItems.forEach((item) => {
     const fullUrl = `${baseUrl}/detail/${item.id}`;
@@ -295,12 +295,11 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
             });
           htmlContent += styledTable;
         } else {
-          // Increase font size for non-table content by wrapping in a paragraph
+          // Update paragraph styling
           if (part.trim()) {
-            // Only wrap non-empty content in paragraphs with increased font size
             const processedPart = part.includes('<p') 
-              ? part.replace(/<p/g, '<p style="font-size: 14pt; line-height: 1.5;"')
-              : `<p style="font-size: 14pt; line-height: 1.5;">${part}</p>`;
+              ? part.replace(/<p/g, '<p style="font-size: 13pt; line-height: 1.5;"')
+              : `<p style="font-size: 13pt; line-height: 1.5;">${part}</p>`;
             htmlContent += processedPart;
           } else {
             htmlContent += part;
@@ -308,8 +307,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
         }
       });
     } else {
-      // Regular paragraph with increased font size
-      htmlContent += `<p style="font-size: 14pt; line-height: 1.5;">${item.memo}</p>`;
+      // Regular paragraph with updated font size
+      htmlContent += `<p style="font-size: 13pt; line-height: 1.5;">${item.memo}</p>`;
     }
     htmlContent += '</div></div><br><br><hr style="border-top: 1px solid #ddd; margin: 30px 0;">'; // Added extra <br> for spacing
   });

@@ -128,7 +128,12 @@ const SendEmail: React.FC = () => {
     const now = new Date();
     const month = now.getMonth() + 1; // getMonth() is zero-based
     const date = now.getDate();
-    setTitle(`${month} 月 ${date} 日(土)  Metal News - `);
+    
+    // Get the day of week in Japanese
+    const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+    const dayOfWeek = daysOfWeek[now.getDay()]; // now.getDay() returns 0-6 (Sunday-Saturday)
+    
+    setTitle(`${month} 月 ${date} 日(${dayOfWeek})  Metal News - `);
   }, []);
 
   useEffect(() => {

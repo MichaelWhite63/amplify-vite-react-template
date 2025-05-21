@@ -259,14 +259,13 @@ async function sendPasswordChangeEmail(
           <h2>Metal News Password Reset</h2>
         </div>
         <div class="content">
-          <p>Dear ${username},</p>
+          <p>Dear ${email},</p>
           <p>As part of our security protocols, your Metal News password has been reset.</p>
           <p>Your new login credentials are:</p>
-          <p><strong>Username:</strong> ${username}</p>
+          <p><strong>Username:</strong> ${email}</p>
           <p><strong>New Password:</strong></p>
           <div class="password">${newPassword}</div>
           <p class="important">Please save this password in a secure location and log in as soon as possible.</p>
-          <p>After logging in, you may change your password from the account settings if desired.</p>
           <p>If you have any questions, please contact the system administrator.</p>
         </div>
         <div class="footer">
