@@ -13,16 +13,7 @@ import { useNavigate } from 'react-router-dom';
 const client = generateClient<Schema>();
 
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
-/*
-interface NewsItem {
-  id: string;
-  title: string;
-  date: string;
-  type: 'Steel' | 'Auto' | 'Aluminum';
-  published: boolean;
-  memo?: string; // Add memo field
-}
-*/
+
 interface NewsItem {
   id: string | null;
   title:  string | null;

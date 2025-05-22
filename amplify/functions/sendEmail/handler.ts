@@ -223,8 +223,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       p { font-size: 13pt; line-height: 1.5; }
       li { font-size: 13pt; line-height: 1.5; }
       .custom-content > div { font-size: 13pt; line-height: 1.5; }
-      /* Table text remains at default size */
-      table { font-size: 11pt; }
+      /* Table text reduced by 2 points */
+      table { font-size: 9pt; } /* Changed from 11pt to 9pt */
     </style>
     <div class="container" style="width: 100%; margin: 0 auto;">
       <div style="text-align: left; margin-bottom: 20px;">
