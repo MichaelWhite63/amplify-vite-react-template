@@ -8,7 +8,7 @@ import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DOMPurify from 'dompurify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const client = generateClient<Schema>();
 
@@ -57,6 +57,7 @@ function TabPanel(props: TabPanelProps) {
 
 const Archive: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [newsType, setNewsType] = useState('Steel');
   const [archiveResults, setArchiveResults] = useState<NewsItem[]>([]);
@@ -133,22 +134,95 @@ const Archive: React.FC = () => {
     };
   };
 
+  // Add effect to handle URL parameters on component mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const keywordParam = params.get('keyword');
+    const dateParam = params.get('date');
+    const typeParam = params.get('type');
+    const tabParam = params.get('tab');
+    
+    // Set tab if provided in URL
+    if (tabParam) {
+      const tab = parseInt(tabParam);
+      setTabValue(tab);
+    }
+    
+    // Handle keyword search from URL parameters
+    if (keywordParam) {
+      setKeyword(keywordParam);
+      // Switch to keyword search tab if not explicitly specified
+      if (!tabParam) {
+        setTabValue(1); // Keyword search tab
+      }
+      
+      // Trigger keyword search
+      setTimeout(() => {
+        console.log('Triggering search from URL params with keyword:', keywordParam);
+        client.models.News.list({
+          filter: {
+            title: { contains: keywordParam.trim() }
+          }
+        }).then(response => {
+          setArchiveResults(response.data);
+        }).catch(error => {
+          console.error('Error searching with keyword from URL:', error);
+        });
+      }, 100);
+    }
+    
+    // Handle date search from URL parameters
+    if (dateParam) {
+      // Set date and news type
+      setSelectedDate(new Date(dateParam));
+      if (typeParam) {
+        setNewsType(typeParam);
+      }
+      
+      // Switch to date search tab if not explicitly specified
+      if (!tabParam) {
+        setTabValue(0); // Date search tab
+      }
+      
+      // Trigger date search
+      setTimeout(() => {
+        console.log('Triggering search from URL params with date:', dateParam, 'type:', typeParam);
+        client.models.News.list({
+          filter: {
+            type: { eq: typeParam || 'Steel' },
+            date: { eq: dateParam }
+          }
+        }).then(response => {
+          setArchiveResults(response.data);
+        }).catch(error => {
+          console.error('Error searching with date from URL:', error);
+        });
+      }, 100);
+    }
+  }, [location, client.models.News]);
+
   return (
-    <>
-      <div style={{ 
-        position: 'absolute',
+    <Box sx={{ 
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      width: '100%',
+      minHeight: '100vh'
+    }}>
+      {/* Header */}
+      <Box sx={{
+        position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        margin: 0,
-        padding: 0,
         backgroundColor: '#191970',
         height: '65px',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 10
       }}>
-        <div style={{ width: '950px', margin: '0 auto' }}>
+        <Box sx={{ width: '65%', maxWidth: '1200px' }}>
           <img 
             src={logoUrl} 
             alt="Metal News Logo" 
@@ -158,19 +232,26 @@ const Archive: React.FC = () => {
               height: '63px'
             }} 
           />
-        </div>
-      </div>
+        </Box>
+      </Box>
       
+      {/* Main content container */}
       <Box sx={{ 
-        flexGrow: 1, 
-        p: 3,
-        width: '100%',
-        maxWidth: '98%',
-        margin: '0 auto',
-        marginLeft: '0.25%',
+        width: '65%',
+        maxWidth: '1200px',
+        marginTop: '30px',
         backgroundColor: '#f5f5f5',
         borderRadius: '8px',
-        boxShadow: 1
+        boxShadow: 1,
+        p: 3,
+        mb: 3,
+        flexGrow: 1,
+        // This ensures a minimum width in pixels
+        minWidth: {
+          xs: '320px', // For tiny screens
+          sm: '450px', // For small screens
+          md: '850px'  // For medium screens and up
+        }
       }}>
         <Paper sx={{ width: '100%', mb: 3 }}>
           <Tabs
@@ -306,69 +387,84 @@ const Archive: React.FC = () => {
           </TabPanel>
         </Paper>
 
-        {/* Results section remains unchanged */}
-        <Grid size={12}>
-          <Paper sx={{ 
-            p: 2,
-            mt: 3, // Add margin top for spacing between rows
-            minHeight: '200px'
-          }}>
-            <Typography variant="h5" gutterBottom>
-              詳細検索結果
-            </Typography>
-            {archiveResults.length > 0 ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {archiveResults.map((item) => (
-                  <Accordion key={item.id}>
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls={`panel-${item.id}-content`}
-                      id={`panel-${item.id}-header`}
-                    >
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <Typography 
-                          variant="h6" 
-                          sx={{ 
-                            borderLeft: '4px solid #191970',
-                            pl: 2,
-                            py: 1
-                          }}
-                        >
-                          {item.title}
-                        </Typography>
-                        <Typography 
-                          variant="body2" 
-                          color="text.secondary"
-                        >
-                          {item.date} - {item.type}
-                        </Typography>
-                      </Box>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Box 
-                        component="div"
+        {/* Results section */}
+        <Paper sx={{ 
+          p: 2,
+          mt: 3,
+          minHeight: '200px',
+          width: '100%'
+        }}>
+          <Typography variant="h5" gutterBottom>
+            詳細検索結果
+          </Typography>
+          {archiveResults.length > 0 ? (
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 1,
+              width: '100%' // Ensure full width
+            }}>
+              {archiveResults.map((item) => (
+                <Accordion key={item.id}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls={`panel-${item.id}-content`}
+                    id={`panel-${item.id}-header`}
+                  >
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <Typography 
+                        variant="h6" 
                         sx={{ 
-                          px: 2,
-                          py: 1,
-                          backgroundColor: '#f5f5f5',
-                          borderRadius: 1
+                          borderLeft: '4px solid #191970',
+                          pl: 2,
+                          py: 1
                         }}
-                        dangerouslySetInnerHTML={createMarkup(item.memo || 'メモは登録されていません。')}
-                      />
-                    </AccordionDetails>
-                  </Accordion>
-                ))}
-              </Box>
-            ) : (
-              <Typography color="text.secondary" sx={{ textAlign: 'center', mt: 4 }}>
+                      >
+                        {item.title}
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                      >
+                        {item.date} - {item.type}
+                      </Typography>
+                    </Box>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box 
+                      component="div"
+                      sx={{ 
+                        px: 2,
+                        py: 1,
+                        backgroundColor: '#f5f5f5',
+                        borderRadius: 1
+                      }}
+                      dangerouslySetInnerHTML={createMarkup(item.memo || 'メモは登録されていません。')}
+                    />
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ 
+              width: '100%', // Ensure this takes full width
+              minHeight: '150px', // Add minimum height when empty
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Typography color="text.secondary">
                 該当する記事がありません
               </Typography>
-            )}
-          </Paper>
-        </Grid>
+            </Box>
+          )}
+        </Paper>
       </Box>
+      
+      {/* Footer */}
       <Box sx={{ 
-        width: '100%', 
+        width: '65%',
+        maxWidth: '1200px',
         textAlign: 'center', 
         mt: 2, 
         mb: 2 
@@ -388,9 +484,8 @@ const Archive: React.FC = () => {
           ホームに戻る
         </Typography>
       </Box>
-    </>
+    </Box>
   );
 };
 
 export default Archive;
-//        Line 352{new Date(item.date).toLocaleDateString()} - {item.type}

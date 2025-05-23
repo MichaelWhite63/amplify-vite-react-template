@@ -8,6 +8,8 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const client = generateClient<Schema>();
 const logoUrl = 'https://metal-news-image.s3.us-east-1.amazonaws.com/imgMetalNewsLogoN3.gif';
@@ -96,6 +98,7 @@ const Default: React.FC = () => {
   */
   const [keyword, setKeyword] = useState('');
   const [archiveResults, setArchiveResults] = useState<NewsSearchResponse[]>([]);
+  const [searchDate, setSearchDate] = useState(new Date());
 /*
   const tableTextStyle = {
     fontSize: '1.2rem',  // Increase font size
@@ -227,6 +230,8 @@ const Default: React.FC = () => {
             LastYear: item.LastYear ?? 0,
           }))
           .sort((a, b) => a.Order - b.Order);
+
+        setChart6Data(sortedChart6Data);
 */
         //setChart6Data(sortedChart6Data);
       } catch (error) {
@@ -245,34 +250,22 @@ const Default: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleArchiveSearch = async () => {
-    try {
-      if (keyword.trim()) {
-        const response = await client.models.News.list({
-          filter: {
-            title: { contains: keyword.trim() },
-            // Use the date field in the filter instead
-            and: [
-              { date: { gt: '1900-01-01' } } // Include all dates after 1900
-            ]
-          }
-        });
-        
-        // Sort the results after fetching
-        const sortedResults = response.data.sort((a, b) => {
-          const dateA = new Date(a.date || '');
-          const dateB = new Date(b.date || '');
-          return dateB.getTime() - dateA.getTime(); // descending order
-        });
-        setArchiveResults(sortedResults);
-      } 
-    } catch (error) {
-      console.error('Error searching news:', error);
+  const handleArchiveSearch = () => {
+    if (keyword.trim()) {
+      // Navigate to Archive page with the keyword and explicitly set tab to 1 (keyword search)
+      navigate(`/archive?keyword=${encodeURIComponent(keyword.trim())}&tab=1`);
     }
   };
 
   const handleKeywordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(event.target.value);
+  };
+
+  const handleDateSearch = () => {
+    // Format date to YYYY-MM-DD for URL
+    const formattedDate = searchDate.toISOString().split('T')[0];
+    // Navigate to Archive page with date parameter and tab=0 (date search tab)
+    navigate(`/archive?date=${formattedDate}&tab=0&type=${encodeURIComponent('Steel')}`);
   };
 
   // Helper component for news display
@@ -543,47 +536,110 @@ const Default: React.FC = () => {
                     </div>
                   )}
                 </Authenticator><br></br><br></br>
-                <TextField
-                  sx={{
-                    width: '60%', // Set to half width
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: '#191970',
+
+                {/* Add title above keyword search - centered with larger font */}
+                <Typography sx={{ 
+                  fontSize: '2.4rem', // Increased from 1.6rem to 2.4rem (2 sizes larger)
+                  mb: 1,
+                  textAlign: 'center', // Center the text
+                  fontWeight: 'medium' // Optional: add slightly more weight for visibility
+                }}>
+                  アーカイブを検索する
+                </Typography>
+
+                {/* Keyword search field and button */}
+                <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                  <TextField
+                    sx={{
+                      width: '60%',
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                          borderColor: '#191970',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#1e1e90',
+                        },
+                        '& input': {
+                          fontSize: '2rem',
+                        }
                       },
-                      '&:hover fieldset': {
-                        borderColor: '#1e1e90',
+                      '& .MuiInputBase-input::placeholder': {
+                        fontSize: '2rem',
+                        opacity: 0.7,
                       },
-                      // Double the font size of the input
-                      '& input': {
-                        fontSize: '2rem', // Doubled from default (which is ~1rem)
-                      }
-                    },
-                    // Double the font size of the placeholder text
-                    '& .MuiInputBase-input::placeholder': {
+                      marginRight: '16px',
+                    }}
+                    placeholder="キーワードを入力"
+                    value={keyword}
+                    onChange={handleKeywordChange}
+                  />
+                  <Button 
+                    variant="contained"
+                    onClick={handleArchiveSearch}
+                    sx={{
+                      width: 'calc(40% - 16px)', // Match remaining width minus margin
+                      backgroundColor: '#191970',
+                      '&:hover': {
+                        backgroundColor: '#1e1e90'
+                      },
                       fontSize: '2rem',
-                      opacity: 0.7,
-                    },
-                    marginRight: '16px', // Add space between TextField and Button
-                  }}
-                  placeholder="キーワードを入力"
-                  value={keyword}
-                  onChange={handleKeywordChange}
-                />
-                <Button 
-                  variant="contained"
-                  onClick={handleArchiveSearch}
-                  sx={{
-                    backgroundColor: '#191970',
-                    '&:hover': {
-                      backgroundColor: '#1e1e90'
-                    },
-                    // Double the font size of the button text
-                    fontSize: '2rem', // Doubled from default (which is ~1rem)
-                    padding: '8px 16px', // Optional: adjust padding to accommodate larger text
-                  }}
-                >
-                  ニュースの検索
-                </Button>    
+                      padding: '8px 16px',
+                    }}
+                  >
+                    ニュースの検索
+                  </Button>
+                </Box>
+
+                {/* Date picker and search button with identical layout */}
+                <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', width: '100%' }}>
+                  <Typography sx={{ 
+                    fontSize: '2.3rem', 
+                    mb: 1,
+                    textAlign: 'center' // Add this to center the text
+                  }}>
+                    日付で検索:
+                  </Typography>
+                  
+                  <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                    {/* Increased the width to match the keyword field */}
+                    <Box sx={{ width: '60%', marginRight: '16px' }}>
+                      <DatePicker
+                        selected={searchDate}
+                        onChange={(date) => setSearchDate(date || new Date())}
+                        dateFormat="yyyy/MM/dd"
+                          wrapperClassName="date-picker-full-width" // Add this wrapper class
+                        customInput={
+                          <input
+                            style={{
+                              padding: '8px',
+                              border: '1px solid #191970',
+                              borderRadius: '4px',
+                              width: '100%',
+                              fontSize: '2rem',
+                              textAlign: 'center',
+                              boxSizing: 'border-box'
+                            }}
+                          />
+                        }
+                      />
+                    </Box>
+                    <Button 
+                      variant="contained"
+                      onClick={handleDateSearch}
+                      sx={{
+                        width: 'calc(40% - 16px)', // Match keyword button width
+                        backgroundColor: '#191970',
+                        '&:hover': {
+                          backgroundColor: '#1e1e90'
+                        },
+                        fontSize: '2rem',
+                        padding: '8px 16px',
+                      }}
+                    >
+                      日付検索
+                    </Button>
+                  </Box>
+                </Box>
               </div>
             </Paper>
           </Grid>
@@ -598,7 +654,7 @@ const Default: React.FC = () => {
               gap: 2
               }}>
                 <Typography variant="h6" gutterBottom>
-                  ニュース検索出力
+                  
                 </Typography>
                 
               {archiveResults.length > 0 ? (
@@ -678,6 +734,52 @@ const Default: React.FC = () => {
           プライバシーポリシー
         </Typography>
       </Box>
+
+      {/* Make the DatePicker calendar larger */}
+      <style>
+        {`
+          .react-datepicker {
+            font-size: 1.5rem !important;
+            transform: scale(2);
+            transform-origin: top center;
+          }
+          
+          .react-datepicker__header {
+            padding-top: 10px !important;
+          }
+          
+          .react-datepicker__month {
+            margin: 0.8em !important;
+          }
+          
+          .react-datepicker__day-name, 
+          .react-datepicker__day, 
+          .react-datepicker__time-name {
+            width: 2rem !important;
+            line-height: 2rem !important;
+            margin: 0.2rem !important;
+          }
+          
+          .react-datepicker__current-month {
+            font-size: 1.5rem !important;
+          }
+          
+          .react-datepicker__navigation {
+            top: 15px !important;
+          }
+          
+          /* Position the calendar correctly relative to the input */
+          .react-datepicker-wrapper {
+            display: block;
+            width: 100%;
+          }
+          
+          .react-datepicker-popper {
+            z-index: 9999 !important;
+            transform: translate3d(0px, 40px, 0px) !important;
+          }
+        `}
+      </style>
     </>
   );
 };
