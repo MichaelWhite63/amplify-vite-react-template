@@ -223,8 +223,9 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
       p { font-size: 13pt; line-height: 1.5; }
       li { font-size: 13pt; line-height: 1.5; }
       .custom-content > div { font-size: 13pt; line-height: 1.5; }
-      /* Table text reduced by 3 points (one more size down) */
-      table { font-size: 8pt; } /* Changed from 9pt to 8pt */
+      /* More specific table styling to ensure font size change is applied */
+      table, table td, table th, table tr { font-size: 8pt !important; }
+      .table-small, .table-medium, .table-large { font-size: 8pt !important; }
     </style>
     <div class="container" style="width: 100%; margin: 0 auto;">
       <div style="text-align: left; margin-bottom: 20px;">
@@ -272,8 +273,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           }
           
           const styledTable = part
-            .replace('<table', `<table class="${tableClass}" style="border-collapse: collapse; width: 100%; margin: 0;" data-columns="${columnCount}"`)
-            .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
+            .replace('<table', `<table class="${tableClass}" style="border-collapse: collapse; width: 100%; margin: 0; font-size: 8pt;" data-columns="${columnCount}"`)
+            .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center; font-size: 8pt;"')
             .replace(/<td/g, (match, offset, fullString) => {
               const upToTd = fullString.substring(0, offset);
               const currentRowStart = upToTd.lastIndexOf('<tr');
@@ -284,7 +285,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
               const isFirstRow = !upToTd.substring(0, currentRowStart).includes('</tr');
               const isFirstColumn = tdBeforeCount === 0;
               
-              let style = 'border: 1px solid #ddd; padding: 8px;';
+              let style = 'border: 1px solid #ddd; padding: 8px; font-size: 8pt;';
               if (isFirstRow || isFirstColumn) {
                 style += ' background-color: #f0f0f0; text-align: center;';
               } else {
