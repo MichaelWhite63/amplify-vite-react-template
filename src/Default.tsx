@@ -97,7 +97,7 @@ const Default: React.FC = () => {
   const [chart6Data, setChart6Data] = useState<any[]>([]);
   */
   const [keyword, setKeyword] = useState('');
-  const [archiveResults, setArchiveResults] = useState<NewsSearchResponse[]>([]);
+  const [archiveResults/*, setArchiveResults*/] = useState<NewsSearchResponse[]>([]);
   const [searchDate, setSearchDate] = useState(new Date());
 /*
   const tableTextStyle = {
