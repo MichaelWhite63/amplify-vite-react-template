@@ -218,12 +218,15 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
         .table-small { width: 50% !important; }
         .table-medium { width: 80% !important; }
         .table-large { width: 98% !important; }
+        /* Desktop-specific table font size */
+        table, table td, table th, table tr { font-size: 9pt !important; }
+        .table-small, .table-medium, .table-large { font-size: 9pt !important; }
       }
-      /* Reduced font size for body text */
+      /* Default styles (mobile) */
       p { font-size: 13pt; line-height: 1.5; }
       li { font-size: 13pt; line-height: 1.5; }
       .custom-content > div { font-size: 13pt; line-height: 1.5; }
-      /* More specific table styling to ensure font size change is applied */
+      /* Mobile table font size */
       table, table td, table th, table tr { font-size: 8pt !important; }
       .table-small, .table-medium, .table-large { font-size: 8pt !important; }
     </style>
@@ -273,8 +276,8 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
           }
           
           const styledTable = part
-            .replace('<table', `<table class="${tableClass}" style="border-collapse: collapse; width: 100%; margin: 0; font-size: 8pt;" data-columns="${columnCount}"`)
-            .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center; font-size: 8pt;"')
+            .replace('<table', `<table class="${tableClass}" style="border-collapse: collapse; width: 100%; margin: 0;" data-columns="${columnCount}"`)
+            .replace(/<th/g, '<th style="border: 1px solid #ddd; padding: 8px; background-color: #f5f5f5; text-align: center;"')
             .replace(/<td/g, (match, offset, fullString) => {
               const upToTd = fullString.substring(0, offset);
               const currentRowStart = upToTd.lastIndexOf('<tr');
@@ -285,7 +288,7 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
               const isFirstRow = !upToTd.substring(0, currentRowStart).includes('</tr');
               const isFirstColumn = tdBeforeCount === 0;
               
-              let style = 'border: 1px solid #ddd; padding: 8px; font-size: 8pt;';
+              let style = 'border: 1px solid #ddd; padding: 8px;';
               if (isFirstRow || isFirstColumn) {
                 style += ' background-color: #f0f0f0; text-align: center;';
               } else {
