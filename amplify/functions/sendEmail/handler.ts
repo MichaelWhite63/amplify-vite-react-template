@@ -218,9 +218,9 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
         .table-small { width: 50% !important; }
         .table-medium { width: 80% !important; }
         .table-large { width: 98% !important; }
-        /* Desktop-specific table font size */
-        table, table td, table th, table tr { font-size: 9pt !important; }
-        .table-small, .table-medium, .table-large { font-size: 9pt !important; }
+        /* Desktop-specific table font size - reduced to 8.5pt */
+        table, table td, table th, table tr { font-size: 8.5pt !important; }
+        .table-small, .table-medium, .table-large { font-size: 8.5pt !important; }
       }
       /* Default styles (mobile) */
       p { font-size: 13pt; line-height: 1.5; }
