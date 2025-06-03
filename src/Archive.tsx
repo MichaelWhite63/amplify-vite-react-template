@@ -64,7 +64,7 @@ const Archive: React.FC = () => {
   const [keyword, setKeyword] = useState('');
   const [tabValue, setTabValue] = useState(0);
 
-  const handleSearch = async () => {
+  const handleSearch = React.useCallback(async () => {
     console.log('Searching news: ');
     try {
       const formattedDate = selectedDate.toISOString().split('T')[0];
@@ -91,7 +91,7 @@ const Archive: React.FC = () => {
     } catch (error) {
       console.error('Error searching news:', error);
     }
-  };
+  }, [keyword, newsType, selectedDate]);
 
   const handleDateChange = (date: Date | null) => {
     console.log('handleDateChange:', date);
@@ -109,7 +109,7 @@ const Archive: React.FC = () => {
   useEffect(() => {
     console.log('useEffect: newsType changed');
     handleSearch();
-  }, [newsType, selectedDate]); // Add newsType as dependency
+  }, [handleSearch]); // Now handleSearch contains all necessary dependencies
 
   const handleNewsTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewsType(event.target.value);

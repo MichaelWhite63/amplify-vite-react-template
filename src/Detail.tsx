@@ -56,8 +56,11 @@ const Detail: React.FC = () => {
       if (!id) return;
       
       try {
+        console.log('Fetching news detail for ID:', id);
         const response = await client.models.News.get({ id });
+        console.log('Response from News.get:', response);
         if (response.data) {
+          console.log('Fetched news detail:', response.data);
           const newsItem = {
             id: response.data.id,
             title: response.data.title ?? '',
@@ -350,6 +353,30 @@ const Detail: React.FC = () => {
                   </Paper>
                 </Box>
               )}
+            </Box>
+            {/* Footer - Add this section */}
+            <Box sx={{ 
+              width: '95%',
+              maxWidth: '1200px',
+              textAlign: 'center', 
+              mt: 2, 
+              mb: 2,
+              margin: '20px auto'
+            }}>
+              <Typography 
+                variant="body2" 
+                component="span" 
+                onClick={() => navigate('/')}
+                sx={{ 
+                  cursor: 'pointer',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                    color: 'primary.main'
+                  }
+                }}
+              >
+                ホームに戻る
+              </Typography>
             </Box>
           </>
         );

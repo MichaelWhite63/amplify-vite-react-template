@@ -643,74 +643,10 @@ const Default: React.FC = () => {
               </div>
             </Paper>
           </Grid>
-          <Grid size={12}>
-            <Paper sx={{ 
-              p: 2, 
-              height: '100%',
-              minHeight: '100px', // Changed from 200px to match first tab
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center', // Added for vertical centering
-              gap: 2
-              }}>
-                <Typography variant="h6" gutterBottom>
-                  
-                </Typography>
-                
-              {archiveResults.length > 0 ? (
-                <Box sx={{ mt: 2 }}>
-                  {archiveResults.map((result) => (
-                    <Box 
-                      key={result.id} 
-                      sx={{ 
-                        mb: 2, 
-                        p: 2, 
-                        borderRadius: 1,
-                        backgroundColor: '#f8f8f8',
-                        '&:hover': {
-                          backgroundColor: '#f0f0f0'
-                        }
-                      }}
-                    >
-                      <Typography 
-                        variant="h6" 
-                        onClick={() => navigate(`/detail/${result.id}`)}
-                        sx={{ 
-                          cursor: 'pointer',
-                          color: '#191970',
-                          fontWeight: 'bold', // Added bold formatting
-                          '&:hover': {
-                            textDecoration: 'underline'
-                          }
-                        }}
-                      >
-                        {result.title}
-                      </Typography>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        mt: 1 
-                      }}>
-                        <Typography variant="body2" color="text.secondary">
-                        日付: {formatDate(result.date || '')}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          タグ: {result.source}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              ) : (
-                keyword.trim() && <Typography sx={{ mt: 2 }}>検索結果がありません</Typography>
-              )}
-            </Paper>
-          </Grid>
-        
         </Grid>
       </Box>
       {/* Privacy Policy Section */}
-      <Box sx={{ 
+        <Box sx={{ 
         width: '100%', 
         display: 'flex',  // Add display flex
         justifyContent: 'flex-start',  // Align items to the left
@@ -767,13 +703,11 @@ const Default: React.FC = () => {
           .react-datepicker__navigation {
             top: 15px !important;
           }
-          
           /* Position the calendar correctly relative to the input */
           .react-datepicker-wrapper {
             display: block;
             width: 100%;
           }
-          
           .react-datepicker-popper {
             z-index: 9999 !important;
             transform: translate3d(0px, 40px, 0px) !important;
