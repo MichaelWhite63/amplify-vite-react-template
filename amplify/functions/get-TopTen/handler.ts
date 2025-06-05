@@ -17,10 +17,22 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   };
   const result = await dynamoDb.scan(params).promise();
   
-  // Sort by date descending and limit to count
-  const sortedItems = result.Items?.sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  ).slice(0, count);
+  // Sort by lDate descending, then by createdAt ascending (equivalent to ORDER BY lDate DESC, createdAt ASC)
+  const sortedItems = result.Items?.sort((a, b) => {
+    // First sort by lDate (date only) in descending order
+    const dateA = new Date(a.lDate);
+    const dateB = new Date(b.lDate);
+    
+    if (dateA.getTime() !== dateB.getTime()) {
+      return dateB.getTime() - dateA.getTime(); // DESC order
+    }
+    
+    // If lDate is the same, sort by createdAt (date and time) in ascending order
+    const createdAtA = new Date(a.createdAt);
+    const createdAtB = new Date(b.createdAt);
+    
+    return createdAtA.getTime() - createdAtB.getTime(); // ASC order
+  }).slice(0, count);
   
   return sortedItems || [];
 };
