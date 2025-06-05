@@ -17,24 +17,50 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   };
   const result = await dynamoDb.scan(params).promise();
   
-  // Sort by lDate descending, then by createdAt ascending (equivalent to ORDER BY lDate DESC, createdAt ASC)
-  const sortedItems = result.Items?.sort((a, b) => {
-    // First sort by lDate (date only) in descending order
-    const dateA = new Date(a.lDate);
-    const dateB = new Date(b.lDate);
-    
-    if (dateA.getTime() !== dateB.getTime()) {
-      return dateB.getTime() - dateA.getTime(); // DESC order
-    }
-    
-    // If lDate is the same, sort by createdAt (date and time) in ascending order
-    const createdAtA = new Date(a.createdAt);
-    const createdAtB = new Date(b.createdAt);
-    
-    return createdAtA.getTime() - createdAtB.getTime(); // ASC order
-  }).slice(0, count);
+  if (!result.Items || result.Items.length === 0) {
+    return [];
+  }
+
+  // Step 1: Group articles by lDate and sort each group by createdAt (ASC)
+  const groupedByDate = new Map<string, any[]>();
   
-  return sortedItems || [];
+  result.Items.forEach(item => {
+    const dateKey = item.lDate; // Use lDate as the grouping key
+    if (!groupedByDate.has(dateKey)) {
+      groupedByDate.set(dateKey, []);
+    }
+    groupedByDate.get(dateKey)!.push(item);
+  });
+  
+  // Step 2: Sort items within each date group by createdAt (ASC)
+  groupedByDate.forEach((items) => {
+    items.sort((a, b) => {
+      const createdAtA = new Date(a.createdAt);
+      const createdAtB = new Date(b.createdAt);
+      return createdAtA.getTime() - createdAtB.getTime(); // ASC order
+    });
+  });
+  
+  // Step 3: Sort the date groups by lDate (DESC) and flatten
+  const sortedDates = Array.from(groupedByDate.keys()).sort((a, b) => {
+    const dateA = new Date(a);
+    const dateB = new Date(b);
+    return dateB.getTime() - dateA.getTime(); // DESC order
+  });
+  
+  // Step 4: Flatten the sorted groups and limit to count
+  const sortedItems: any[] = [];
+  for (const dateKey of sortedDates) {
+    const items = groupedByDate.get(dateKey)!;
+    sortedItems.push(...items);
+    
+    // Stop if we've reached the desired count
+    if (sortedItems.length >= count) {
+      break;
+    }
+  }
+  
+  return sortedItems.slice(0, count);
 };
 
 export const handler: Schema["getTopTen"]["functionHandler"] = async (event) => {
