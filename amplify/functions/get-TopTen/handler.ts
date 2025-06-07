@@ -17,30 +17,62 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   };
   const result = await dynamoDb.scan(params).promise();
   
+  console.log(`Found ${result.Items?.length || 0} items for type: ${type}`);
+  
   if (!result.Items || result.Items.length === 0) {
     return [];
   }
 
-  // Single-pass sort with compound comparator - much more efficient
+  // Debug: Log some sample lDate values
+  console.log('Sample lDate values:', result.Items.slice(0, 5).map(item => ({
+    id: item.id,
+    lDate: item.lDate,
+    parsedDate: new Date(item.lDate).toISOString(),
+    isValidDate: !isNaN(new Date(item.lDate).getTime())
+  })));
+
+  // Add this before sorting to see all dates
+  const allDates = result.Items.map(item => item.lDate).sort();
+  console.log('All unique lDate values:', [...new Set(allDates)]);
+  console.log('Date range:', allDates[0], 'to', allDates[allDates.length - 1]);
+
   const sortedItems = result.Items.sort((a, b) => {
-    // Primary sort: lDate DESC
     const dateA = new Date(a.lDate);
     const dateB = new Date(b.lDate);
+    
+    // Debug: Log invalid dates
+    if (isNaN(dateA.getTime())) {
+      console.log(`Invalid dateA: ${a.lDate} for item:`, a.id);
+    }
+    if (isNaN(dateB.getTime())) {
+      console.log(`Invalid dateB: ${b.lDate} for item:`, b.id);
+    }
+    
     const dateDiff = dateB.getTime() - dateA.getTime();
     
-    // If dates are different, return the date comparison
     if (dateDiff !== 0) {
       return dateDiff;
     }
     
-    // Secondary sort: createdAt ASC (only when dates are equal)
     const createdAtA = new Date(a.createdAt);
     const createdAtB = new Date(b.createdAt);
     return createdAtA.getTime() - createdAtB.getTime();
   });
   
+  // Debug: Log the top results
+  console.log('Top 3 sorted results:', sortedItems.slice(0, 3).map(item => ({
+    id: item.id,
+    lDate: item.lDate,
+    createdAt: item.createdAt
+  })));
+  
   return sortedItems.slice(0, count);
 };
+
+// Test the specific format
+console.log('Date parsing test:');
+console.log(new Date('2025-06-03')); // Should work fine
+console.log(new Date('2025-05-28')); // Should work fine
 
 export const handler: Schema["getTopTen"]["functionHandler"] = async (event) => {
   const { type, count = 10 } = event.arguments as { type: 'Steel' | 'Auto' | 'Aluminum', count: integer };
