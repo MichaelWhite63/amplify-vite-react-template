@@ -5,15 +5,13 @@ import { DynamoDB } from 'aws-sdk';
 const dynamoDb = new DynamoDB.DocumentClient();
 
 const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: number) => {
+  // Temporarily remove the type filter to see ALL dates
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-    FilterExpression: '#type = :type',
-    ExpressionAttributeValues: { 
-      ':type': type,
-    },
-    ExpressionAttributeNames: {
-      '#type': 'type',
-    }
+    // Comment out the filter to see all records
+    // FilterExpression: '#type = :type',
+    // ExpressionAttributeValues: { ':type': type },
+    // ExpressionAttributeNames: { '#type': 'type' }
   };
   const result = await dynamoDb.scan(params).promise();
   
@@ -66,6 +64,16 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     id: item.id,
     lDate: item.lDate,
     createdAt: item.createdAt
+  })));
+  
+  // Add this to see what types exist for June 2025
+  const june2025Records = result.Items?.filter(item => 
+    item.lDate && item.lDate.startsWith('2025-06')
+  );
+  console.log('June 2025 records found:', june2025Records?.map(item => ({
+    id: item.id,
+    lDate: item.lDate,
+    type: item.type
   })));
   
   return sortedItems.slice(0, count);
