@@ -32,8 +32,10 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   })));
 
   // Add this before sorting to see all dates
-  const allDates = result.Items.map(item => item.lDate).sort();
-  console.log('All unique lDate values:', [...new Set(allDates)]);
+  const allDates = result.Items.map(item => item.lDate).sort((a, b) => {
+    return new Date(b).getTime() - new Date(a).getTime(); // Date sorting, newest first
+  });
+  console.log('All unique lDate values (date sorted):', [...new Set(allDates)]);
   console.log('Date range:', allDates[0], 'to', allDates[allDates.length - 1]);
 
   const sortedItems = result.Items.sort((a, b) => {
