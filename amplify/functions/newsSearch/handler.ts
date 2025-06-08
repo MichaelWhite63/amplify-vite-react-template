@@ -8,7 +8,7 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString();
+  const tomorrowStr = tomorrow.toISOString().split('T')[0]; // Get YYYY-MM-DD format
 
   try {
     let allItems: any[] = [];
@@ -17,16 +17,17 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
     do {
       const params = {
         TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-        FilterExpression: '#createdAt <= :tomorrow AND contains(#title, :searchString)',
+        // Change filter to use lDate (article date) instead of createdAt
+        FilterExpression: '#lDate <= :tomorrow AND contains(#title, :searchString)',
         ExpressionAttributeNames: {
-          '#createdAt': 'createdAt',
+          '#lDate': 'lDate', // Changed from createdAt to lDate
           '#title': 'title'
         },
         ExpressionAttributeValues: {
-          ':tomorrow': tomorrowStr,
+          ':tomorrow': tomorrowStr, // Use YYYY-MM-DD format to match lDate
           ':searchString': searchString
         },
-        Limit: 1000, // Process more items per batch
+        Limit: 1000,
         ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey })
       };
 
@@ -38,16 +39,19 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
       
       lastEvaluatedKey = result.LastEvaluatedKey;
       
-      // Break early if we have enough results
       if (allItems.length >= 35) {
         break;
       }
       
     } while (lastEvaluatedKey && allItems.length < 35);
 
-    // Sort by most recent first
+    // Sort by lDate (article date) instead of createdAt
     const sortedItems = allItems
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort((a, b) => {
+        const dateA = new Date(a.lDate);
+        const dateB = new Date(b.lDate);
+        return dateB.getTime() - dateA.getTime(); // Most recent article dates first
+      })
       .slice(0, 35);
 
     return sortedItems && sortedItems.length > 0 ? JSON.stringify(sortedItems) : "NADA";
