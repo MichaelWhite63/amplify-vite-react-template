@@ -87,9 +87,9 @@ export const handler: Schema["getTopTen"]["functionHandler"] = async (event) => 
   const actualCount = count ?? 10;
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
-  } else {topTen = await getTopTenArticles(type, actualCount);
-    throw new Error(`Invalid type: ${type}`);
+    const topTen = await getTopTenArticles(type, actualCount);
+    return JSON.stringify(topTen);
   } else {
-};  throw new Error(`Invalid type: ${type}`);
+    throw new Error(`Invalid type: ${type}`);
   }
 };
