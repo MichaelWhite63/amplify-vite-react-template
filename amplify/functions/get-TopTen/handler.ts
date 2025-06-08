@@ -5,13 +5,11 @@ import { DynamoDB } from 'aws-sdk';
 const dynamoDb = new DynamoDB.DocumentClient();
 
 const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: number) => {
-  // Temporarily remove the type filter to see ALL dates
   const params = {
     TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-    // Comment out the filter to see all records
-    // FilterExpression: '#type = :type',
-    // ExpressionAttributeValues: { ':type': type },
-    // ExpressionAttributeNames: { '#type': 'type' }
+    FilterExpression: '#type = :type',
+    ExpressionAttributeValues: { ':type': type },
+    ExpressionAttributeNames: { '#type': 'type' }
   };
   const result = await dynamoDb.scan(params).promise();
   
@@ -21,6 +19,21 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     return [];
   }
 
+  // Debug: Check for June 2025 articles before sorting
+  const june2025Articles = result.Items.filter(item => 
+    item.lDate && item.lDate.startsWith('2025-06')
+  );
+  console.log(`Found ${june2025Articles.length} June 2025 articles before sorting`);
+  
+  // Debug: Check for articles newer than May 28, 2025
+  const recentArticles = result.Items.filter(item => {
+    if (!item.lDate) return false;
+    const articleDate = new Date(item.lDate);
+    const cutoffDate = new Date('2025-05-28');
+    return articleDate > cutoffDate;
+  });
+  console.log(`Found ${recentArticles.length} articles newer than May 28, 2025`);
+
   // Debug: Log some sample lDate values
   console.log('Sample lDate values:', result.Items.slice(0, 5).map(item => ({
     id: item.id,
@@ -28,13 +41,6 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     parsedDate: new Date(item.lDate).toISOString(),
     isValidDate: !isNaN(new Date(item.lDate).getTime())
   })));
-
-  // Add this before sorting to see all dates
-  const allDates = result.Items.map(item => item.lDate).sort((a, b) => {
-    return new Date(b).getTime() - new Date(a).getTime(); // Date sorting, newest first
-  });
-  console.log('All unique lDate values (date sorted):', [...new Set(allDates)]);
-  console.log('Date range:', allDates[0], 'to', allDates[allDates.length - 1]);
 
   const sortedItems = result.Items.sort((a, b) => {
     const dateA = new Date(a.lDate);
@@ -59,21 +65,11 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     return createdAtA.getTime() - createdAtB.getTime();
   });
   
-  // Debug: Log the top results
-  console.log('Top 3 sorted results:', sortedItems.slice(0, 3).map(item => ({
+  // Debug: Log the top results after sorting
+  console.log('Top 10 sorted results:', sortedItems.slice(0, 10).map(item => ({
     id: item.id,
     lDate: item.lDate,
     createdAt: item.createdAt
-  })));
-  
-  // Add this to see what types exist for June 2025
-  const june2025Records = result.Items?.filter(item => 
-    item.lDate && item.lDate.startsWith('2025-06')
-  );
-  console.log('June 2025 records found:', june2025Records?.map(item => ({
-    id: item.id,
-    lDate: item.lDate,
-    type: item.type
   })));
   
   return sortedItems.slice(0, count);
