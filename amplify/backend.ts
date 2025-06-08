@@ -12,7 +12,7 @@ import { createUser } from './functions/create-user/resource';
 import { getTopTen } from "./functions/get-TopTen/resource";
 import { changeUserPassword } from './functions/changeUserPassword/resource';
 
-defineBackend({
+const backend = defineBackend({
   auth,
   data,
   sayHello,
@@ -25,4 +25,17 @@ defineBackend({
   createUser,
   getTopTen,
   changeUserPassword
+});
+
+// Grant scan permissions to newsSearch function
+backend.newsSearch.addToRolePolicy({
+  Effect: "Allow",
+  Action: [
+    "dynamodb:Scan",
+    "dynamodb:Query"
+  ],
+  Resource: [
+    backend.data.resources.tables.News.tableArn,
+    `${backend.data.resources.tables.News.tableArn}/index/*`
+  ]
 });

@@ -17,21 +17,26 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
     do {
       const params = {
         TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-        // Change filter to use lDate (article date) instead of createdAt
         FilterExpression: '#lDate <= :tomorrow AND contains(#title, :searchString)',
         ExpressionAttributeNames: {
-          '#lDate': 'lDate', // Changed from createdAt to lDate
+          '#lDate': 'lDate',
           '#title': 'title'
         },
         ExpressionAttributeValues: {
-          ':tomorrow': tomorrowStr, // Use YYYY-MM-DD format to match lDate
+          ':tomorrow': tomorrowStr,
           ':searchString': searchString
         },
         Limit: 1000,
         ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey })
       };
 
+      console.log(`Scanning batch with lastEvaluatedKey: ${lastEvaluatedKey ? 'exists' : 'null'}`);
+
       const result = await dynamoDb.scan(params).promise();
+      
+      console.log(`Batch returned ${result.Items?.length || 0} items`);
+      console.log(`Scanned count: ${result.ScannedCount}`);
+      console.log(`Has more data: ${!!result.LastEvaluatedKey}`);
       
       if (result.Items) {
         allItems = allItems.concat(result.Items);
@@ -39,11 +44,16 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
       
       lastEvaluatedKey = result.LastEvaluatedKey;
       
+      console.log(`Total items found so far: ${allItems.length}`);
+      
       if (allItems.length >= 35) {
+        console.log('Breaking early - found enough items');
         break;
       }
       
-    } while (lastEvaluatedKey && allItems.length < 35);
+    } while (lastEvaluatedKey);
+
+    console.log(`Final result: ${allItems.length} items found`);
 
     // Sort by lDate (article date) instead of createdAt
     const sortedItems = allItems
