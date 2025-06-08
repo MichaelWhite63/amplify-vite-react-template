@@ -164,7 +164,11 @@ const schema = a.schema({
   }).secondaryIndexes((index) => [
     index('type')
       .sortKeys(['date'])
-      .queryField('listNewsByTypeAndDate')
+      .queryField('listNewsByTypeAndDate'),
+    // Add new GSI for getTopTen function
+    index('type')
+      .sortKeys(['lDate'])
+      .queryField('listNewsByTypeAndLDate')
   ])
     .authorization((allow) => [allow.publicApiKey()]),
 
