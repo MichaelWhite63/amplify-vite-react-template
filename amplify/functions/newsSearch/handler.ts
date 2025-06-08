@@ -8,28 +8,49 @@ export const handler: Schema["newsSearch"]["functionHandler"] = async (event): P
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString(); // Use full ISO string with time
+  const tomorrowStr = tomorrow.toISOString();
 
   try {
+    let allItems: any[] = [];
+    let lastEvaluatedKey: any = undefined;
     
-    const params = {
-      TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-      // Remove IndexName as we're using Scan instead of Query
-      // IndexName: 'date-title-index',
-      FilterExpression: '#createdAt <= :tomorrow AND contains(#title, :searchString)',
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',     // Updated attribute name
-        '#title': 'title'
-      },
-      ExpressionAttributeValues: {
-        ':tomorrow': tomorrowStr,       // Full ISO string for tomorrow
-        ':searchString': searchString
-      },
-      Limit: 35
-    };
+    do {
+      const params = {
+        TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
+        FilterExpression: '#createdAt <= :tomorrow AND contains(#title, :searchString)',
+        ExpressionAttributeNames: {
+          '#createdAt': 'createdAt',
+          '#title': 'title'
+        },
+        ExpressionAttributeValues: {
+          ':tomorrow': tomorrowStr,
+          ':searchString': searchString
+        },
+        Limit: 1000, // Process more items per batch
+        ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey })
+      };
 
-    const result = await dynamoDb.scan(params).promise();
-    return result.Items && result.Items.length > 0 ? JSON.stringify(result.Items) : "NADA";
+      const result = await dynamoDb.scan(params).promise();
+      
+      if (result.Items) {
+        allItems = allItems.concat(result.Items);
+      }
+      
+      lastEvaluatedKey = result.LastEvaluatedKey;
+      
+      // Break early if we have enough results
+      if (allItems.length >= 35) {
+        break;
+      }
+      
+    } while (lastEvaluatedKey && allItems.length < 35);
+
+    // Sort by most recent first
+    const sortedItems = allItems
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 35);
+
+    return sortedItems && sortedItems.length > 0 ? JSON.stringify(sortedItems) : "NADA";
 
   } catch (error) {
     console.error('Search error:', error);
