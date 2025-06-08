@@ -17,6 +17,7 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
         ExpressionAttributeValues: { ':type': type },
         ExpressionAttributeNames: { '#type': 'type' },
         ScanIndexForward: false, // date DESC
+        Limit: 1000, // Limit items per batch to avoid timeout
         ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey })
       };
       
@@ -31,7 +32,12 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
       }
       
       lastEvaluatedKey = result.LastEvaluatedKey;
-      console.log(`Total items so far: ${allItems.length}, hasMore: ${!!lastEvaluatedKey}`);
+      
+      // Break early if we have enough items to avoid timeout
+      if (allItems.length >= count * 2) {
+        console.log(`Breaking early with ${allItems.length} items to avoid timeout`);
+        break;
+      }
       
     } while (lastEvaluatedKey);
     
@@ -42,8 +48,7 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     throw error;
   }
   
-  // Sort by createdAt for items with same lDate (GSI already sorted by lDate DESC)
-  // Sort by lDate DESC, then createdAt ASC (since GSI sorts by 'date', not 'lDate')
+  // Sort by lDate DESC, then createdAt ASC
   const sortedItems = allItems.sort((a, b) => {
     // Primary sort: lDate DESC
     const lDateA = new Date(a.lDate);
@@ -60,12 +65,6 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     return createdAtA.getTime() - createdAtB.getTime(); // createdAt ASC
   });
   
-  // Debug: Show the most recent dates
-  console.log('Top 5 dates after sorting:', sortedItems.slice(0, 5).map(item => ({
-    lDate: item.lDate,
-    createdAt: item.createdAt
-  })));
-  
   return sortedItems.slice(0, count);
 };
 
@@ -74,22 +73,6 @@ export const handler: Schema["getTopTen"]["functionHandler"] = async (event) => 
   const actualCount = count ?? 10;
   
   console.log(`getTopTen called with type: ${type}, count: ${actualCount}`);
-  
-  // In your handler, add this temporary debug code
-  const debugParams = {
-    TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-    FilterExpression: '#type = :type',
-    ExpressionAttributeValues: { ':type': 'Steel' },
-    ExpressionAttributeNames: { '#type': 'type' },
-    Limit: 5
-  };
-
-  const debugResult = await dynamoDb.scan(debugParams).promise();
-  console.log('Sample lDate values:', debugResult.Items?.map(item => ({
-    lDate: item.lDate,
-    lDateType: typeof item.lDate,
-    lDateValue: JSON.stringify(item.lDate)
-  })));
   
   try {
     if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
