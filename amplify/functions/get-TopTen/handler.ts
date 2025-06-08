@@ -12,15 +12,15 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     do {
       const params = {
         TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-        IndexName: 'newsByTypeAndLDate', // Use the active GSI that has data
+        IndexName: 'newsByTypeAndDate', // Use the working GSI temporarily
         KeyConditionExpression: '#type = :type',
         ExpressionAttributeValues: { ':type': type },
         ExpressionAttributeNames: { '#type': 'type' },
-        ScanIndexForward: false, // This gives us lDate DESC
+        ScanIndexForward: false, // date DESC
         ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey })
       };
       
-      console.log(`Querying GSI: newsByTypeAndLDate for type: ${type}`);
+      console.log(`Querying GSI: newsByTypeAndDate for type: ${type}`);
       
       const result = await dynamoDb.query(params).promise();
       
@@ -43,19 +43,21 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   }
   
   // Sort by createdAt for items with same lDate (GSI already sorted by lDate DESC)
+  // Sort by lDate DESC, then createdAt ASC (since GSI sorts by 'date', not 'lDate')
   const sortedItems = allItems.sort((a, b) => {
-    const dateA = new Date(a.lDate);
-    const dateB = new Date(b.lDate);
-    const dateDiff = dateB.getTime() - dateA.getTime();
+    // Primary sort: lDate DESC
+    const lDateA = new Date(a.lDate);
+    const lDateB = new Date(b.lDate);
+    const lDateDiff = lDateB.getTime() - lDateA.getTime();
     
-    if (dateDiff !== 0) {
-      return dateDiff; // lDate DESC (GSI should handle this, but keeping for safety)
+    if (lDateDiff !== 0) {
+      return lDateDiff; // lDate DESC
     }
     
-    // For same lDate, sort by createdAt ASC
+    // Secondary sort: createdAt ASC for same lDate
     const createdAtA = new Date(a.createdAt);
     const createdAtB = new Date(b.createdAt);
-    return createdAtA.getTime() - createdAtB.getTime();
+    return createdAtA.getTime() - createdAtB.getTime(); // createdAt ASC
   });
   
   // Debug: Show the most recent dates
@@ -72,6 +74,22 @@ export const handler: Schema["getTopTen"]["functionHandler"] = async (event) => 
   const actualCount = count ?? 10;
   
   console.log(`getTopTen called with type: ${type}, count: ${actualCount}`);
+  
+  // In your handler, add this temporary debug code
+  const debugParams = {
+    TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
+    FilterExpression: '#type = :type',
+    ExpressionAttributeValues: { ':type': 'Steel' },
+    ExpressionAttributeNames: { '#type': 'type' },
+    Limit: 5
+  };
+
+  const debugResult = await dynamoDb.scan(debugParams).promise();
+  console.log('Sample lDate values:', debugResult.Items?.map(item => ({
+    lDate: item.lDate,
+    lDateType: typeof item.lDate,
+    lDateValue: JSON.stringify(item.lDate)
+  })));
   
   try {
     if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {

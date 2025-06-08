@@ -152,7 +152,7 @@ const schema = a.schema({
       group: a.integer(),
       writtenBy: a.string(),
       date: a.date(),
-      lDate: a.date(),
+      lDate: a.string(), // Change from a.date() to a.string()
       source: a.string(),
       memo: a.string(),
       ord: a.integer(),
