@@ -65,31 +65,36 @@ const Archive: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
 
   const handleSearch = React.useCallback(async () => {
-    console.log('Searching news: ');
+    console.log('Searching news using newsSearch lambda');
     try {
-      const formattedDate = selectedDate.toISOString().split('T')[0];
+      let response;
       
       if (keyword.trim()) {
-        // If keyword exists, search by type and keyword
-        const response = await client.models.News.list({
-          filter: {
-//            type: { eq: newsType },
-            title: { contains: keyword.trim() }
-          }
+        // Call newsSearch lambda for keyword search
+        response = await client.queries.newsSearch({
+          searchString: keyword.trim(),
+          date: "",
+          type: "Steel" // default value
         });
-        setArchiveResults(response.data);
       } else {
-        // If no keyword, search by type and date
-        const response = await client.models.News.list({
-          filter: {
-            type: { eq: newsType },
-            date: { eq: formattedDate }
-          }
+        // Call newsSearch lambda for date search
+        const formattedDate = selectedDate.toISOString().split('T')[0];
+        response = await client.queries.newsSearch({
+          searchString: "",
+          date: formattedDate,
+          type: newsType as 'Steel' | 'Auto' | 'Aluminum'
         });
-        setArchiveResults(response.data);
+      }
+      
+      if (response.data && response.data !== "NADA") {
+        const results = JSON.parse(response.data);
+        setArchiveResults(results);
+      } else {
+        setArchiveResults([]);
       }
     } catch (error) {
-      console.error('Error searching news:', error);
+      console.error('Error calling newsSearch lambda:', error);
+      setArchiveResults([]);
     }
   }, [keyword, newsType, selectedDate]);
 

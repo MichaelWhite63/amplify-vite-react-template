@@ -64,6 +64,8 @@ const schema = a.schema({
     .query()
     .arguments({
       searchString: a.string(),
+      date: a.string(),
+      type: a.enum(['Steel', 'Auto', 'Aluminum']),
     })
     .returns(a.string())
     .handler(a.handler.function(newsSearch))
