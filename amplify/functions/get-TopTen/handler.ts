@@ -19,20 +19,22 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     return [];
   }
 
-  // Debug: Check for June 2025 articles before sorting
-  const june2025Articles = result.Items.filter(item => 
-    item.lDate && item.lDate.startsWith('2025-06')
-  );
-  console.log(`Found ${june2025Articles.length} June 2025 articles before sorting`);
-  
-  // Debug: Check for articles newer than May 28, 2025
-  const recentArticles = result.Items.filter(item => {
-    if (!item.lDate) return false;
-    const articleDate = new Date(item.lDate);
-    const cutoffDate = new Date('2025-05-28');
-    return articleDate > cutoffDate;
+  // Debug: Check for June 2025 articles before sorting using createdAt
+  const june2025Articles = result.Items.filter(item => {
+    if (!item.createdAt) return false;
+    const createdDate = new Date(item.createdAt);
+    return createdDate.getFullYear() === 2025 && createdDate.getMonth() === 5; // Month is 0-indexed, so 5 = June
   });
-  console.log(`Found ${recentArticles.length} articles newer than May 28, 2025`);
+  console.log(`Found ${june2025Articles.length} June 2025 articles (by createdAt) before sorting`);
+
+  // Debug: Check for articles created after May 28, 2025 using createdAt
+  const recentArticles = result.Items.filter(item => {
+    if (!item.createdAt) return false;
+    const createdDate = new Date(item.createdAt);
+    const cutoffDate = new Date('2025-05-28T00:00:00+00:00');
+    return createdDate > cutoffDate;
+  });
+  console.log(`Found ${recentArticles.length} articles created after May 28, 2025 (by createdAt)`);
 
   // Debug: Log some sample lDate values
   console.log('Sample lDate values:', result.Items.slice(0, 5).map(item => ({
@@ -85,9 +87,9 @@ export const handler: Schema["getTopTen"]["functionHandler"] = async (event) => 
   const actualCount = count ?? 10;
   
   if (type === 'Steel' || type === 'Auto' || type === 'Aluminum') {
-    const topTen = await getTopTenArticles(type, actualCount);
-    return JSON.stringify(topTen);
-  } else {
+  } else {topTen = await getTopTenArticles(type, actualCount);
     throw new Error(`Invalid type: ${type}`);
+  } else {
+};  throw new Error(`Invalid type: ${type}`);
   }
 };
