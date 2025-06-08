@@ -152,7 +152,7 @@ const schema = a.schema({
       group: a.integer(),
       writtenBy: a.string(),
       date: a.date(),
-      lDate: a.string(), // Change from a.date() to a.string()
+      lDate: a.string(), // ✅ Confirmed: Change from a.date() to a.string()
       source: a.string(),
       memo: a.string(),
       ord: a.integer(),
@@ -165,9 +165,8 @@ const schema = a.schema({
     index('type')
       .sortKeys(['date'])
       .queryField('listNewsByTypeAndDate'),
-    // Add new GSI for getTopTen function
     index('type')
-      .sortKeys(['lDate'])
+      .sortKeys(['lDate'])  // ✅ This will work now with string lDate
       .queryField('listNewsByTypeAndLDate')
   ])
     .authorization((allow) => [allow.publicApiKey()]),
