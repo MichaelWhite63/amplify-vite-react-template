@@ -5,22 +5,37 @@ import { DynamoDB } from 'aws-sdk';
 const dynamoDb = new DynamoDB.DocumentClient();
 
 const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: number) => {
-  const params = {
-    TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-    FilterExpression: '#type = :type',
-    ExpressionAttributeValues: { ':type': type },
-    ExpressionAttributeNames: { '#type': 'type' }
-  };
-  const result = await dynamoDb.scan(params).promise();
+  let allItems: any[] = [];
+  let lastEvaluatedKey: any = undefined;
   
-  console.log(`Found ${result.Items?.length || 0} items for type: ${type}`);
+  do {
+    const params = {
+      TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
+      FilterExpression: '#type = :type',
+      ExpressionAttributeValues: { ':type': type },
+      ExpressionAttributeNames: { '#type': 'type' },
+      ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey })
+    };
+    
+    const result = await dynamoDb.scan(params).promise();
+    
+    if (result.Items) {
+      allItems = allItems.concat(result.Items);
+    }
+    
+    lastEvaluatedKey = result.LastEvaluatedKey;
+    console.log(`Batch returned ${result.Items?.length || 0} items. Total so far: ${allItems.length}`);
+    
+  } while (lastEvaluatedKey);
   
-  if (!result.Items || result.Items.length === 0) {
+  console.log(`Found ${allItems.length} total items for type: <${type}>`);
+  
+  if (allItems.length === 0) {
     return [];
   }
 
   // Debug: Check for June 2025 articles before sorting using createdAt
-  const june2025Articles = result.Items.filter(item => {
+  const june2025Articles = allItems.filter(item => {
     if (!item.createdAt) return false;
     const createdDate = new Date(item.createdAt);
     return createdDate.getFullYear() === 2025 && createdDate.getMonth() === 5; // Month is 0-indexed, so 5 = June
@@ -28,7 +43,7 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   console.log(`Found ${june2025Articles.length} June 2025 articles (by createdAt) before sorting`);
 
   // Debug: Check for articles created after May 28, 2025 using createdAt
-  const recentArticles = result.Items.filter(item => {
+  const recentArticles = allItems.filter(item => {
     if (!item.createdAt) return false;
     const createdDate = new Date(item.createdAt);
     const cutoffDate = new Date('2025-05-28T00:00:00+00:00');
@@ -37,14 +52,14 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
   console.log(`Found ${recentArticles.length} articles created after May 28, 2025 (by createdAt)`);
 
   // Debug: Log some sample lDate values
-  console.log('Sample lDate values:', result.Items.slice(0, 5).map(item => ({
+  console.log('Sample lDate values:', allItems.slice(0, 5).map(item => ({
     id: item.id,
     lDate: item.lDate,
     parsedDate: new Date(item.lDate).toISOString(),
     isValidDate: !isNaN(new Date(item.lDate).getTime())
   })));
 
-  const sortedItems = result.Items.sort((a, b) => {
+  const sortedItems = allItems.sort((a, b) => {
     const dateA = new Date(a.lDate);
     const dateB = new Date(b.lDate);
     
