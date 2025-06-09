@@ -48,18 +48,18 @@ const getTopTenArticles = async (type: 'Steel' | 'Auto' | 'Aluminum', count: num
     throw error;
   }
   
-  // Sort by lDate DESC, then createdAt ASC
+  // Sort by date DESC, then createdAt ASC
   const sortedItems = allItems.sort((a, b) => {
-    // Primary sort: lDate DESC
-    const lDateA = new Date(a.lDate);
-    const lDateB = new Date(b.lDate);
-    const lDateDiff = lDateB.getTime() - lDateA.getTime();
+    // Primary sort: date DESC
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    const dateDiff = dateB.getTime() - dateA.getTime();
     
-    if (lDateDiff !== 0) {
-      return lDateDiff; // lDate DESC
+    if (dateDiff !== 0) {
+      return dateDiff; // date DESC
     }
     
-    // Secondary sort: createdAt ASC for same lDate
+    // Secondary sort: createdAt ASC for same date
     const createdAtA = new Date(a.createdAt);
     const createdAtB = new Date(b.createdAt);
     return createdAtA.getTime() - createdAtB.getTime(); // createdAt ASC
