@@ -142,6 +142,7 @@ const SendEmail: React.FC = () => {
         type: selectedType,
         date: queryDate
       });
+      console.log('Fetched unpublished news:', result);
       setUnpublishedNews(result.data ? (JSON.parse(result.data) as News[]) : []);
     }
     fetchUnpublishedNews();

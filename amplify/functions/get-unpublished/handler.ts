@@ -11,9 +11,11 @@ const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum', date: str
     do {
       const params = {
         TableName: 'News-xvm6ipom2jd45jq7boxzeki5bu-NONE',
-        IndexName: 'newsByTypeAndDate', // Use the GSI for better performance
-        KeyConditionExpression: '#type = :type',
-        FilterExpression: '#date = :date AND #published = :published',
+        IndexName: 'newsByTypeAndDate',
+        // Use BOTH partition key (type) AND sort key (date) in KeyConditionExpression
+        KeyConditionExpression: '#type = :type AND #date = :date',
+        // Move published filter to FilterExpression (non-primary key attribute)
+        FilterExpression: '#published = :published',
         ExpressionAttributeNames: {
           '#type': 'type',
           '#date': 'date',
@@ -22,7 +24,7 @@ const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum', date: str
         ExpressionAttributeValues: { 
           ':type': type,
           ':date': date,
-          ':published': false // Filter for unpublished articles
+          ':published': false
         },
         Limit: 1000,
         ...(lastEvaluatedKey && { ExclusiveStartKey: lastEvaluatedKey })
@@ -47,7 +49,7 @@ const getUnpublishedNews = async (type: 'Steel' | 'Auto' | 'Aluminum', date: str
   const sortedItems = allItems.sort((a, b) => {
     const dateA = new Date(a.createdAt || a.date).getTime();
     const dateB = new Date(b.createdAt || b.date).getTime();
-    return dateA - dateB; // For chronological order (oldest to newest)
+    return dateA - dateB;
   });
   
   return sortedItems;
