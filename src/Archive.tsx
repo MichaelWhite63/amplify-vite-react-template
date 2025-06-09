@@ -121,7 +121,7 @@ const Archive: React.FC = () => {
     setKeyword(event.target.value);
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     // Reset all states when changing tabs
     setSelectedDate(new Date());
     setKeyword('');
