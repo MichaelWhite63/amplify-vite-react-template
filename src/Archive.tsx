@@ -65,7 +65,6 @@ const Archive: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
 
   const handleSearch = React.useCallback(async () => {
-    console.log('Searching news using newsSearch lambda');
     try {
       let response;
       
@@ -99,7 +98,6 @@ const Archive: React.FC = () => {
   }, [keyword, newsType, selectedDate]);
 
   const handleDateChange = (date: Date | null) => {
-    console.log('handleDateChange:', date);
     if (date) {
       setSelectedDate(date);
       // Clear any existing keyword when date changes
@@ -112,7 +110,6 @@ const Archive: React.FC = () => {
 
   // Update useEffect to run search on mount and when newsType changes
   useEffect(() => {
-    console.log('useEffect: newsType changed');
     handleSearch();
   }, [handleSearch]); // Now handleSearch contains all necessary dependencies
 
@@ -125,7 +122,6 @@ const Archive: React.FC = () => {
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    console.log('Tab changed to:', newValue, event);
     // Reset all states when changing tabs
     setSelectedDate(new Date());
     setKeyword('');
@@ -163,7 +159,6 @@ const Archive: React.FC = () => {
       
       // Trigger keyword search
       setTimeout(() => {
-        console.log('Triggering search from URL params with keyword:', keywordParam);
         client.models.News.list({
           filter: {
             title: { contains: keywordParam.trim() }
@@ -191,7 +186,6 @@ const Archive: React.FC = () => {
       
       // Trigger date search
       setTimeout(() => {
-        console.log('Triggering search from URL params with date:', dateParam, 'type:', typeParam);
         client.models.News.list({
           filter: {
             type: { eq: typeParam || 'Steel' },
