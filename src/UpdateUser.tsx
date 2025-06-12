@@ -225,9 +225,9 @@ const UpdateUser: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox" sx={{ width: '5%' }}></TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', width: '25%' }}>メール</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', width: '25%' }}>名前</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', width: '25%' }}>会社名</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '35%' }}>メール</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>名前</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>会社名</TableCell>
                     <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>部署</TableCell>
                   </TableRow>
                 </TableHead>
