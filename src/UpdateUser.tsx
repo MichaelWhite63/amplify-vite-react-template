@@ -52,25 +52,37 @@ const UpdateUser: React.FC = () => {
         nextToken: token
       });
       
-      console.log('Search response:', response);
+      console.log('Raw search response:', response);
       
       if (response.data) {
         const data = JSON.parse(response.data);
         
+        // Add detailed debugging
+        console.log('Parsed data:', data);
+        console.log('data.users:', data.users);
+        console.log('data.nextToken:', data.nextToken);
+        console.log('Array.isArray(data):', Array.isArray(data));
+        
         // Check if response has pagination structure
         let userList, newNextToken;
         if (data.users && Array.isArray(data.users)) {
-          // Paginated response
+          // Paginated response from handler
           userList = data.users;
           newNextToken = data.nextToken;
+          console.log('Using paginated response structure');
         } else if (Array.isArray(data)) {
-          // Non-paginated response (search results)
+          // Non-paginated response (search results or simple array)
           userList = data;
           newNextToken = null;
+          console.log('Using direct array response structure');
         } else {
           userList = [];
           newNextToken = null;
+          console.log('No valid response structure found');
         }
+        
+        console.log('Final userList length:', userList.length);
+        console.log('Final newNextToken:', newNextToken);
         
         const userDetails = userList.map((user: { Attributes: { Name: string; Value: string }[] }) => {
           const emailAttr = user.Attributes.find(attr => attr.Name === 'email');
@@ -90,6 +102,11 @@ const UpdateUser: React.FC = () => {
         setNextToken(newNextToken || '');
         setHasMoreData(!!newNextToken);
         setCurrentPage(page);
+        
+        // Debug the final state
+        console.log('Setting hasMoreData to:', !!newNextToken);
+        console.log('Setting nextToken to:', newNextToken || '');
+        
       } else {
         setUsers([]);
         setNextToken('');

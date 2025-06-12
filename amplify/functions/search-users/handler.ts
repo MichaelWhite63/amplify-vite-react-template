@@ -127,14 +127,21 @@ export const handler: Schema["searchUsers"]["functionHandler"] = async (event) =
   };
   
   try {
-    const users = await queryCognito(
+    const result = await queryCognito(
       'us-east-1_oy1KeDlsD', 
       name, 
-      pageSize || 20, 
+      pageSize, 
       nextToken || undefined
     );
-    console.log(`Returning ${users.length} users`);
-    return JSON.stringify(users);
+    
+    // Always return the paginated structure
+    const response = {
+      users: result.users || result, // Handle both structures
+      nextToken: result.nextToken || null
+    };
+    
+    console.log(`Returning response with ${response.users.length} users, nextToken: ${response.nextToken}`);
+    return JSON.stringify(response);
   } catch (error) {
     console.error('Handler error:', error);
     throw error;
