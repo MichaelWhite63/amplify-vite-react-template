@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
-import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Pagination } from '@mui/material';
 import NewsAppBar from './components/NewsAppBar';
 import { Authenticator } from '@aws-amplify/ui-react';
 
@@ -15,12 +15,19 @@ interface UserSearchResult {
 const client = generateClient<Schema>();
 
 const UpdateUser: React.FC = () => {
-  const [searchName, setSearchName] = useState(''); // New state for search
+  const [searchName, setSearchName] = useState('');
   const [users, setUsers] = useState<UserSearchResult[]>([]);
   const [selectedEmail, setSelectedEmail] = useState('');
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   const [groupMemberships, setGroupMemberships] = useState<string[]>([]);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [nextToken, setNextToken] = useState<string>('');
+  const [hasMoreData, setHasMoreData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const pageSize = 20; // Fixed page size
   
   const GROUP_MAPPING = {
     '鉄鋼': 'Steel',
@@ -30,35 +37,84 @@ const UpdateUser: React.FC = () => {
   
   const availableGroups = ['鉄鋼', '自動車', 'アルミ'];
   const [editableEmail, setEditableEmail] = useState('');
-  const [name, setName] = useState('');  // Changed from originalEmail
+  const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
   const [company, setCompany] = useState('');
 
-  const handleSearchUsers = async () => {
-    console.log('name', searchName); // Changed from name
+  const handleSearchUsers = async (page: number = 1, token: string = '') => {
+    console.log('Searching users:', { searchName, page, token });
+    setIsLoading(true);
     
     try {
-      const response = await client.queries.searchUsers({ name: searchName }); // Changed from name
-      console.log('response', response);
-      console.log(response);
-      const data = response.data ? JSON.parse(response.data) : [];
-      const userDetails = data.map((user: { Attributes: { Name: string; Value: string }[] }) => {
-        const emailAttr = user.Attributes.find(attr => attr.Name === 'email');
-        const nameAttr = user.Attributes.find(attr => attr.Name === 'name');
-        const familyNameAttr = user.Attributes.find(attr => attr.Name === 'family_name');
-        const givenNameAttr = user.Attributes.find(attr => attr.Name === 'given_name');
-        
-        return {
-          email: emailAttr?.Value || 'No email found',
-          name: nameAttr?.Value || '',
-          familyName: familyNameAttr?.Value || '',
-          givenName: givenNameAttr?.Value || ''
-        };
+      const response = await client.queries.searchUsers({ 
+        name: searchName,
+        pageSize: pageSize,
+        nextToken: token
       });
-      setUsers(userDetails);
-      setSelectedDetails(false);
+      
+      console.log('Search response:', response);
+      
+      if (response.data) {
+        const data = JSON.parse(response.data);
+        
+        // Check if response has pagination structure
+        let userList, newNextToken;
+        if (data.users && Array.isArray(data.users)) {
+          // Paginated response
+          userList = data.users;
+          newNextToken = data.nextToken;
+        } else if (Array.isArray(data)) {
+          // Non-paginated response (search results)
+          userList = data;
+          newNextToken = null;
+        } else {
+          userList = [];
+          newNextToken = null;
+        }
+        
+        const userDetails = userList.map((user: { Attributes: { Name: string; Value: string }[] }) => {
+          const emailAttr = user.Attributes.find(attr => attr.Name === 'email');
+          const nameAttr = user.Attributes.find(attr => attr.Name === 'name');
+          const familyNameAttr = user.Attributes.find(attr => attr.Name === 'family_name');
+          const givenNameAttr = user.Attributes.find(attr => attr.Name === 'given_name');
+          
+          return {
+            email: emailAttr?.Value || 'No email found',
+            name: nameAttr?.Value || '',
+            familyName: familyNameAttr?.Value || '',
+            givenName: givenNameAttr?.Value || ''
+          };
+        });
+        
+        setUsers(userDetails);
+        setNextToken(newNextToken || '');
+        setHasMoreData(!!newNextToken);
+        setCurrentPage(page);
+      } else {
+        setUsers([]);
+        setNextToken('');
+        setHasMoreData(false);
+      }
+      
+      setSelectedDetails(null);
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error('Error fetching users:', error);
+      setUsers([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePageChange = async (event: React.ChangeEvent<unknown>, page: number) => {
+    if (page > currentPage && hasMoreData) {
+      // Going to next page
+      await handleSearchUsers(page, nextToken);
+    } else if (page < currentPage) {
+      // Going to previous page - need to search from beginning
+      // Note: Cognito doesn't support backward pagination, so we'll search from start
+      console.log('Backward pagination not fully supported with Cognito');
+      // For now, just go back to page 1
+      await handleSearchUsers(1, '');
     }
   };
 
@@ -73,18 +129,26 @@ const UpdateUser: React.FC = () => {
 
   const handleSelectUser = async (email: string) => {
     setSelectedEmail(email);
-    setEditableEmail(email);  
-    setName(email);  // Changed from setOriginalEmail
+    setEditableEmail(email);
+    setName(email);
     setUsers([]);
 
     try {
-      const response = await client.queries.searchUsers({ name: email });
-      const data = response.data ? JSON.parse(response.data) : [];
-      setSelectedDetails(data);
-      console.log('data', data);
-      setGroupMemberships(data[0]?.GroupMemberships || []);
+      const response = await client.queries.searchUsers({ 
+        name: email,
+        pageSize: 1,
+        nextToken: ''
+      });
       
-      const attributes = data[0]?.Attributes || [];
+      const data = response.data ? JSON.parse(response.data) : [];
+      
+      // Handle both paginated and non-paginated responses
+      const userList = data.users || data;
+      setSelectedDetails(userList);
+      console.log('User details:', userList);
+      setGroupMemberships(userList[0]?.GroupMemberships || []);
+      
+      const attributes = userList[0]?.Attributes || [];
       const departmentAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'given_name');
       const companyAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'family_name');
       const nameAttr = attributes.find((attr: { Name: string; Value: string }) => attr.Name === 'name');
@@ -122,6 +186,9 @@ const UpdateUser: React.FC = () => {
       setName('');
       setDepartment('');
       setCompany('');
+      setCurrentPage(1);
+      setNextToken('');
+      setHasMoreData(false);
 
     } catch (error) {
       console.error('Error updating user:', error);
@@ -151,8 +218,10 @@ const UpdateUser: React.FC = () => {
       setDepartment('');
       setCompany('');
       setDeleteDialogOpen(false);
+      setCurrentPage(1);
+      setNextToken('');
+      setHasMoreData(false);
 
-      // Show success notification
       alert("ユーザーが正常に削除されました");
 
     } catch (error) {
@@ -191,8 +260,8 @@ const UpdateUser: React.FC = () => {
     <Authenticator>
       <NewsAppBar />
       <Box sx={{ 
-        mt: '130px', // Add margin top to account for NewsAppBar and logo
-        mx: 3 // Add horizontal margin
+        mt: '130px',
+        mx: 3
       }}>
         <div style={{ margin: '20px' }}>
           <TextField
@@ -201,55 +270,92 @@ const UpdateUser: React.FC = () => {
               '& .MuiInputBase-input': { fontSize: '2.0rem', fontWeight: 'bold' },
             }}
             label="名前を入力してください"
-            value={searchName}  // Changed from name
-            onChange={(e) => setSearchName(e.target.value)}  // Changed from setName
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            disabled={isLoading}
           />
           <Button 
             variant="contained" 
-            onClick={handleSearchUsers} 
+            onClick={() => handleSearchUsers(1, '')} 
+            disabled={isLoading}
             sx={{ 
               marginLeft: '10px',
               padding: '10px 30px',
               fontSize: '1.2rem'
             }}
           >
-            検索
+            {isLoading ? '検索中...' : '検索'}
           </Button>
-          {!selectedDetails && (
-            <TableContainer component={Paper} sx={{ mt: 2, width: '100%' }}>
-              <Table sx={{ 
-                '& .MuiTableCell-root': { fontSize: '1.5rem', padding: '16px' },
-                width: '100%',
-                tableLayout: 'fixed'
-              }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell padding="checkbox" sx={{ width: '5%' }}></TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', width: '35%' }}>メール</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>名前</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>会社名</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>部署</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {users.map((user, idx) => (
-                    <TableRow key={idx} hover>
-                      <TableCell padding="checkbox">
-                        <Radio
-                          checked={selectedEmail === user.email}
-                          onChange={() => handleSelectUser(user.email)}
-                        />
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.familyName}</TableCell>
-                      <TableCell>{user.givenName}</TableCell>
+          
+          {!selectedDetails && users.length > 0 && (
+            <>
+              <TableContainer component={Paper} sx={{ mt: 2, width: '100%' }}>
+                <Table sx={{ 
+                  '& .MuiTableCell-root': { fontSize: '1.5rem', padding: '16px' },
+                  width: '100%',
+                  tableLayout: 'fixed'
+                }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell padding="checkbox" sx={{ width: '5%' }}></TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', width: '35%' }}>メール</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>名前</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>会社名</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', width: '20%' }}>部署</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {users.map((user, idx) => (
+                      <TableRow key={idx} hover>
+                        <TableCell padding="checkbox">
+                          <Radio
+                            checked={selectedEmail === user.email}
+                            onChange={() => handleSelectUser(user.email)}
+                          />
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.familyName}</TableCell>
+                        <TableCell>{user.givenName}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              
+              {/* Pagination Controls */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Button 
+                    variant="outlined" 
+                    disabled={currentPage === 1 || isLoading}
+                    onClick={() => handlePageChange({} as any, 1)}
+                  >
+                    最初
+                  </Button>
+                  <Button 
+                    variant="outlined" 
+                    disabled={!hasMoreData || isLoading}
+                    onClick={() => handlePageChange({} as any, currentPage + 1)}
+                  >
+                    次のページ
+                  </Button>
+                  <Typography>
+                    ページ {currentPage} ({users.length} 件表示)
+                    {hasMoreData && ' - さらに結果があります'}
+                  </Typography>
+                </Stack>
+              </Box>
+            </>
           )}
+          
+          {!selectedDetails && users.length === 0 && !isLoading && searchName && (
+            <Typography sx={{ mt: 2, fontSize: '1.2rem' }}>
+              検索結果が見つかりませんでした。
+            </Typography>
+          )}
+          
+          {/* Rest of the existing user details form code remains the same */}
           {selectedDetails && selectedDetails[0] && (
             <Card sx={{ mt: 3, maxWidth: 600 }}>
               <CardContent>

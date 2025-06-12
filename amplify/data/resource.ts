@@ -52,13 +52,15 @@ const schema = a.schema({
   .authorization((allow) => [allow.publicApiKey()]),
 
   searchUsers: a
-    .query()
-    .arguments({
-      name: a.string(),
-    })
-    .returns(a.string())
-    .handler(a.handler.function(searchUsers))
-    .authorization((allow) => [allow.publicApiKey()]),
+  .query()
+  .arguments({
+    name: a.string(),
+    pageSize: a.integer(),
+    nextToken: a.string(),
+  })
+  .returns(a.string())
+  .handler(a.handler.function(searchUsers))
+  .authorization((allow) => [allow.publicApiKey()]),
 
   newsSearch: a
     .query()
