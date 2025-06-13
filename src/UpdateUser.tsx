@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
-import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Pagination } from '@mui/material';
+import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from '@mui/material';
 import NewsAppBar from './components/NewsAppBar';
 import { Authenticator } from '@aws-amplify/ui-react';
 
@@ -75,8 +75,13 @@ const UpdateUser: React.FC = () => {
         
         // Check if we're getting the same users
         if (data.users && data.users.length > 0) {
-          const firstUserEmail = data.users[0]?.Attributes?.find(attr => attr.Name === 'email')?.Value;
-          const lastUserEmail = data.users[data.users.length - 1]?.Attributes?.find(attr => attr.Name === 'email')?.Value;
+            interface UserAttribute {
+            Name: string;
+            Value: string;
+            }
+
+            const firstUserEmail: string | undefined = data.users[0]?.Attributes?.find((attr: UserAttribute) => attr.Name === 'email')?.Value;
+          const lastUserEmail = data.users[data.users.length - 1]?.Attributes?.find((attr: { Name: string; }) => attr.Name === 'email')?.Value;
           console.log('First user email:', firstUserEmail);
           console.log('Last user email:', lastUserEmail);
         }
@@ -143,7 +148,7 @@ const UpdateUser: React.FC = () => {
     }
   };
 
-  const handlePageChange = async (event: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange = async (_event: React.ChangeEvent<unknown>, page: number) => {
     console.log('handlePageChange called:', { page, currentPage, hasMoreData, nextToken });
     
     if (page > currentPage && hasMoreData) {
