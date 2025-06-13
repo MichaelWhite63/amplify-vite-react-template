@@ -65,7 +65,12 @@ const UpdateUser: React.FC = () => {
         
         // Check if we're getting the same users by logging first user email
         if (data.users && data.users.length > 0) {
-          const firstUserEmail = data.users[0]?.Attributes?.find(attr => attr.Name === 'email')?.Value;
+          interface UserAttribute {
+            Name: string;
+            Value: string;
+          }
+
+                    const firstUserEmail = data.users[0]?.Attributes?.find((attr: UserAttribute) => attr.Name === 'email')?.Value;
           console.log('First user email:', firstUserEmail);
         }
         
