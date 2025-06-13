@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Pagination } from '@mui/material';
@@ -42,36 +42,52 @@ const UpdateUser: React.FC = () => {
   const [company, setCompany] = useState('');
 
   const handleSearchUsers = async (page: number = 1, token: string = '') => {
-    console.log('Searching users:', { searchName, page, token });
+    console.log('=== SEARCH USERS DEBUG ===');
+    console.log('Input params:', { searchName, page, token });
+    console.log('Current state before search:', { currentPage, nextToken, hasMoreData });
+    
     setIsLoading(true);
     
     try {
-      const response = await client.queries.searchUsers({ 
+      const requestParams = { 
         name: searchName,
         pageSize: pageSize,
         nextToken: token
-      });
+      };
+      
+      console.log('Sending request with params:', requestParams);
+      
+      const response = await client.queries.searchUsers(requestParams);
       
       console.log('Raw search response:', response);
       
       if (response.data) {
         const data = JSON.parse(response.data);
         
-        // Add detailed debugging
-        console.log('Parsed data:', data);
-        console.log('data.users:', data.users);
-        console.log('data.nextToken:', data.nextToken);
-        console.log('Array.isArray(data):', Array.isArray(data));
+        console.log('Parsed response data:', data);
+        console.log('Response structure check:', {
+          hasUsers: !!data.users,
+          usersIsArray: Array.isArray(data.users),
+          usersLength: data.users?.length || 0,
+          hasNextToken: !!data.nextToken,
+          nextTokenValue: data.nextToken
+        });
+        
+        // Check if we're getting the same users
+        if (data.users && data.users.length > 0) {
+          const firstUserEmail = data.users[0]?.Attributes?.find(attr => attr.Name === 'email')?.Value;
+          const lastUserEmail = data.users[data.users.length - 1]?.Attributes?.find(attr => attr.Name === 'email')?.Value;
+          console.log('First user email:', firstUserEmail);
+          console.log('Last user email:', lastUserEmail);
+        }
         
         // Check if response has pagination structure
         let userList, newNextToken;
         if (data.users && Array.isArray(data.users)) {
-          // Paginated response from handler
           userList = data.users;
           newNextToken = data.nextToken;
           console.log('Using paginated response structure');
         } else if (Array.isArray(data)) {
-          // Non-paginated response (search results or simple array)
           userList = data;
           newNextToken = null;
           console.log('Using direct array response structure');
@@ -85,10 +101,10 @@ const UpdateUser: React.FC = () => {
         console.log('Final newNextToken:', newNextToken);
         
         const userDetails = userList.map((user: { Attributes: { Name: string; Value: string }[] }) => {
-          const emailAttr = user.Attributes.find(attr => attr.Name === 'email');
-          const nameAttr = user.Attributes.find(attr => attr.Name === 'name');
-          const familyNameAttr = user.Attributes.find(attr => attr.Name === 'family_name');
-          const givenNameAttr = user.Attributes.find(attr => attr.Name === 'given_name');
+          const emailAttr = user.Attributes?.find(attr => attr.Name === 'email');
+          const nameAttr = user.Attributes?.find(attr => attr.Name === 'name');
+          const familyNameAttr = user.Attributes?.find(attr => attr.Name === 'family_name');
+          const givenNameAttr = user.Attributes?.find(attr => attr.Name === 'given_name');
           
           return {
             email: emailAttr?.Value || 'No email found',
@@ -98,40 +114,46 @@ const UpdateUser: React.FC = () => {
           };
         });
         
+        console.log('Final userDetails:', userDetails);
+        
+        // Update all state together and force re-render
         setUsers(userDetails);
         setNextToken(newNextToken || '');
         setHasMoreData(!!newNextToken);
         setCurrentPage(page);
+        setSelectedDetails(null); // Clear any selected user details
         
-        // Debug the final state
-        console.log('Setting hasMoreData to:', !!newNextToken);
-        console.log('Setting nextToken to:', newNextToken || '');
+        console.log('State updated - users:', userDetails.length, 'hasMore:', !!newNextToken);
         
       } else {
+        console.log('No response.data found');
         setUsers([]);
         setNextToken('');
         setHasMoreData(false);
+        setSelectedDetails(null);
       }
       
-      setSelectedDetails(null);
     } catch (error) {
       console.error('Error fetching users:', error);
       setUsers([]);
+      setSelectedDetails(null);
     } finally {
       setIsLoading(false);
+      console.log('Search completed, isLoading set to false');
     }
   };
 
   const handlePageChange = async (event: React.ChangeEvent<unknown>, page: number) => {
+    console.log('handlePageChange called:', { page, currentPage, hasMoreData, nextToken });
+    
     if (page > currentPage && hasMoreData) {
-      // Going to next page
+      console.log('Going to next page with token:', nextToken);
       await handleSearchUsers(page, nextToken);
     } else if (page < currentPage) {
-      // Going to previous page - need to search from beginning
-      // Note: Cognito doesn't support backward pagination, so we'll search from start
-      console.log('Backward pagination not fully supported with Cognito');
-      // For now, just go back to page 1
+      console.log('Going to previous page - searching from beginning');
       await handleSearchUsers(1, '');
+    } else {
+      console.log('Page change not executed:', { page, currentPage, hasMoreData });
     }
   };
 
@@ -273,6 +295,24 @@ const UpdateUser: React.FC = () => {
     </Dialog>
   );
 
+  // Add this right before the return statement
+  console.log('Render state:', {
+    selectedDetails: !!selectedDetails,
+    usersLength: users.length,
+    isLoading,
+    searchName
+  });
+
+  useEffect(() => {
+    console.log('Users state changed:', {
+      usersLength: users.length,
+      currentPage,
+      hasMoreData,
+      nextToken: nextToken.substring(0, 20),
+      selectedDetails: !!selectedDetails
+    });
+  }, [users, currentPage, hasMoreData, nextToken, selectedDetails]);
+
   return (
     <Authenticator>
       <NewsAppBar />
@@ -281,6 +321,7 @@ const UpdateUser: React.FC = () => {
         mx: 3
       }}>
         <div style={{ margin: '20px' }}>
+          {/* Search input and button */}
           <TextField
             sx={{
               '& .MuiInputLabel-root': { fontSize: '2.0rem', fontWeight: 'bold' },
@@ -304,9 +345,19 @@ const UpdateUser: React.FC = () => {
             {isLoading ? '検索中...' : '検索'}
           </Button>
           
+          {/* Debug info - remove this later */}
+          <Typography sx={{ mt: 2, color: 'red' }}>
+            Debug: selectedDetails={selectedDetails ? 'exists' : 'null'}, 
+            users.length={users.length}, 
+            isLoading={isLoading.toString()}
+          </Typography>
+          
           {!selectedDetails && users.length > 0 && (
             <>
-              <TableContainer component={Paper} sx={{ mt: 2, width: '100%' }}>
+              <Typography sx={{ mt: 2, color: 'green' }}>
+                Found {users.length} users - showing table (Page {currentPage})
+              </Typography>
+              <TableContainer component={Paper} sx={{ mt: 2, width: '100%' }} key={`users-${currentPage}-${users.length}`}>
                 <Table sx={{ 
                   '& .MuiTableCell-root': { fontSize: '1.5rem', padding: '16px' },
                   width: '100%',
@@ -323,7 +374,7 @@ const UpdateUser: React.FC = () => {
                   </TableHead>
                   <TableBody>
                     {users.map((user, idx) => (
-                      <TableRow key={idx} hover>
+                      <TableRow key={`${user.email}-${currentPage}-${idx}`} hover>
                         <TableCell padding="checkbox">
                           <Radio
                             checked={selectedEmail === user.email}
@@ -340,7 +391,7 @@ const UpdateUser: React.FC = () => {
                 </Table>
               </TableContainer>
               
-              {/* Pagination Controls */}
+              {/* Enhanced pagination controls with more debugging */}
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Button 
@@ -353,13 +404,19 @@ const UpdateUser: React.FC = () => {
                   <Button 
                     variant="outlined" 
                     disabled={!hasMoreData || isLoading}
-                    onClick={() => handlePageChange({} as any, currentPage + 1)}
+                    onClick={() => {
+                      console.log('Next page clicked:', { currentPage, hasMoreData, nextToken });
+                      handlePageChange({} as any, currentPage + 1);
+                    }}
                   >
                     次のページ
                   </Button>
                   <Typography>
                     ページ {currentPage} ({users.length} 件表示)
                     {hasMoreData && ' - さらに結果があります'}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.8rem', color: 'gray' }}>
+                    Debug: hasMore={hasMoreData.toString()}, token={nextToken.substring(0, 10)}...
                   </Typography>
                 </Stack>
               </Box>
@@ -486,3 +543,42 @@ const UpdateUser: React.FC = () => {
 };
 
 export default UpdateUser;
+
+// In your searchUsers handler
+export const handler: Schema["searchUsers"]["functionHandler"] = async (event) => {
+  const { 
+    name, 
+    pageSize = 20, 
+    nextToken 
+  } = event.arguments as { 
+    name: string; 
+    pageSize?: number; 
+    nextToken?: string; 
+  };
+  
+  console.log('Handler received params:', { name, pageSize, nextToken });
+  
+  try {
+    const result = await queryCognito(
+      process.env.USER_POOL_ID || 'us-east-1_oy1KeDlsD', 
+      name, 
+      pageSize, 
+      nextToken // Make sure this is passed correctly
+    );
+    
+    console.log('Handler result:', {
+      usersCount: result.users?.length || 0,
+      nextToken: result.nextToken
+    });
+    
+    const response = {
+      users: result.users || [],
+      nextToken: result.nextToken || null
+    };
+    
+    return JSON.stringify(response);
+  } catch (error) {
+    console.error('Handler error:', error);
+    throw error;
+  }
+};
