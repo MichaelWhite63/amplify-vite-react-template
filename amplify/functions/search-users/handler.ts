@@ -73,7 +73,7 @@ export async function queryCognito(
       
       // Fetch all users in batches and filter client-side
       do {
-        const listParams = {
+        const listParams: CognitoIdentityServiceProvider.ListUsersRequest = {
           UserPoolId: userPoolId,
           Limit: 60, // Fetch in chunks
           PaginationToken: paginationToken
