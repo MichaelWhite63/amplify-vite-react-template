@@ -18,25 +18,27 @@ export async function queryCognito(
     if (isEmptySearch) {
       console.log('Empty search - listing all users with pagination');
       
-      const params = {
+      const params: any = {
         UserPoolId: userPoolId,
         Limit: pageSize
       };
       
       // CRITICAL: Add PaginationToken if it exists
       if (startToken && startToken.trim() !== '') {
-        (params as any).PaginationToken = startToken;
+        params.PaginationToken = startToken;
         console.log('Using pagination token:', startToken);
       } else {
         console.log('No pagination token - starting from beginning');
       }
       
+      console.log('Calling cognito.listUsers with params:', params);
+      
       const response = await cognito.listUsers(params).promise();
       
-      console.log('Cognito response:', {
+      console.log('Cognito listUsers response:', {
         usersCount: response.Users?.length || 0,
         hasNextToken: !!response.PaginationToken,
-        nextToken: response.PaginationToken
+        nextTokenPreview: response.PaginationToken?.substring(0, 50) + '...'
       });
 
       const users = response.Users || [];
@@ -66,6 +68,11 @@ export async function queryCognito(
         })
       );
 
+      console.log('Returning users with groups:', {
+        count: usersWithGroups.length,
+        nextToken: response.PaginationToken ? 'exists' : 'null'
+      });
+
       return {
         users: usersWithGroups,
         nextToken: response.PaginationToken
@@ -75,7 +82,6 @@ export async function queryCognito(
       // Search logic for when searchString is provided
       console.log('Performing search with string:', searchString);
       
-      // Use Cognito's filter for prefix matching
       const response = await cognito.listUsers({
         UserPoolId: userPoolId,
         Filter: `email ^= "${searchString}"`,
@@ -85,7 +91,6 @@ export async function queryCognito(
       const users = response.Users || [];
       console.log(`Found ${users.length} users with prefix filter`);
 
-      // For search results, fetch groups and return (no pagination)
       const usersWithGroups = await Promise.all(
         users.map(async (user, index) => {
           if (!user.Username) return user;
@@ -133,6 +138,7 @@ export const handler: Schema["searchUsers"]["functionHandler"] = async (event) =
     nextToken?: string; 
   };
   
+  console.log('=== HANDLER DEBUG ===');
   console.log('Handler received params:', { name, pageSize, nextToken });
   
   try {
@@ -145,7 +151,8 @@ export const handler: Schema["searchUsers"]["functionHandler"] = async (event) =
     
     console.log('Handler result:', {
       usersCount: result.users?.length || 0,
-      nextToken: result.nextToken
+      hasNextToken: !!result.nextToken,
+      nextTokenPreview: result.nextToken?.substring(0, 50) + '...'
     });
     
     const response = {
@@ -153,7 +160,10 @@ export const handler: Schema["searchUsers"]["functionHandler"] = async (event) =
       nextToken: result.nextToken || null
     };
     
-    console.log(`Returning response with ${response.users.length} users, nextToken: ${response.nextToken}`);
+    console.log(`=== HANDLER RESPONSE ===`);
+    console.log(`Returning ${response.users.length} users`);
+    console.log(`NextToken exists: ${!!response.nextToken}`);
+    
     return JSON.stringify(response);
   } catch (error) {
     console.error('Handler error:', error);

@@ -42,9 +42,10 @@ const UpdateUser: React.FC = () => {
   const [company, setCompany] = useState('');
 
   const handleSearchUsers = async (page: number = 1, token: string = '') => {
-    console.log('=== SEARCH USERS DEBUG ===');
+    console.log('=== FRONTEND SEARCH DEBUG ===');
     console.log('Input params:', { searchName, page, token });
-    console.log('Current state before search:', { currentPage, nextToken, hasMoreData });
+    console.log('Token length:', token.length);
+    console.log('Token preview:', token.substring(0, 50) + '...');
     
     setIsLoading(true);
     
@@ -64,26 +65,24 @@ const UpdateUser: React.FC = () => {
       if (response.data) {
         const data = JSON.parse(response.data);
         
+        console.log('=== RESPONSE ANALYSIS ===');
         console.log('Parsed response data:', data);
-        console.log('Response structure check:', {
-          hasUsers: !!data.users,
-          usersIsArray: Array.isArray(data.users),
-          usersLength: data.users?.length || 0,
-          hasNextToken: !!data.nextToken,
-          nextTokenValue: data.nextToken
-        });
+        console.log('Users count:', data.users?.length || 0);
+        console.log('Has nextToken:', !!data.nextToken);
+        console.log('NextToken preview:', data.nextToken?.substring(0, 50) + '...');
         
-        // Check if we're getting the same users
+        // Log first and last user emails to verify different users
         if (data.users && data.users.length > 0) {
-            interface UserAttribute {
-            Name: string;
-            Value: string;
-            }
-
-            const firstUserEmail: string | undefined = data.users[0]?.Attributes?.find((attr: UserAttribute) => attr.Name === 'email')?.Value;
-          const lastUserEmail = data.users[data.users.length - 1]?.Attributes?.find((attr: { Name: string; }) => attr.Name === 'email')?.Value;
+          const firstUserEmail = data.users[0]?.Attributes?.find((attr: { Name: string; Value: string }) => attr.Name === 'email')?.Value;
+          const lastUserEmail = data.users[data.users.length - 1]?.Attributes?.find((attr: { Name: string; Value: string }) => attr.Name === 'email')?.Value;
           console.log('First user email:', firstUserEmail);
           console.log('Last user email:', lastUserEmail);
+          
+          // Log all user emails to see if they're different
+          const allEmails = data.users.map((user: any) => {
+            return user.Attributes?.find((attr: { Name: string; Value: string }) => attr.Name === 'email')?.Value;
+          });
+          console.log('All user emails:', allEmails);
         }
         
         // Check if response has pagination structure
@@ -119,7 +118,10 @@ const UpdateUser: React.FC = () => {
           };
         });
         
-        console.log('Final userDetails:', userDetails);
+        console.log('=== STATE UPDATE ===');
+        console.log('Setting users:', userDetails.length);
+        console.log('Setting nextToken:', newNextToken?.substring(0, 50) + '...');
+        console.log('Setting hasMoreData:', !!newNextToken);
         
         // Update all state together and force re-render
         setUsers(userDetails);
@@ -127,8 +129,6 @@ const UpdateUser: React.FC = () => {
         setHasMoreData(!!newNextToken);
         setCurrentPage(page);
         setSelectedDetails(null); // Clear any selected user details
-        
-        console.log('State updated - users:', userDetails.length, 'hasMore:', !!newNextToken);
         
       } else {
         console.log('No response.data found');
@@ -144,19 +144,31 @@ const UpdateUser: React.FC = () => {
       setSelectedDetails(null);
     } finally {
       setIsLoading(false);
-      console.log('Search completed, isLoading set to false');
     }
   };
 
   const handlePageChange = async (_event: React.ChangeEvent<unknown>, page: number) => {
     console.log('handlePageChange called:', { page, currentPage, hasMoreData, nextToken });
     
-    if (page > currentPage && hasMoreData) {
+    if (page === 1) {
+      // Always restart from beginning for first page
+      console.log('Going to first page');
+      await handleSearchUsers(1, '');
+      
+    } else if (page > currentPage && hasMoreData) {
+      // Going forward - use nextToken
       console.log('Going to next page with token:', nextToken);
       await handleSearchUsers(page, nextToken);
+      
     } else if (page < currentPage) {
-      console.log('Going to previous page - searching from beginning');
+      // Going backward - restart from beginning and show message
+      console.log('Going backward - restarting from beginning');
+      setCurrentPage(1);
       await handleSearchUsers(1, '');
+      
+      // Optional: Show user message about backward pagination limitation
+      alert('後方ページングの制限により、最初のページに戻りました。');
+      
     } else {
       console.log('Page change not executed:', { page, currentPage, hasMoreData });
     }
@@ -396,16 +408,36 @@ const UpdateUser: React.FC = () => {
                 </Table>
               </TableContainer>
               
-              {/* Enhanced pagination controls with more debugging */}
+              {/* Enhanced pagination controls with Previous Page button */}
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Button 
                     variant="outlined" 
                     disabled={currentPage === 1 || isLoading}
                     onClick={() => handlePageChange({} as any, 1)}
+                    size="small"
                   >
                     最初
                   </Button>
+                  <Button 
+                    variant="outlined" 
+                    disabled={currentPage === 1 || isLoading}
+                    onClick={() => {
+                      console.log('Previous page clicked:', { currentPage });
+                      handlePageChange({} as any, currentPage - 1);
+                    }}
+                    size="small"
+                  >
+                    ← 前のページ
+                  </Button>
+                  <Typography sx={{ 
+                    mx: 2, 
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    color: 'primary.main'
+                  }}>
+                    ページ {currentPage}
+                  </Typography>
                   <Button 
                     variant="outlined" 
                     disabled={!hasMoreData || isLoading}
@@ -413,15 +445,13 @@ const UpdateUser: React.FC = () => {
                       console.log('Next page clicked:', { currentPage, hasMoreData, nextToken });
                       handlePageChange({} as any, currentPage + 1);
                     }}
+                    size="small"
                   >
-                    次のページ
+                    次のページ →
                   </Button>
-                  <Typography>
-                    ページ {currentPage} ({users.length} 件表示)
+                  <Typography sx={{ ml: 2, fontSize: '0.9rem' }}>
+                    ({users.length} 件表示)
                     {hasMoreData && ' - さらに結果があります'}
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.8rem', color: 'gray' }}>
-                    Debug: hasMore={hasMoreData.toString()}, token={nextToken.substring(0, 10)}...
                   </Typography>
                 </Stack>
               </Box>
