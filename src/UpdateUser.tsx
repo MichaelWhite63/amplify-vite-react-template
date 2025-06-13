@@ -27,7 +27,10 @@ const UpdateUser: React.FC = () => {
   const [nextToken, setNextToken] = useState<string>('');
   const [hasMoreData, setHasMoreData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const pageSize = 20; // Fixed page size
+  const pageSize = 20;
+  
+  // Simple search mode tracking
+  const [lastSearchTerm, setLastSearchTerm] = useState('');
   
   const GROUP_MAPPING = {
     '鉄鋼': 'Steel',
@@ -42,37 +45,25 @@ const UpdateUser: React.FC = () => {
   const [company, setCompany] = useState('');
 
   const handleSearchUsers = async (page: number = 1, token: string = '', searchQuery: string = '') => {
-    console.log('=== SEARCH DEBUG ===');
-    console.log('Page:', page, 'Token:', token, 'Query:', searchQuery);
+    console.log('handleSearchUsers called:', { page, token: token.substring(0, 20) + '...', searchQuery });
     
     setIsLoading(true);
     
     try {
+      // Use different page sizes based on whether it's a search or browse
+      const requestPageSize = searchQuery ? 1000 : pageSize; // Get all results for search, paginated for browse
+    
       const response = await client.queries.searchUsers({ 
         name: searchQuery,
-        pageSize: pageSize,
+        pageSize: requestPageSize,
         nextToken: token
       });
       
-      console.log('Backend response:', response);
+      console.log('Response received:', response);
       
       if (response.data) {
         const data = JSON.parse(response.data);
-        
         console.log('Parsed data:', data);
-        console.log('Users count:', data.users?.length);
-        console.log('Next token:', data.nextToken);
-        
-        // Check if we're getting the same users by logging first user email
-        if (data.users && data.users.length > 0) {
-          interface UserAttribute {
-            Name: string;
-            Value: string;
-          }
-
-                    const firstUserEmail = data.users[0]?.Attributes?.find((attr: UserAttribute) => attr.Name === 'email')?.Value;
-          console.log('First user email:', firstUserEmail);
-        }
         
         // Check if response has pagination structure
         let userList, newNextToken;
@@ -86,6 +77,12 @@ const UpdateUser: React.FC = () => {
           userList = [];
           newNextToken = null;
         }
+        
+        console.log('Processing:', { 
+          userCount: userList.length, 
+          hasNextToken: !!newNextToken,
+          isSearch: !!searchQuery
+        });
         
         const userDetails = userList.map((user: { Attributes: { Name: string; Value: string }[] }) => {
           const emailAttr = user.Attributes?.find(attr => attr.Name === 'email');
@@ -101,17 +98,32 @@ const UpdateUser: React.FC = () => {
           };
         });
         
-        console.log('Setting users:', userDetails.length);
-        console.log('Setting nextToken:', newNextToken);
-        console.log('Setting hasMoreData:', !!newNextToken);
+        // Log first user to verify we're getting different results
+        if (userDetails.length > 0) {
+          console.log('First user email:', userDetails[0].email);
+        }
         
         setUsers(userDetails);
-        setNextToken(newNextToken || '');
-        setHasMoreData(!!newNextToken);
-        setCurrentPage(page);
+        
+        if (searchQuery) {
+          // For search results: show all on one page, no pagination
+          setNextToken('');
+          setHasMoreData(false);
+          setCurrentPage(1);
+          console.log(`Search completed: showing all ${userDetails.length} results on one page`);
+        } else {
+          // For browse mode: use pagination
+          setNextToken(newNextToken || '');
+          setHasMoreData(!!newNextToken);
+          setCurrentPage(page);
+          console.log(`Browse mode: page ${page}, showing ${userDetails.length} users, hasMore: ${!!newNextToken}`);
+        }
+        
+        setLastSearchTerm(searchQuery);
         setSelectedDetails(null);
         
       } else {
+        console.log('No response data');
         setUsers([]);
         setNextToken('');
         setHasMoreData(false);
@@ -129,26 +141,41 @@ const UpdateUser: React.FC = () => {
 
   // Load all users when component mounts
   useEffect(() => {
-    handleSearchUsers(1, '', ''); // Empty search query to get all users
+    handleSearchUsers(1, '', '');
   }, []);
 
-  const handleSearchButtonClick = () => {
-    // Reset pagination and search with the current search term
-    handleSearchUsers(1, '', searchName);
-  };
-
   const handlePageChange = async (_event: React.ChangeEvent<unknown>, page: number) => {
-    const currentSearchQuery = searchName; // Use current search term for pagination
+    // Only handle pagination for browse mode (when no search term)
+    if (lastSearchTerm) {
+      console.log('Search mode - pagination disabled');
+      return; // No pagination for search results
+    }
+    
+    console.log('Page change requested:', { 
+      requestedPage: page, 
+      currentPage, 
+      hasMoreData, 
+      nextToken: nextToken.substring(0, 20) + '...'
+    });
     
     if (page === 1) {
-      await handleSearchUsers(1, '', currentSearchQuery);
+      // Always go to first page
+      await handleSearchUsers(1, '', '');
     } else if (page > currentPage && hasMoreData) {
-      await handleSearchUsers(page, nextToken, currentSearchQuery);
+      // Go to next page with next token
+      await handleSearchUsers(page, nextToken, '');
     } else if (page < currentPage) {
-      setCurrentPage(1);
-      await handleSearchUsers(1, '', currentSearchQuery);
-//      alert('後方ページングの制限により、最初のページに戻りました。');
+      // Go back to first page (Cognito limitation)
+      console.log('Going back to first page due to Cognito limitation');
+      await handleSearchUsers(1, '', '');
+      alert('後方ページングの制限により、最初のページに戻りました。');
     }
+  };
+
+  const handleSearchButtonClick = () => {
+    console.log('Search button clicked with term:', searchName);
+    setCurrentPage(1);
+    handleSearchUsers(1, '', searchName.trim());
   };
 
   const handleGroupChange = (group: string) => {
@@ -207,9 +234,7 @@ const UpdateUser: React.FC = () => {
         throw new Error(response.errors[0].message);
       }
 
-      // Reset state and reload the initial user list
-      setSearchName('');
-      setUsers([]);
+      // Reset state and reload current view
       setSelectedEmail('');
       setSelectedDetails(null);
       setGroupMemberships([]);
@@ -217,12 +242,9 @@ const UpdateUser: React.FC = () => {
       setName('');
       setDepartment('');
       setCompany('');
-      setCurrentPage(1);
-      setNextToken('');
-      setHasMoreData(false);
 
-      // Reload the full user list
-      handleSearchUsers(1, '', '');
+      // Reload current view
+      handleSearchUsers(1, '', lastSearchTerm);
 
     } catch (error) {
       console.error('Error updating user:', error);
@@ -241,9 +263,7 @@ const UpdateUser: React.FC = () => {
         throw new Error(response.errors[0].message);
       }
 
-      // Reset state and reload the initial user list
-      setSearchName('');
-      setUsers([]);
+      // Reset state and reload current view
       setSelectedEmail('');
       setSelectedDetails(null);
       setGroupMemberships([]);
@@ -252,14 +272,11 @@ const UpdateUser: React.FC = () => {
       setDepartment('');
       setCompany('');
       setDeleteDialogOpen(false);
-      setCurrentPage(1);
-      setNextToken('');
-      setHasMoreData(false);
 
       alert("ユーザーが正常に削除されました");
 
-      // Reload the full user list
-      handleSearchUsers(1, '', '');
+      // Reload current view
+      handleSearchUsers(1, '', lastSearchTerm);
 
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -327,6 +344,7 @@ const UpdateUser: React.FC = () => {
             variant="outlined" 
             onClick={() => {
               setSearchName('');
+              setCurrentPage(1);
               handleSearchUsers(1, '', '');
             }} 
             disabled={isLoading}
@@ -375,46 +393,58 @@ const UpdateUser: React.FC = () => {
                 </Table>
               </TableContainer>
               
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Button 
-                    variant="outlined" 
-                    disabled={currentPage === 1 || isLoading}
-                    onClick={() => handlePageChange({} as any, 1)}
-                    size="small"
-                  >
-                    最初
-                  </Button>
-                  <Button 
-                    variant="outlined" 
-                    disabled={currentPage === 1 || isLoading}
-                    onClick={() => handlePageChange({} as any, currentPage - 1)}
-                    size="small"
-                  >
-                    ← 前のページ
-                  </Button>
-                  <Typography sx={{ 
-                    mx: 2, 
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    color: 'primary.main'
-                  }}>
-                    ページ {currentPage}
+              {/* Only show pagination controls for browse mode (no search term) */}
+              {!lastSearchTerm && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Button 
+                      variant="outlined" 
+                      disabled={currentPage === 1 || isLoading}
+                      onClick={() => handlePageChange({} as any, 1)}
+                      size="small"
+                    >
+                      最初
+                    </Button>
+                    <Button 
+                      variant="outlined" 
+                      disabled={currentPage === 1 || isLoading}
+                      onClick={() => handlePageChange({} as any, currentPage - 1)}
+                      size="small"
+                    >
+                      ← 前のページ
+                    </Button>
+                    <Typography sx={{ 
+                      mx: 2, 
+                      fontSize: '1.1rem',
+                      fontWeight: 'bold',
+                      color: 'primary.main'
+                    }}>
+                      ページ {currentPage}
+                    </Typography>
+                    <Button 
+                      variant="outlined" 
+                      disabled={!hasMoreData || isLoading}
+                      onClick={() => handlePageChange({} as any, currentPage + 1)}
+                      size="small"
+                    >
+                      次のページ →
+                    </Button>
+                    <Typography sx={{ ml: 2, fontSize: '0.9rem' }}>
+                      ({users.length} 件表示)
+                      {hasMoreData && ' - さらに結果があります'}
+                    </Typography>
+                  </Stack>
+                </Box>
+              )}
+              
+              {/* Show search results summary */}
+              {lastSearchTerm && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                  <Typography sx={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'primary.main' }}>
+                    検索結果: "{lastSearchTerm}" で {users.length} 件見つかりました
                   </Typography>
-                  <Button 
-                    variant="outlined" 
-                    disabled={!hasMoreData || isLoading}
-                    onClick={() => handlePageChange({} as any, currentPage + 1)}
-                    size="small"
-                  >
-                    次のページ →
-                  </Button>
-                  <Typography sx={{ ml: 2, fontSize: '0.9rem' }}>
-                    ({users.length} 件表示)
-                    {hasMoreData && ' - さらに結果があります'}
-                  </Typography>
-                </Stack>
-              </Box>
+                </Box>
+              )}
             </>
           )}
           
