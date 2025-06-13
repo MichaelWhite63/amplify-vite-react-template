@@ -147,7 +147,7 @@ const UpdateUser: React.FC = () => {
     } else if (page < currentPage) {
       setCurrentPage(1);
       await handleSearchUsers(1, '', currentSearchQuery);
-      alert('後方ページングの制限により、最初のページに戻りました。');
+//      alert('後方ページングの制限により、最初のページに戻りました。');
     }
   };
 
