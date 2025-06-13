@@ -10,7 +10,8 @@ export async function queryCognito(
   startToken?: string
 ): Promise<{users: CognitoIdentityServiceProvider.UserType[], nextToken?: string}> {
   
-  console.log(`queryCognito called with:`, { searchString, pageSize, startToken });
+  console.log(`=== HANDLER queryCognito ===`);
+  console.log('Input params:', { searchString, pageSize, startToken });
 
   try {
     const isEmptySearch = !searchString || searchString.trim() === '';
@@ -26,12 +27,16 @@ export async function queryCognito(
       // CRITICAL: Add PaginationToken if it exists
       if (startToken && startToken.trim() !== '') {
         params.PaginationToken = startToken;
-        console.log('Using pagination token:', startToken);
+        console.log('Using pagination token:', startToken.substring(0, 50) + '...');
       } else {
         console.log('No pagination token - starting from beginning');
       }
       
-      console.log('Calling cognito.listUsers with params:', params);
+      console.log('Calling cognito.listUsers with params:', {
+        UserPoolId: params.UserPoolId,
+        Limit: params.Limit,
+        hasPaginationToken: !!params.PaginationToken
+      });
       
       const response = await cognito.listUsers(params).promise();
       
@@ -80,7 +85,7 @@ export async function queryCognito(
       
     } else {
       // Search logic for when searchString is provided
-      console.log('Performing search with string:', searchString);
+      console.log('Performing substring search with string:', searchString);
       
       let allMatchingUsers: CognitoIdentityServiceProvider.UserType[] = [];
       let paginationToken: string | undefined = undefined;
@@ -89,7 +94,7 @@ export async function queryCognito(
       console.log('Fetching all users to perform substring search...');
       
       do {
-        const listParams: CognitoIdentityServiceProvider.ListUsersRequest = {
+        const listParams = {
           UserPoolId: userPoolId,
           Limit: 60, // Fetch in larger chunks for efficiency
           PaginationToken: paginationToken
@@ -178,7 +183,7 @@ export const handler: Schema["searchUsers"]["functionHandler"] = async (event) =
   };
   
   console.log('=== HANDLER DEBUG ===');
-  console.log('Handler received params:', { name, pageSize, nextToken });
+  console.log('Handler received params:', { name, pageSize, nextToken: nextToken?.substring(0, 50) + '...' });
   
   try {
     const result = await queryCognito(

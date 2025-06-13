@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../amplify/data/resource';
 import { TextField, Button, Radio, Card, CardContent, Typography, Chip, Stack, Divider, Checkbox, FormGroup, FormControlLabel, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from '@mui/material';
@@ -41,18 +41,33 @@ const UpdateUser: React.FC = () => {
   const [department, setDepartment] = useState('');
   const [company, setCompany] = useState('');
 
-  const handleSearchUsers = async (page: number = 1, token: string = '') => {
+  const handleSearchUsers = async (page: number = 1, token: string = '', searchQuery: string = '') => {
+    console.log('=== SEARCH DEBUG ===');
+    console.log('Page:', page, 'Token:', token, 'Query:', searchQuery);
+    
     setIsLoading(true);
     
     try {
       const response = await client.queries.searchUsers({ 
-        name: searchName,
+        name: searchQuery,
         pageSize: pageSize,
         nextToken: token
       });
       
+      console.log('Backend response:', response);
+      
       if (response.data) {
         const data = JSON.parse(response.data);
+        
+        console.log('Parsed data:', data);
+        console.log('Users count:', data.users?.length);
+        console.log('Next token:', data.nextToken);
+        
+        // Check if we're getting the same users by logging first user email
+        if (data.users && data.users.length > 0) {
+          const firstUserEmail = data.users[0]?.Attributes?.find(attr => attr.Name === 'email')?.Value;
+          console.log('First user email:', firstUserEmail);
+        }
         
         // Check if response has pagination structure
         let userList, newNextToken;
@@ -81,6 +96,10 @@ const UpdateUser: React.FC = () => {
           };
         });
         
+        console.log('Setting users:', userDetails.length);
+        console.log('Setting nextToken:', newNextToken);
+        console.log('Setting hasMoreData:', !!newNextToken);
+        
         setUsers(userDetails);
         setNextToken(newNextToken || '');
         setHasMoreData(!!newNextToken);
@@ -103,14 +122,26 @@ const UpdateUser: React.FC = () => {
     }
   };
 
+  // Load all users when component mounts
+  useEffect(() => {
+    handleSearchUsers(1, '', ''); // Empty search query to get all users
+  }, []);
+
+  const handleSearchButtonClick = () => {
+    // Reset pagination and search with the current search term
+    handleSearchUsers(1, '', searchName);
+  };
+
   const handlePageChange = async (_event: React.ChangeEvent<unknown>, page: number) => {
+    const currentSearchQuery = searchName; // Use current search term for pagination
+    
     if (page === 1) {
-      await handleSearchUsers(1, '');
+      await handleSearchUsers(1, '', currentSearchQuery);
     } else if (page > currentPage && hasMoreData) {
-      await handleSearchUsers(page, nextToken);
+      await handleSearchUsers(page, nextToken, currentSearchQuery);
     } else if (page < currentPage) {
       setCurrentPage(1);
-      await handleSearchUsers(1, '');
+      await handleSearchUsers(1, '', currentSearchQuery);
       alert('後方ページングの制限により、最初のページに戻りました。');
     }
   };
@@ -171,7 +202,7 @@ const UpdateUser: React.FC = () => {
         throw new Error(response.errors[0].message);
       }
 
-      // Reset all state to initial values
+      // Reset state and reload the initial user list
       setSearchName('');
       setUsers([]);
       setSelectedEmail('');
@@ -184,6 +215,9 @@ const UpdateUser: React.FC = () => {
       setCurrentPage(1);
       setNextToken('');
       setHasMoreData(false);
+
+      // Reload the full user list
+      handleSearchUsers(1, '', '');
 
     } catch (error) {
       console.error('Error updating user:', error);
@@ -202,7 +236,7 @@ const UpdateUser: React.FC = () => {
         throw new Error(response.errors[0].message);
       }
 
-      // Reset all state to initial values
+      // Reset state and reload the initial user list
       setSearchName('');
       setUsers([]);
       setSelectedEmail('');
@@ -218,6 +252,9 @@ const UpdateUser: React.FC = () => {
       setHasMoreData(false);
 
       alert("ユーザーが正常に削除されました");
+
+      // Reload the full user list
+      handleSearchUsers(1, '', '');
 
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -271,7 +308,7 @@ const UpdateUser: React.FC = () => {
           />
           <Button 
             variant="contained" 
-            onClick={() => handleSearchUsers(1, '')} 
+            onClick={handleSearchButtonClick} 
             disabled={isLoading}
             sx={{ 
               marginLeft: '10px',
@@ -280,6 +317,21 @@ const UpdateUser: React.FC = () => {
             }}
           >
             {isLoading ? '検索中...' : '検索'}
+          </Button>
+          <Button 
+            variant="outlined" 
+            onClick={() => {
+              setSearchName('');
+              handleSearchUsers(1, '', '');
+            }} 
+            disabled={isLoading}
+            sx={{ 
+              marginLeft: '10px',
+              padding: '10px 30px',
+              fontSize: '1.2rem'
+            }}
+          >
+            全ユーザー表示
           </Button>
           
           {!selectedDetails && users.length > 0 && (
