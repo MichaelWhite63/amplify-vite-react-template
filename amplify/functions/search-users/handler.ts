@@ -82,17 +82,54 @@ export async function queryCognito(
       // Search logic for when searchString is provided
       console.log('Performing search with string:', searchString);
       
-      const response = await cognito.listUsers({
-        UserPoolId: userPoolId,
-        Filter: `email ^= "${searchString}"`,
-        Limit: pageSize
-      }).promise();
-
-      const users = response.Users || [];
-      console.log(`Found ${users.length} users with prefix filter`);
-
+      let allMatchingUsers: CognitoIdentityServiceProvider.UserType[] = [];
+      let paginationToken: string | undefined = undefined;
+      
+      // Since Cognito filters are limited, we need to fetch all users and filter client-side
+      console.log('Fetching all users to perform substring search...');
+      
+      do {
+        const listParams: CognitoIdentityServiceProvider.ListUsersRequest = {
+          UserPoolId: userPoolId,
+          Limit: 60, // Fetch in larger chunks for efficiency
+          PaginationToken: paginationToken
+        };
+        
+        const response = await cognito.listUsers(listParams).promise();
+        const users = response.Users || [];
+        
+        console.log(`Fetched ${users.length} users for filtering`);
+        
+        // Filter users that contain the search string in their email (case-insensitive)
+        const matchingUsers = users.filter(user => {
+          const emailAttr = user.Attributes?.find(attr => attr.Name === 'email');
+          const email = emailAttr?.Value || '';
+          
+          // Check if search string is contained anywhere in the email (case-insensitive)
+          return email.toLowerCase().includes(searchString.toLowerCase());
+        });
+        
+        console.log(`Found ${matchingUsers.length} matching users in this batch`);
+        allMatchingUsers = [...allMatchingUsers, ...matchingUsers];
+        
+        paginationToken = response.PaginationToken;
+        
+        // Continue until we have enough results or no more pages
+        if (allMatchingUsers.length >= pageSize * 3) {
+          console.log('Found enough matching users, stopping search');
+          break;
+        }
+        
+      } while (paginationToken);
+      
+      console.log(`Total matching users found: ${allMatchingUsers.length}`);
+      
+      // Limit to requested page size
+      const paginatedUsers = allMatchingUsers.slice(0, pageSize);
+      
+      // Fetch groups for matching users
       const usersWithGroups = await Promise.all(
-        users.map(async (user, index) => {
+        paginatedUsers.map(async (user, index) => {
           if (!user.Username) return user;
           
           try {
@@ -115,9 +152,11 @@ export async function queryCognito(
         })
       );
 
+      console.log(`Returning ${usersWithGroups.length} users with groups for search: "${searchString}"`);
+
       return {
         users: usersWithGroups,
-        nextToken: undefined // No pagination for search results
+        nextToken: undefined // No pagination for search results since we're filtering client-side
       };
     }
 
