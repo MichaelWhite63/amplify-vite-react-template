@@ -1,6 +1,10 @@
 import type { Schema } from "../../data/resource"
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
+interface CognitoUserWithGroups extends CognitoIdentityServiceProvider.UserType {
+  GroupMemberships: string[];
+}
+
 const cognito = new CognitoIdentityServiceProvider();
 
 export async function queryCognito(
@@ -58,9 +62,9 @@ export async function queryCognito(
               await new Promise(resolve => setTimeout(resolve, 50));
             }
             
-            const groups = await cognito.adminListGroupsForUser({
-              UserPoolId: userPoolId,
-              Username: user.Username
+            const groups: CognitoIdentityServiceProvider.AdminListGroupsForUserResponse = await cognito.adminListGroupsForUser({
+              Username: user.Username,
+              UserPoolId: userPoolId
             }).promise();
 
             (user as any).GroupMemberships = groups.Groups?.map(g => g.GroupName) || [];
@@ -94,7 +98,7 @@ export async function queryCognito(
       console.log('Fetching all users to perform substring search...');
       
       do {
-        const listParams = {
+        const listParams: CognitoIdentityServiceProvider.ListUsersRequest = {
           UserPoolId: userPoolId,
           Limit: 60, // Fetch in larger chunks for efficiency
           PaginationToken: paginationToken
