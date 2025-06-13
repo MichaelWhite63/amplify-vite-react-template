@@ -109,6 +109,15 @@ export async function queryCognito(
       
       console.log(`Search completed: found ${allMatchingUsers.length} total users matching "${searchString}"`);
       
+      // Sort search results alphabetically by email
+      allMatchingUsers.sort((a, b) => {
+        const emailA = a.Attributes?.find(attr => attr.Name === 'email')?.Value || '';
+        const emailB = b.Attributes?.find(attr => attr.Name === 'email')?.Value || '';
+        return emailA.toLowerCase().localeCompare(emailB.toLowerCase());
+      });
+      
+      console.log(`Search results sorted alphabetically by email`);
+      
       // Fetch groups for all matching users
       const usersWithGroups = await Promise.all(
         allMatchingUsers.map(async (user, index) => {
@@ -134,7 +143,7 @@ export async function queryCognito(
         })
       );
 
-      console.log(`Returning all ${usersWithGroups.length} search results for "${searchString}"`);
+      console.log(`Returning all ${usersWithGroups.length} search results for "${searchString}" in alphabetic order`);
 
       return {
         users: usersWithGroups,
