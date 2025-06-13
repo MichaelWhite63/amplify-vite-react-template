@@ -23,7 +23,7 @@ export async function queryCognito(
         Limit: pageSize
       };
       
-      // CRITICAL: Only add PaginationToken if it exists and is not empty
+      // CRITICAL: Add PaginationToken if it exists
       if (startToken && startToken.trim() !== '') {
         (params as any).PaginationToken = startToken;
         console.log('Using pagination token:', startToken);
@@ -75,8 +75,6 @@ export async function queryCognito(
       // Search logic for when searchString is provided
       console.log('Performing search with string:', searchString);
       
-      let allUsers: CognitoIdentityServiceProvider.UserType[] = [];
-      
       // Use Cognito's filter for prefix matching
       const response = await cognito.listUsers({
         UserPoolId: userPoolId,
@@ -87,98 +85,35 @@ export async function queryCognito(
       const users = response.Users || [];
       console.log(`Found ${users.length} users with prefix filter`);
 
-      // If no results with prefix, try broader search
-      if (users.length === 0) {
-        console.log('No prefix matches, trying broader search...');
-        
-        let searchPaginationToken: string | undefined = undefined;
-        
-        do {
-          const broadResponse = await cognito.listUsers({
-            UserPoolId: userPoolId,
-            PaginationToken: searchPaginationToken,
-            Limit: 60
-          }).promise();
-
-          if (broadResponse.Users) {
-            const matchingUsers = broadResponse.Users.filter(user => {
-              const emailAttr = user.Attributes?.find(attr => attr.Name === 'email');
-              return emailAttr?.Value?.toLowerCase().includes(searchString.toLowerCase());
-            });
-            
-            allUsers = [...allUsers, ...matchingUsers];
-          }
-
-          searchPaginationToken = broadResponse.PaginationToken;
+      // For search results, fetch groups and return (no pagination)
+      const usersWithGroups = await Promise.all(
+        users.map(async (user, index) => {
+          if (!user.Username) return user;
           
-          if (allUsers.length >= 10) {
-            console.log('Found enough matches, stopping pagination');
-            break;
+          try {
+            if (index > 0) {
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            
+            const groups = await cognito.adminListGroupsForUser({
+              UserPoolId: userPoolId,
+              Username: user.Username
+            }).promise();
+
+            (user as any).GroupMemberships = groups.Groups?.map(g => g.GroupName) || [];
+            return user;
+          } catch (error) {
+            console.error(`Error fetching groups for user ${user.Username}:`, error);
+            (user as any).GroupMemberships = [];
+            return user;
           }
-          
-        } while (searchPaginationToken);
-        
-        // For search results, we don't use pagination tokens
-        const usersWithGroups = await Promise.all(
-          allUsers.slice(0, 20).map(async (user, index) => {
-            if (!user.Username) return user;
-            
-            try {
-              if (index > 0) {
-                await new Promise(resolve => setTimeout(resolve, 50));
-              }
-              
-              const groups = await cognito.adminListGroupsForUser({
-                UserPoolId: userPoolId,
-                Username: user.Username
-              }).promise();
+        })
+      );
 
-              (user as any).GroupMemberships = groups.Groups?.map(g => g.GroupName) || [];
-              return user;
-            } catch (error) {
-              console.error(`Error fetching groups for user ${user.Username}:`, error);
-              (user as any).GroupMemberships = [];
-              return user;
-            }
-          })
-        );
-
-        return {
-          users: usersWithGroups,
-          nextToken: undefined // No pagination for search results
-        };
-        
-      } else {
-        // Process prefix match results
-        const usersWithGroups = await Promise.all(
-          users.map(async (user, index) => {
-            if (!user.Username) return user;
-            
-            try {
-              if (index > 0) {
-                await new Promise(resolve => setTimeout(resolve, 50));
-              }
-              
-              const groups = await cognito.adminListGroupsForUser({
-                UserPoolId: userPoolId,
-                Username: user.Username
-              }).promise();
-
-              (user as any).GroupMemberships = groups.Groups?.map(g => g.GroupName) || [];
-              return user;
-            } catch (error) {
-              console.error(`Error fetching groups for user ${user.Username}:`, error);
-              (user as any).GroupMemberships = [];
-              return user;
-            }
-          })
-        );
-
-        return {
-          users: usersWithGroups,
-          nextToken: undefined // No pagination for search results
-        };
-      }
+      return {
+        users: usersWithGroups,
+        nextToken: undefined // No pagination for search results
+      };
     }
 
   } catch (error) {
