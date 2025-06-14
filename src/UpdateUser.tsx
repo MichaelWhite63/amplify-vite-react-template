@@ -45,8 +45,6 @@ const UpdateUser: React.FC = () => {
   const [company, setCompany] = useState('');
 
   const handleSearchUsers = async (page: number = 1, token: string = '', searchQuery: string = '') => {
-    console.log('handleSearchUsers called:', { page, token: token.substring(0, 20) + '...', searchQuery });
-    
     setIsLoading(true);
     
     try {
@@ -59,11 +57,8 @@ const UpdateUser: React.FC = () => {
         nextToken: token
       });
       
-      console.log('Response received:', response);
-      
       if (response.data) {
         const data = JSON.parse(response.data);
-        console.log('Parsed data:', data);
         
         // Check if response has pagination structure
         let userList, newNextToken;
@@ -77,12 +72,6 @@ const UpdateUser: React.FC = () => {
           userList = [];
           newNextToken = null;
         }
-        
-        console.log('Processing:', { 
-          userCount: userList.length, 
-          hasNextToken: !!newNextToken,
-          isSearch: !!searchQuery
-        });
         
         const userDetails = userList.map((user: { Attributes: { Name: string; Value: string }[] }) => {
           const emailAttr = user.Attributes?.find(attr => attr.Name === 'email');
@@ -98,11 +87,6 @@ const UpdateUser: React.FC = () => {
           };
         });
         
-        // Log first user to verify we're getting different results
-        if (userDetails.length > 0) {
-          console.log('First user email:', userDetails[0].email);
-        }
-        
         setUsers(userDetails);
         
         if (searchQuery) {
@@ -110,20 +94,17 @@ const UpdateUser: React.FC = () => {
           setNextToken('');
           setHasMoreData(false);
           setCurrentPage(1);
-          console.log(`Search completed: showing all ${userDetails.length} results on one page`);
         } else {
           // For browse mode: use pagination
           setNextToken(newNextToken || '');
           setHasMoreData(!!newNextToken);
           setCurrentPage(page);
-          console.log(`Browse mode: page ${page}, showing ${userDetails.length} users, hasMore: ${!!newNextToken}`);
         }
         
         setLastSearchTerm(searchQuery);
         setSelectedDetails(null);
         
       } else {
-        console.log('No response data');
         setUsers([]);
         setNextToken('');
         setHasMoreData(false);
@@ -147,16 +128,8 @@ const UpdateUser: React.FC = () => {
   const handlePageChange = async (_event: React.ChangeEvent<unknown>, page: number) => {
     // Only handle pagination for browse mode (when no search term)
     if (lastSearchTerm) {
-      console.log('Search mode - pagination disabled');
       return; // No pagination for search results
     }
-    
-    console.log('Page change requested:', { 
-      requestedPage: page, 
-      currentPage, 
-      hasMoreData, 
-      nextToken: nextToken.substring(0, 20) + '...'
-    });
     
     if (page === 1) {
       // Always go to first page
@@ -166,14 +139,12 @@ const UpdateUser: React.FC = () => {
       await handleSearchUsers(page, nextToken, '');
     } else if (page < currentPage) {
       // Go back to first page (Cognito limitation)
-      console.log('Going back to first page due to Cognito limitation');
       await handleSearchUsers(1, '', '');
       alert('後方ページングの制限により、最初のページに戻りました。');
     }
   };
 
   const handleSearchButtonClick = () => {
-    console.log('Search button clicked with term:', searchName);
     setCurrentPage(1);
     handleSearchUsers(1, '', searchName.trim());
   };

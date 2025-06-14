@@ -10,15 +10,10 @@ export async function queryCognito(
   startToken?: string
 ): Promise<{users: CognitoIdentityServiceProvider.UserType[], nextToken?: string}> {
   
-  console.log(`=== HANDLER queryCognito ===`);
-  console.log('Input params:', { searchString, pageSize, startToken });
-
   try {
     const isEmptySearch = !searchString || searchString.trim() === '';
     
     if (isEmptySearch) {
-      console.log('Empty search - listing all users with pagination');
-      
       const params: any = {
         UserPoolId: userPoolId,
         Limit: pageSize
@@ -26,7 +21,6 @@ export async function queryCognito(
       
       if (startToken && startToken.trim() !== '') {
         params.PaginationToken = startToken;
-        console.log('Using pagination token for browse mode');
       }
       
       const response = await cognito.listUsers(params).promise();
@@ -57,8 +51,6 @@ export async function queryCognito(
         })
       );
 
-      console.log(`Browse mode: returning ${usersWithGroups.length} users`);
-
       return {
         users: usersWithGroups,
         nextToken: response.PaginationToken
@@ -66,8 +58,6 @@ export async function queryCognito(
       
     } else {
       // SEARCH MODE: Get all users and filter client-side for substring matching
-      console.log(`Search mode: looking for "${searchString}" anywhere in email`);
-      
       let allMatchingUsers: CognitoIdentityServiceProvider.UserType[] = [];
       let paginationToken: string | undefined = undefined;
       
@@ -75,11 +65,10 @@ export async function queryCognito(
       do {
         const listParams: CognitoIdentityServiceProvider.ListUsersRequest = {
           UserPoolId: userPoolId,
-          Limit: 60, // Fetch in chunks
+          Limit: 60,
           PaginationToken: paginationToken
         };
         
-        console.log(`Fetching batch with ${listParams.Limit} users...`);
         const response = await cognito.listUsers(listParams).promise();
         const users = response.Users || [];
         
@@ -89,25 +78,13 @@ export async function queryCognito(
           const email = emailAttr?.Value || '';
           
           // Case-insensitive substring match
-          const isMatch = email.toLowerCase().includes(searchString.toLowerCase());
-          
-          if (isMatch) {
-            console.log(`Match found: ${email} contains "${searchString}"`);
-          }
-          
-          return isMatch;
+          return email.toLowerCase().includes(searchString.toLowerCase());
         });
         
-        console.log(`Found ${matchingUsers.length} matching users in this batch of ${users.length}`);
         allMatchingUsers = [...allMatchingUsers, ...matchingUsers];
-        
         paginationToken = response.PaginationToken;
         
-        // Continue until we've searched all users (no limit for search)
-        
       } while (paginationToken);
-      
-      console.log(`Search completed: found ${allMatchingUsers.length} total users matching "${searchString}"`);
       
       // Sort search results alphabetically by email
       allMatchingUsers.sort((a, b) => {
@@ -116,8 +93,6 @@ export async function queryCognito(
         return emailA.toLowerCase().localeCompare(emailB.toLowerCase());
       });
       
-      console.log(`Search results sorted alphabetically by email`);
-      
       // Fetch groups for all matching users
       const usersWithGroups = await Promise.all(
         allMatchingUsers.map(async (user, index) => {
@@ -125,7 +100,7 @@ export async function queryCognito(
           
           try {
             if (index > 0 && index % 10 === 0) {
-              await new Promise(resolve => setTimeout(resolve, 100)); // Throttle every 10 requests
+              await new Promise(resolve => setTimeout(resolve, 100));
             }
             
             const groups = await cognito.adminListGroupsForUser({
@@ -143,11 +118,9 @@ export async function queryCognito(
         })
       );
 
-      console.log(`Returning all ${usersWithGroups.length} search results for "${searchString}" in alphabetic order`);
-
       return {
         users: usersWithGroups,
-        nextToken: undefined // No pagination for search results - return all matches
+        nextToken: undefined
       };
     }
 
@@ -168,9 +141,6 @@ export const handler: Schema["searchUsers"]["functionHandler"] = async (event) =
     nextToken?: string; 
   };
   
-  console.log('=== HANDLER START ===');
-  console.log('Handler params:', { name, pageSize, nextToken: nextToken ? 'exists' : 'none' });
-  
   try {
     const result = await queryCognito(
       'us-east-1_oy1KeDlsD', 
@@ -178,20 +148,6 @@ export const handler: Schema["searchUsers"]["functionHandler"] = async (event) =
       pageSize, 
       nextToken || undefined
     );
-    
-    console.log('=== HANDLER RESULT ===');
-    console.log(`Found ${result.users?.length || 0} users`);
-    console.log(`Search term: "${name}"`);
-    console.log(`Has nextToken: ${!!result.nextToken}`);
-    
-    // Log first few user emails to verify results
-    if (result.users && result.users.length > 0) {
-      const firstEmails = result.users.slice(0, 3).map(user => {
-        const emailAttr = user.Attributes?.find(attr => attr.Name === 'email');
-        return emailAttr?.Value || 'no-email';
-      });
-      console.log('First few emails:', firstEmails);
-    }
     
     const response = {
       users: result.users || [],
