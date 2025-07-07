@@ -349,6 +349,7 @@ async function sendEmailToUsersInBatches(
     await Promise.all(
       batch.map(async (user) => {
         const emailAttribute = user.Attributes?.find(attr => attr.Name === 'email');
+        const username = user.Username || 'unknown';
         if (emailAttribute?.Value) {
           const params = {
             Destination: {
@@ -366,11 +367,14 @@ async function sendEmailToUsersInBatches(
           try {
             await ses.sendEmail(params).promise();
             successCount++;
+            console.log(`[SEND SUCCESS] Email sent to: ${emailAttribute.Value} (username: ${username})`);
           } catch (error) {
-            failed.push({ username: user.Username || 'unknown', error });
+            failed.push({ username, error });
+            console.error(`[SEND FAILURE] Failed to send to: ${emailAttribute.Value} (username: ${username})`, error);
           }
         } else {
-          failed.push({ username: user.Username || 'unknown', error: 'No email attribute' });
+          failed.push({ username, error: 'No email attribute' });
+          console.error(`[SEND FAILURE] No email attribute for user: ${username}`);
         }
       })
     );
@@ -389,7 +393,7 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
   const { name, email, type, title, header, selectedNewsIDs } = event.arguments as { name: string, 
     email: string, 
     type: 'Steel' | 'Auto' | 'Aluminum', 
-    title: string,
+    title: string,  
     header: string, 
     selectedNewsIDs: string[] };
 
