@@ -7,16 +7,22 @@ const ses = new SES();
 
 // Selects users by type/group. Cognito grouping is done by type: steel, auto, aluminum
 export async function selectUsersByType(userPoolId: string, groupName: string): Promise<CognitoIdentityServiceProvider.UserType[]> {
+  let users: CognitoIdentityServiceProvider.UserType[] = [];
+  let nextToken: string | undefined = undefined;
 
-  const params = {UserPoolId: userPoolId, GroupName: groupName,};
-
-  try {
+  do {
+    const params: CognitoIdentityServiceProvider.ListUsersInGroupRequest = {
+      UserPoolId: userPoolId,
+      GroupName: groupName,
+      Limit: 60,
+      ...(nextToken ? { NextToken: nextToken } : {})
+    };
     const data = await cognito.listUsersInGroup(params).promise();
-    return data.Users || [];
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw new Error('Error fetching users');
-  }
+    users = users.concat(data.Users || []);
+    nextToken = data.NextToken;
+  } while (nextToken);
+
+  return users;
 }
 
 // Selects users by group. Grouping is done by type: steel, auto, aluminum
