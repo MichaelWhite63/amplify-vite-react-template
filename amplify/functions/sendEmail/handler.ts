@@ -398,6 +398,10 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       ? await selectSingleUser('us-east-1_oy1KeDlsD', email) 
       : await selectUsersByType('us-east-1_oy1KeDlsD', type);
 
+    if (!users || users.length === 0) {
+      throw new Error(`No users found for group: ${type}`);
+    }
+
     const newsItems = await fetchNewsItems(selectedNewsIDs);
     const emailContent = await formatEmailContent(newsItems, header);
 
