@@ -324,36 +324,60 @@ async function formatEmailContent(newsItems: any[], header?: string): Promise<{ 
   };
 }
 
-async function sendEmailToUsers(users: CognitoIdentityServiceProvider.UserType[], subject: string, content: { html: string, text: string }) {
-  for (const user of users) {
-    const emailAttribute = user.Attributes?.find(attr => attr.Name === 'email');
-    if (emailAttribute?.Value) {
-      const params = {
-        Destination: {
-          ToAddresses: [emailAttribute.Value]
-        },
-        Message: {
-          Body: {
-            Html: { 
-              Data: content.html,
-              Charset: 'UTF-8'
-            },
-            Text: { 
-              Data: content.text,
-              Charset: 'UTF-8'
-            }
-          },
-          Subject: { 
-            Data: subject,
-            Charset: 'UTF-8'
-          }
-        },
-        Source: 'Kuromatsu@metalnews.com'
-      };
-      
-      await ses.sendEmail(params).promise();
-    }
+// Helper to batch an array into chunks of given size
+function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  const results: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    results.push(array.slice(i, i + chunkSize));
   }
+  return results;
+}
+
+// Send emails in batches with throttling and error collection
+async function sendEmailToUsersInBatches(
+  users: CognitoIdentityServiceProvider.UserType[],
+  subject: string,
+  content: { html: string, text: string },
+  batchSize: number = 10,
+  batchDelayMs: number = 1500
+): Promise<{ successCount: number; failed: { username: string; error: any }[] }> {
+  let successCount = 0;
+  const failed: { username: string; error: any }[] = [];
+  const userBatches = chunkArray(users, batchSize);
+
+  for (const batch of userBatches) {
+    await Promise.all(
+      batch.map(async (user) => {
+        const emailAttribute = user.Attributes?.find(attr => attr.Name === 'email');
+        if (emailAttribute?.Value) {
+          const params = {
+            Destination: {
+              ToAddresses: [emailAttribute.Value]
+            },
+            Message: {
+              Body: {
+                Html: { Data: content.html, Charset: 'UTF-8' },
+                Text: { Data: content.text, Charset: 'UTF-8' }
+              },
+              Subject: { Data: subject, Charset: 'UTF-8' }
+            },
+            Source: 'Kuromatsu@metalnews.com'
+          };
+          try {
+            await ses.sendEmail(params).promise();
+            successCount++;
+          } catch (error) {
+            failed.push({ username: user.Username || 'unknown', error });
+          }
+        } else {
+          failed.push({ username: user.Username || 'unknown', error: 'No email attribute' });
+        }
+      })
+    );
+    // Wait between batches to avoid throttling
+    await new Promise(resolve => setTimeout(resolve, batchDelayMs));
+  }
+  return { successCount, failed };
 }
 
 /**
@@ -375,14 +399,16 @@ export const handler: Schema["sendEmail"]["functionHandler"] = async (event) => 
       : await selectUsersByType('us-east-1_oy1KeDlsD', type);
 
     const newsItems = await fetchNewsItems(selectedNewsIDs);
-    
     const emailContent = await formatEmailContent(newsItems, header);
-    
-    await sendEmailToUsers(users, title, emailContent);
-    
+
+    // Use batching for sending emails
+    const { successCount, failed } = await sendEmailToUsersInBatches(users, title, emailContent);
+
     return JSON.stringify({ 
-      success: true, 
+      success: failed.length === 0, 
       recipientCount: users.length,
+      sentCount: successCount,
+      failed,
       newsCount: newsItems.length,
       users: users.map(user => user.Username),
       emailContent: emailContent
