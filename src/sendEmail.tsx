@@ -112,6 +112,12 @@ const createMarkup = (html: string) => {
   };
 };
 
+const typeLabels: { [key in 'Steel' | 'Auto' | 'Aluminum']: string } = {
+  Steel: '鉄鋼',
+  Auto: '自動車',
+  Aluminum: 'アルミ'
+};
+
 const SendEmail: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'Steel' | 'Auto' | 'Aluminum'>('Steel');
   const [recipient, setRecipient] = useState<'everyone' | 'single'>('everyone');
@@ -128,13 +134,13 @@ const SendEmail: React.FC = () => {
     const now = new Date();
     const month = now.getMonth() + 1; // getMonth() is zero-based
     const date = now.getDate();
-    
+
     // Get the day of week in Japanese
     const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
     const dayOfWeek = daysOfWeek[now.getDay()]; // now.getDay() returns 0-6 (Sunday-Saturday)
-    
-    setTitle(`${month} 月 ${date} 日(${dayOfWeek})  Metal News - `);
-  }, []);
+
+    setTitle(`${month} 月 ${date} 日(${dayOfWeek})  Metal News - ${typeLabels[selectedType]} - `);
+  }, [selectedType]);
 
   useEffect(() => {
     async function fetchUnpublishedNews() {
@@ -172,14 +178,6 @@ const SendEmail: React.FC = () => {
 
   const handleSendEmail = async () => {
     
-    console.log({ 
-      name: 'MetalNews Email',
-      email: recipient === 'single' ? email : null, 
-      type: selectedType,
-      title: title,
-      header: header,
-      selectedNewsIDs: selectedNewsIDs
-    });
     await client.queries.sendEmail({ 
       name: 'MetalNews Email',
       email: recipient === 'single' ? email : null, 
