@@ -139,7 +139,7 @@ const SendEmail: React.FC = () => {
     const daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
     const dayOfWeek = daysOfWeek[now.getDay()]; // now.getDay() returns 0-6 (Sunday-Saturday)
 
-    setTitle(`${month} 月 ${date} 日(${dayOfWeek})  Metal News - ${typeLabels[selectedType]} - `);
+    setTitle(`${month} 月 ${date} 日(${dayOfWeek})  Metal News - ${typeLabels[selectedType]} `);
   }, [selectedType]);
 
   useEffect(() => {
