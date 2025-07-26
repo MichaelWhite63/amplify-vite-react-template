@@ -528,7 +528,21 @@ const Default: React.FC = () => {
                     <div>
                       {user ? (                      
                           <Box sx={{ mt: 2, textAlign: 'center' }}>
-                            <button onClick={signOut}>Sign out</button>
+                            <Button 
+                              variant="contained"
+                              onClick={signOut}
+                              sx={{
+                                fontSize: '2rem',
+                                padding: '10px 20px',
+                                width: '80%',
+                                backgroundColor: '#d32f2f',
+                                '&:hover': {
+                                  backgroundColor: '#c62828'
+                                }
+                              }}
+                            >
+                              Sign out
+                            </Button>
                           </Box>
                       ) : (
                         <Typography>Please sign in</Typography>

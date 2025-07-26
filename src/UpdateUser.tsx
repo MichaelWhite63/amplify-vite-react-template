@@ -159,6 +159,7 @@ const UpdateUser: React.FC = () => {
   };
 
   const handleSelectUser = async (email: string) => {
+    setIsLoading(true);
     setSelectedEmail(email);
     setEditableEmail(email);
     setName(email);
@@ -186,6 +187,9 @@ const UpdateUser: React.FC = () => {
       setName(nameAttr?.Value || '');
     } catch (error) {
       console.error('Error fetching user details:', error);
+      setSelectedDetails(null); // Clear details on error
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -419,7 +423,7 @@ const UpdateUser: React.FC = () => {
             </>
           )}
           
-          {!selectedDetails && users.length === 0 && !isLoading && searchName && (
+          {!selectedDetails && users.length === 0 && !isLoading && lastSearchTerm !== '' && (
             <Typography sx={{ mt: 2, fontSize: '1.2rem' }}>
               検索結果が見つかりませんでした。
             </Typography>
