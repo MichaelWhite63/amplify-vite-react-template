@@ -517,11 +517,14 @@ const Default: React.FC = () => {
           {/* Authentication Column size={3}   */}
           <Grid size={{ xs: 12, md: 3 }}>
             <Paper sx={{ p: 1, height: '100%' }}>
+              {/* Authenticator with scale transformation */}
               <div style={{ 
-                transform: 'scale(0.5)',
-                transformOrigin: 'top left',
-                width: '200%', // Compensate for scale to maintain layout
-                height: '200%' // Compensate for scale to maintain layout
+                transform: 'scale(0.80)',
+                transformOrigin: 'top center', // Changed from 'top left' to 'top center'
+                width: '133%', // Adjusted from '200%' to compensate for 0.75 scale (100/0.75 = 133%)
+                height: 'auto',
+                marginBottom: '-25px', // Adjusted from '-50px' for 0.75 scale
+                marginLeft: '-16.5%' // Added to center the scaled element (-(133-100)/2 = -16.5%)
               }}>
                 <Authenticator>
                   {({ signOut, user }) => (
@@ -532,12 +535,12 @@ const Default: React.FC = () => {
                               variant="contained"
                               onClick={signOut}
                               sx={{
-                                fontSize: '2rem',
+                                fontSize: '1.5rem', // Reduced from '2rem' to '1.5rem'
                                 padding: '10px 20px',
                                 width: '80%',
-                                backgroundColor: '#d32f2f',
+                                backgroundColor: '#4CAF50',
                                 '&:hover': {
-                                  backgroundColor: '#c62828'
+                                  backgroundColor: '#45a049'
                                 }
                               }}
                             >
@@ -549,19 +552,26 @@ const Default: React.FC = () => {
                       )}
                     </div>
                   )}
-                </Authenticator><br></br><br></br>
+                </Authenticator>
+              </div>
 
-                {/* Add title above keyword search - centered with larger font */}
+              {/* Search elements - scaled down to match previous size */}
+              <Box sx={{ 
+                mt: 4, // Increased from mt: 2 to mt: 4 for more spacing
+                transform: 'scale(0.5)',
+                transformOrigin: 'top left',
+                width: '200%',
+                marginBottom: '-50px'
+              }}>
                 <Typography sx={{ 
-                  fontSize: '2.4rem', // Increased from 1.6rem to 2.4rem (2 sizes larger)
+                  fontSize: '2.4rem',
                   mb: 1,
-                  textAlign: 'center', // Center the text
-                  fontWeight: 'medium' // Optional: add slightly more weight for visibility
+                  textAlign: 'center',
+                  fontWeight: 'medium'
                 }}>
                   アーカイブを検索する
                 </Typography>
 
-                {/* Keyword search field and button */}
                 <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
                   <TextField
                     sx={{
@@ -591,7 +601,7 @@ const Default: React.FC = () => {
                     variant="contained"
                     onClick={handleArchiveSearch}
                     sx={{
-                      width: 'calc(40% - 16px)', // Match remaining width minus margin
+                      width: 'calc(40% - 16px)',
                       backgroundColor: '#191970',
                       '&:hover': {
                         backgroundColor: '#1e1e90'
@@ -604,24 +614,22 @@ const Default: React.FC = () => {
                   </Button>
                 </Box>
 
-                {/* Date picker and search button with identical layout */}
                 <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', width: '100%' }}>
                   <Typography sx={{ 
                     fontSize: '2.3rem', 
                     mb: 1,
-                    textAlign: 'center' // Add this to center the text
+                    textAlign: 'center'
                   }}>
                     日付で検索:
                   </Typography>
                   
                   <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-                    {/* Increased the width to match the keyword field */}
                     <Box sx={{ width: '60%', marginRight: '16px' }}>
                       <DatePicker
                         selected={searchDate}
                         onChange={(date) => setSearchDate(date || new Date())}
                         dateFormat="yyyy/MM/dd"
-                          wrapperClassName="date-picker-full-width" // Add this wrapper class
+                        wrapperClassName="date-picker-full-width"
                         customInput={
                           <input
                             style={{
@@ -641,7 +649,7 @@ const Default: React.FC = () => {
                       variant="contained"
                       onClick={handleDateSearch}
                       sx={{
-                        width: 'calc(40% - 16px)', // Match keyword button width
+                        width: 'calc(40% - 16px)',
                         backgroundColor: '#191970',
                         '&:hover': {
                           backgroundColor: '#1e1e90'
@@ -654,7 +662,7 @@ const Default: React.FC = () => {
                     </Button>
                   </Box>
                 </Box>
-              </div>
+              </Box>
             </Paper>
           </Grid>
         </Grid>
