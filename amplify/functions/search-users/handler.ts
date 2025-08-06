@@ -72,7 +72,7 @@ export async function queryCognito(
         const response = await cognito.listUsers(listParams).promise();
         const users = response.Users || [];
         
-        // Filter users that contain the search string anywhere in their email OR name
+        // Filter users that contain the search string anywhere in their email, name, OR family_name
         const matchingUsers = users.filter(user => {
           const emailAttr = user.Attributes?.find(attr => attr.Name === 'email');
           const email = emailAttr?.Value || '';
@@ -80,9 +80,13 @@ export async function queryCognito(
           const nameAttr = user.Attributes?.find(attr => attr.Name === 'name');
           const name = nameAttr?.Value || '';
           
-          // Case-insensitive substring match for either email or name
+          const familyNameAttr = user.Attributes?.find(attr => attr.Name === 'family_name');
+          const familyName = familyNameAttr?.Value || '';
+          
+          // Case-insensitive substring match for email, name, or family_name
           return email.toLowerCase().includes(searchString.toLowerCase()) ||
-                 name.toLowerCase().includes(searchString.toLowerCase());
+                 name.toLowerCase().includes(searchString.toLowerCase()) ||
+                 familyName.toLowerCase().includes(searchString.toLowerCase());
         });
         
         allMatchingUsers = [...allMatchingUsers, ...matchingUsers];
